@@ -4,19 +4,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SHIMS.Models.Records
 {
-    public class PatientInsurances
+    public class PatientSchemes
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid PatientInsurancesID { get; set; }
+        public Guid PatientSchemesID { get; set; }
 
         [Required]
         public required Guid PatientsID { get; set; }
 
         [Required]
-        public required Guid InsurancesID { get; set; }
+        public required Guid SchemesID { get; set; }
 
         [DefaultValue(true)]
-        public bool Status { get; set; }
+        public bool IsActive { get; set; }
 
         [Required]
         [StringLength(30, MinimumLength = 10)]
@@ -36,10 +36,9 @@ namespace SHIMS.Models.Records
     Guid PatientsID,
 
     [Required]
-    Guid InsurancesID,
-
+    Guid SchemesID,
     [DefaultValue(true)]
-    bool Status,
+    bool IsActive,
 
     [Required, StringLength(30, MinimumLength = 10)]
     string CardID,

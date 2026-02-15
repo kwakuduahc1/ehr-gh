@@ -9,7 +9,7 @@ namespace SHIMS.Models.Records
         public Guid PatientAttendancesID { get; set; } = Guid.CreateVersion7();
 
         [Required]
-        public Guid PatientsID { get; set; }
+        public required Guid PatientSchemesID { get; set; }
 
         [Required]
         [StringLength(15)]
@@ -19,15 +19,15 @@ namespace SHIMS.Models.Records
 
         public DateTime DateSeen { get; set; }
 
-        [Display(Name = "User Name"), MaxLength(75)]
+        [MaxLength(75)]
         [Required]
         public required string UserName { get; set; }
 
-        public virtual Patients? Patients { get; set; }
+        public virtual PatientSchemes? PatientSchemes { get; set; }
     }
 
     public record AttendanceDto(
-     Guid PatientsID,
+     Guid PatientSchemesID,
 
     [StringLength(15)]
     [DefaultValue("Acute")]

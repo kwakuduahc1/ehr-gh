@@ -4,15 +4,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SHIMS.Models.Schemes
 {
-    public class SchemLabs
+    public class SchemeLabs
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid SchemeLabsID { get; set; } = Guid.CreateVersion7();
+
+        [Required]
+        public required Guid LabsGroupID { get; set; }
 
         [Required]
         public required Guid SchemesID { get; set; }
-
-        [Required]
-        public required Guid LabGroupsID { get; set; }
 
         [Required]
         [Range(0.5D, double.MaxValue)]
@@ -28,5 +29,7 @@ namespace SHIMS.Models.Schemes
         public virtual Schemes? Schemes { get; set; }
 
         public virtual LabGroups? LabGroups { get; set; }
+
+        public virtual ICollection<LabRequests>? LabRequests { get; set; }
     }
 }

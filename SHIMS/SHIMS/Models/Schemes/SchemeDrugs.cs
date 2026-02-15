@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SHIMS.Models.Drugs;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SHIMS.Models.Schemes
@@ -6,9 +7,12 @@ namespace SHIMS.Models.Schemes
     public class SchemDrugs
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+                public Guid SchemDrugsID { get; set; } = Guid.CreateVersion7();
 
+        [Required]
         public required Guid SchemesID { get; set; }
 
+        [Required]
         public required Guid DrugsID { get; set; }
 
         [Required]
@@ -25,5 +29,7 @@ namespace SHIMS.Models.Schemes
         public virtual Drugs.Drugs? Drugs { get; set; }
 
         public virtual Schemes? Schemes { get; set; }
+
+        public virtual ICollection<DrugsRequests>? DrugsRequests { get; set; }
     }
 }

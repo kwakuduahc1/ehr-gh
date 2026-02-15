@@ -20,7 +20,7 @@ namespace SHIMS.Models.Drugs
 
         public DateTime DateAdded { get; set; }
 
-        public virtual ICollection<PatientDrugs>? PatientDrugs { get; set; }
+        public virtual ICollection<DrugsRequests>? PatientDrugs { get; set; }
 
         public virtual ICollection<DrugsStock>? DrugsStocks { get; set; }
     }
