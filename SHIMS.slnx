@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="SHIMS/SHIMS.Client/SHIMS.Client.csproj" />
+  <Project Path="SHIMS/SHIMS/SHIMS.csproj" />
+</Solution>
