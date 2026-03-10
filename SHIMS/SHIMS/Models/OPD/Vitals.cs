@@ -1,5 +1,4 @@
-﻿using SHIMS.Models.ConsultingRoom;
-using SHIMS.Models.Records;
+﻿using SHIMS.Models.Records;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

@@ -37,7 +37,7 @@ namespace SHIMS.Models.Drugs
 
         public bool IsDispensed { get; set; } = false;
 
-        public virtual SchemDrugs? SchemeDrugs { get; set; }
+        public virtual SchemeDrugs? SchemeDrugs { get; set; }
 
         public virtual PatientAttendance? PatientsAttendances { get; set; }
 

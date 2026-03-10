@@ -1,4 +1,10 @@
 <Solution>
+  <Folder Name="/client-app/" />
+  <Folder Name="/Solution Items/">
+    <File Path="DTO_DOCUMENTATION.md" />
+  </Folder>
   <Project Path="SHIMS/SHIMS.Client/SHIMS.Client.csproj" />
   <Project Path="SHIMS/SHIMS/SHIMS.csproj" />
+  <Project Path="ShimsServer.Tests/ShimsServer.Tests.csproj" />
+  <Project Path="ShimsServer/ShimsServer.csproj" Id="7da2cfa6-c369-46ee-98a6-4e619cd228b7" />
 </Solution>

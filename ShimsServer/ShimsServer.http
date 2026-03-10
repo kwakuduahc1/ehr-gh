@@ -1,0 +1,45 @@
+@ShimsServer_HostAddress = https://localhost:7199
+
+
+GET {{ShimsServer_HostAddress}}/schemes
+Accept: application/json
+
+###
+@id=019cbabf-b552-728f-92db-1c52fa6c2a86
+
+GET {{ShimsServer_HostAddress}}/schemes/{{id}}
+
+###
+
+@name=NHIS
+GET {{ShimsServer_HostAddress}}/schemes/Check?name={{name}}
+
+###
+
+POST {{ShimsServer_HostAddress}}/schemes
+Content-Type: application/json
+
+{
+  "SchemeName": "NHIS",
+  "Coverage": "Full",
+  "MaxPayable": 0,
+  "Recovery": 0
+}
+
+###
+
+DELETE {{ShimsServer_HostAddress}}/schemes/{{id}}
+
+###
+
+PUT {{ShimsServer_HostAddress}}/schemes/{{id}}
+Content-Type: application/json
+
+{
+  "ID": "019cbadc-6538-7608-af64-d9c98786a62a",
+  "SchemeName": "NHIS",
+  "Coverage": "Full",
+  "MaxPayable": 0,
+  "Recovery": 0
+}
+

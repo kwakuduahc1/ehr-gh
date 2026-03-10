@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SHIMS.Models.ConsultingRoom
 {
-    [Index("ICD", ["GDRG", "SNOMED"], IsDescending = [false], IsUnique = true)]
+    [Index("ICD", ["GDRG", "SNOMED"], IsUnique = true)]
     public class Diagnoses
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]

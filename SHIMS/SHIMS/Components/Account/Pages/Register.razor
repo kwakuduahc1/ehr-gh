@@ -1,0 +1,126 @@
+﻿@page "/Account/Register"
+
+@using System.ComponentModel.DataAnnotations
+@using System.Text
+@using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+@using SHIMS.Context
+@using System.ComponentModel.DataAnnotations.Schema
+@using SHIMS.Models.AuthVm
+
+@inject UserManager<ApplicationUser> UserManager
+@inject IUserStore<ApplicationUser> UserStore
+@inject SignInManager<ApplicationUser> SignInManager
+@inject IEmailSender<ApplicationUser> EmailSender
+@inject ILogger<Register> Logger
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Register</PageTitle>
+
+<h1>Register</h1>
+
+<div class="row">
+    <div class="col-lg-6">
+        <StatusMessage Message="@Message" />
+        <EditForm Model="Input" method="post" OnValidSubmit="RegisterUser" FormName="register">
+            <DataAnnotationsValidator />
+            <h2>Create a new account.</h2>
+            <hr />
+            <ValidationSummary class="text-danger" role="alert" />
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.Email" id="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <label for="Input.Email">Email</label>
+                <ValidationMessage For="() => Input.Email" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputText type="password" @bind-Value="Input.Password" id="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label for="Input.Password">Password</label>
+                <ValidationMessage For="() => Input.Password" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputText type="password" @bind-Value="Input.ConfirmPassword" id="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label for="Input.ConfirmPassword">Confirm Password</label>
+                <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.FullName" id="Input.FullName" class="form-control" aria-required="true" placeholder="Full Name" />
+                <label for="Input.FullName">Full Name</label>
+                <ValidationMessage For="() => Input.FullName" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.PhoneNumber" id="Input.PhoneNumber" class="form-control" type="tel" aria-required="true" placeholder="Phone Number" />
+                <label for="Input.PhoneNumber">Phone Number</label>
+                <ValidationMessage For="() => Input.PhoneNumber" class="text-danger" />
+            </div>
+            <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+        </EditForm>
+    </div>
+    <div class="col-lg-4 col-lg-offset-2">
+        <section>
+            <h3>Use another service to register.</h3>
+            <hr />
+            <ExternalLoginPicker />
+        </section>
+    </div>
+</div>
+
+@code {
+    private IEnumerable<IdentityError>? identityErrors;
+
+    [SupplyParameterFromForm]
+    private RegisterVM Input { get; set; } = new();
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
+
+
+    public async Task RegisterUser(EditContext editContext)
+    {
+        var user = Input.Transform();
+        var result = await UserManager.CreateAsync(user, Input.Password);
+
+        if (!result.Succeeded)
+        {
+            identityErrors = result.Errors;
+            return;
+        }
+
+        Logger.LogInformation("User created a new account with password.");
+
+        await SignInManager.SignInAsync(user, isPersistent: false);
+        RedirectManager.RedirectTo(ReturnUrl);
+    }
+
+    private sealed class RegisterVM
+    {
+        [Required]
+        [StringLength(20, MinimumLength = 6)]
+        [DataType(DataType.EmailAddress)]
+        public string? Email { get; set; }
+
+        [Required]
+        [StringLength(15, MinimumLength = 6)]
+        [DataType(DataType.Password)]
+        public string? Password { get; set; }
+
+        [Required]
+        [StringLength(15, MinimumLength = 6)]
+        [Compare("Password", ErrorMessage = "Password and Confirm Password do not match.")]
+        [DataType(DataType.Password)]
+        public string? ConfirmPassword { get; set; }
+
+        [Required]
+        [StringLength(50, MinimumLength = 5)]
+        public string? FullName { get; set; }
+
+        [DataType(DataType.PhoneNumber)]
+        [StringLength(10, MinimumLength = 10)]
+        public string? PhoneNumber { get; set; }
+
+        public ApplicationUser Transform() => new() { Email = Email, Password = Password, PhoneNumber = PhoneNumber, FullName = FullName, UserName = Email, ConfirmPassword = ConfirmPassword };
+    }
+}

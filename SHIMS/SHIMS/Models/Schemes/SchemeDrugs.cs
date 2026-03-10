@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SHIMS.Models.Schemes
 {
-    public class SchemDrugs
+    public class SchemeDrugs
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
                 public Guid SchemDrugsID { get; set; } = Guid.CreateVersion7();

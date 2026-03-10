@@ -1,15 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SHIMS.Models.Wards
 {
+    [Index(nameof(Ward), IsUnique = true)]
     public class Wards
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid WardsID { get; set; }
 
         [Required, StringLength(50, MinimumLength = 5)]
-        public required string WardName { get; set; }
+        public required string Ward{ get; set; }
 
         [Required, StringLength(10, MinimumLength = 4)]
         public required string WardTags { get; set; }
