@@ -483,3 +483,4 @@ Thumbs.db
 src/environments/environment.prod.ts
 src/environments/environment.staging.ts
 src/environments/environment.development.ts
+/ShimsServer/appsettings.*.json
