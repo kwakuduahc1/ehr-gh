@@ -1,12 +1,10 @@
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using ShimsServer.Context;
-using ShimsServer.EndPoints;
 using System.Net;
 using System.Text;
 
@@ -18,13 +16,20 @@ namespace ShimsServer
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddNpgsqlDataSource(builder.Configuration.GetConnectionString("DefaultConnection")!, x =>
-            {
-                x.EnableDynamicJson()
-                 .EnableParameterLogging(builder.Environment.IsDevelopment());
-            });
+            // Configure Serilog
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.Console()
+                .WriteTo.File(
+                    "logs/shims-.txt",
+                    rollingInterval: RollingInterval.Day,
+                    retainedFileCountLimit: 30,
+                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+                .CreateLogger();
 
-            builder.Services.AddDbContext<ApplicationDbContext>(o =>
+            builder.Host.UseSerilog();
+
+            builder.Services.AddDbContextPool<ApplicationDbContext>(o =>
             {
                 o.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), opt =>
                 {
@@ -34,6 +39,12 @@ namespace ShimsServer
                 }).UseLowerCaseNamingConvention()
                 .EnableDetailedErrors(builder.Environment.IsDevelopment())
                 .EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
+            });
+
+            builder.Services.AddNpgsqlDataSource(builder.Configuration.GetConnectionString("DefaultConnection")!, x =>
+            {
+                x.EnableDynamicJson()
+                 .EnableParameterLogging(builder.Environment.IsDevelopment());
             });
 
             builder.Services.AddStackExchangeRedisCache(o =>
@@ -78,8 +89,8 @@ namespace ShimsServer
                 };
             });
 
-            builder.Services.AddAuthorizationBuilder()
-                .AddDefaultPolicy("Default", x => x.RequireAuthenticatedUser());
+            //builder.Services.AddAuthorizationBuilder()
+            //    .AddDefaultPolicy("Default", x => x.RequireAuthenticatedUser());
 
             builder.Services.AddHealthChecks()
                 .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection")!)
@@ -103,7 +114,7 @@ namespace ShimsServer
                 options.KnownProxies.Add(IPAddress.Parse("10.0.0.100"));
             });
 
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllers();
             builder.Services.AddSignalR(x => x.KeepAliveInterval = TimeSpan.FromSeconds(10));
             builder.Services.AddResponseCaching();
             builder.Services.AddRateLimiter();
@@ -117,7 +128,8 @@ namespace ShimsServer
             });
             if (builder.Environment.IsDevelopment())
             {
-                builder.Services.AddOpenApi();
+                builder.Services.AddOpenApi("shims-server");
+                builder.Services.AddSwaggerGen();  // Add this
             }
 
             var app = builder.Build();
@@ -129,17 +141,22 @@ namespace ShimsServer
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseResponseCaching();
             app.UseRouting();
             app.UseCors("bStudioApps");
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseRateLimiter();
-            app.UseResponseCaching();
-            app.MapSchemesEndPoints();
-            app.MapDrugsEndPoints();
+            app.MapControllers();
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.UseSwagger();           // Add this
+                app.UseSwaggerUI(c =>    // Add this
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"); ;
+                    c.RoutePrefix = "swagger";  // Set the route prefix for Swagger UI
+                });
             }
             app.Run();
 

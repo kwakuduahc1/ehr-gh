@@ -21,7 +21,6 @@ Content-Type: application/json
 
 {
   "SchemeName": "NHIS",
-  "Coverage": "Full",
   "MaxPayable": 0,
   "Recovery": 0
 }

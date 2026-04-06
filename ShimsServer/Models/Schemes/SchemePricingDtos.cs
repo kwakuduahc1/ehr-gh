@@ -12,7 +12,7 @@ namespace ShimsServer.Models.Schemes
         Guid SchemesID,
         Guid DrugsID,
         string SchemeName,
-        string DrugName,
+        string Drug,
         decimal Price,
         DateTime DateSet);
 
@@ -20,18 +20,18 @@ namespace ShimsServer.Models.Schemes
     /// Data transfer object for creating scheme drug pricing
     /// </summary>
     public record AddSchemeDrugDto(
-        [Required] Guid SchemesID,
-        [Required] Guid DrugsID,
-        [Required, Range(0.5D, double.MaxValue, ErrorMessage = "Price must be greater than 0.5")] decimal Price);
+        Guid SchemesID,
+        Guid DrugsID,
+        [Range(0.5D, double.MaxValue, ErrorMessage = "Price must be greater than 0.5")] decimal Price);
 
     /// <summary>
     /// Data transfer object for updating scheme drug pricing
     /// </summary>
     public record UpdateSchemeDrugDto(
         Guid SchemeDrugsID,
-        [Required] Guid SchemesID,
-        [Required] Guid DrugsID,
-        [Required, Range(0.5D, double.MaxValue, ErrorMessage = "Price must be greater than 0.5")] decimal Price);
+        Guid SchemesID,
+        Guid DrugsID,
+        [Range(0.5D, double.MaxValue, ErrorMessage = "Price must be greater than 0.5")] decimal Price);
 
     /// <summary>
     /// Data transfer object for scheme drugs with availability status
@@ -61,18 +61,18 @@ namespace ShimsServer.Models.Schemes
     /// Data transfer object for creating scheme lab pricing
     /// </summary>
     public record AddSchemeLabDto(
-        [Required] Guid SchemesID,
-        [Required] Guid LabsGroupID,
-        [Required, Range(0.5D, double.MaxValue, ErrorMessage = "Price must be greater than 0.5")] decimal Price);
+        Guid SchemesID,
+        Guid LabsGroupID,
+        [Range(0.5D, double.MaxValue, ErrorMessage = "Price must be greater than 0.5")] decimal Price);
 
     /// <summary>
     /// Data transfer object for updating scheme lab pricing
     /// </summary>
     public record UpdateSchemeLabDto(
         Guid SchemeLabsID,
-        [Required] Guid SchemesID,
-        [Required] Guid LabsGroupID,
-        [Required, Range(0.5D, double.MaxValue, ErrorMessage = "Price must be greater than 0.5")] decimal Price);
+        Guid SchemesID,
+        Guid LabsGroupID,
+        [Range(0.5D, double.MaxValue, ErrorMessage = "Price must be greater than 0.5")] decimal Price);
 
     /// <summary>
     /// Data transfer object for scheme labs with available tests
@@ -102,18 +102,18 @@ namespace ShimsServer.Models.Schemes
     /// Data transfer object for creating scheme service pricing
     /// </summary>
     public record AddSchemeServiceDto(
-        [Required] Guid SchemesID,
-        [Required] Guid ServicesID,
-        [Required, Range(0.5D, double.MaxValue, ErrorMessage = "Price must be greater than 0.5")] decimal Price);
+        Guid SchemesID,
+        Guid ServicesID,
+        [Range(0.5D, double.MaxValue, ErrorMessage = "Price must be greater than 0.5")] decimal Price);
 
     /// <summary>
     /// Data transfer object for updating scheme service pricing
     /// </summary>
     public record UpdateSchemeServiceDto(
         Guid SchemeServicesID,
-        [Required] Guid SchemesID,
-        [Required] Guid ServicesID,
-        [Required, Range(0.5D, double.MaxValue, ErrorMessage = "Price must be greater than 0.5")] decimal Price);
+        Guid SchemesID,
+        Guid ServicesID,
+        [Range(0.5D, double.MaxValue, ErrorMessage = "Price must be greater than 0.5")] decimal Price);
 
     /// <summary>
     /// Data transfer object for scheme services with coverage status

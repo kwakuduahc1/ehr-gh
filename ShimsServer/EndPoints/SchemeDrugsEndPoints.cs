@@ -25,7 +25,7 @@ namespace ShimsServer.EndPoints
         static async Task<IResult> GetSchemeDrugs(ApplicationDbContext db, Guid schemeId) =>
             TypedResults.Ok(await db.SchemeDrugs.Where(x => x.SchemesID == schemeId)
                 .Select(x => new SchemeDrugDTO(
-                    x.SchemDrugsID,
+                    x.SchemeDrugsID,
                     x.SchemesID,
                     x.DrugsID,
                     x.Schemes!.SchemeName,
@@ -35,9 +35,9 @@ namespace ShimsServer.EndPoints
                 )).ToListAsync());
 
         static async Task<IResult> GetSchemeDrugById(ApplicationDbContext db, Guid schemeId, Guid id, CancellationToken token) =>
-            await db.SchemeDrugs.Where(x => x.SchemesID == schemeId && x.SchemDrugsID == id)
+            await db.SchemeDrugs.Where(x => x.SchemesID == schemeId && x.SchemeDrugsID == id)
                 .Select(x => new SchemeDrugDTO(
-                    x.SchemDrugsID,
+                    x.SchemeDrugsID,
                     x.SchemesID,
                     x.DrugsID,
                     x.Schemes!.SchemeName,
@@ -60,7 +60,7 @@ namespace ShimsServer.EndPoints
 
             var schemeDrug = new SchemeDrugs
             {
-                SchemDrugsID = Guid.CreateVersion7(),
+                SchemeDrugsID = Guid.CreateVersion7(),
                 SchemesID = schemeId,
                 DrugsID = drugDto.DrugsID,
                 Price = drugDto.Price,
@@ -71,12 +71,12 @@ namespace ShimsServer.EndPoints
             db.SchemeDrugs.Add(schemeDrug);
             await db.SaveChangesAsync(token);
 
-            return TypedResults.Ok(schemeDrug.SchemDrugsID);
+            return TypedResults.Ok(schemeDrug.SchemeDrugsID);
         }
 
         static async Task<IResult> UpdateSchemeDrug(ApplicationDbContext db, Guid schemeId, Guid id, UpdateSchemeDrugDto drugDto, CancellationToken token)
         {
-            var schemeDrug = await db.SchemeDrugs.FirstOrDefaultAsync(x => x.SchemesID == schemeId && x.SchemDrugsID == id, token);
+            var schemeDrug = await db.SchemeDrugs.FirstOrDefaultAsync(x => x.SchemesID == schemeId && x.SchemeDrugsID == id, token);
             if (schemeDrug == null)
                 return TypedResults.NotFound();
 
@@ -91,7 +91,7 @@ namespace ShimsServer.EndPoints
 
         static async Task<IResult> DeleteSchemeDrug(ApplicationDbContext db, Guid schemeId, Guid id, CancellationToken token)
         {
-            var schemeDrug = await db.SchemeDrugs.FirstOrDefaultAsync(x => x.SchemesID == schemeId && x.SchemDrugsID == id, token);
+            var schemeDrug = await db.SchemeDrugs.FirstOrDefaultAsync(x => x.SchemesID == schemeId && x.SchemeDrugsID == id, token);
             if (schemeDrug == null)
                 return TypedResults.NotFound();
 
@@ -104,7 +104,7 @@ namespace ShimsServer.EndPoints
         static async Task<IResult> GetSchemeDrugsAvailability(ApplicationDbContext db, Guid schemeId) =>
             TypedResults.Ok(await db.SchemeDrugs.Where(x => x.SchemesID == schemeId)
                 .Select(x => new SchemeDrugAvailabilityDto(
-                    x.SchemDrugsID,
+                    x.SchemeDrugsID,
                     x.Schemes!.SchemeName,
                     x.Drugs!.Drug,
                     x.Price,

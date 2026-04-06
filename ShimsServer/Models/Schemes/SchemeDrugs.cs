@@ -1,4 +1,5 @@
 ﻿using ShimsServer.Models.Drugs;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -7,7 +8,7 @@ namespace ShimsServer.Models.Schemes
     public class SchemeDrugs
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid SchemDrugsID { get; set; } = Guid.CreateVersion7();
+        public Guid SchemeDrugsID { get; set; } = Guid.CreateVersion7();
 
         [Required]
         public required Guid SchemesID { get; set; }
@@ -21,6 +22,9 @@ namespace ShimsServer.Models.Schemes
 
         [Required]
         public required DateTime DateSet { get; set; }
+
+        [DefaultValue(false)]
+        public bool IsActive { get; set; } = true;
 
         [Required]
         [StringLength(75, MinimumLength = 10)]
