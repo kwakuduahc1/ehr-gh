@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using Serilog;
 using ShimsServer.Context;
 using System.Net;
@@ -92,6 +93,21 @@ namespace ShimsServer
             //builder.Services.AddAuthorizationBuilder()
             //    .AddDefaultPolicy("Default", x => x.RequireAuthenticatedUser());
 
+            builder.Services.AddAuthorizationBuilder()
+                .AddPolicy("Developer", policy => policy.RequireRole("Developer"))
+                .AddPolicy("SysAdmin", policy => policy.RequireRole("SysAdmin", "Developer"))
+                .AddPolicy("Doctor", policy => policy.RequireRole("Doctor", "SysAdmin"))
+                .AddPolicy("Nurse", policy => policy.RequireRole("Nurse", "OPDNurse", "Wards", "Doctor", "SysAdmin"))
+                .AddPolicy("OPDNurse", policy => policy.RequireRole("OPDNurse", "SysAdmin"))
+                .AddPolicy("Wards", policy => policy.RequireRole("Wards", "SysAdmin"))
+                .AddPolicy("Pharmacist", policy => policy.RequireRole("Pharmacist", "Pharmacy", "SysAdmin"))
+                .AddPolicy("Pharmacy", policy => policy.RequireRole("Pharmacy", "SysAdmin"))
+                .AddPolicy("Billing", policy => policy.RequireRole("Billing", "SysAdmin"))
+                .AddPolicy("Administration", policy => policy.RequireRole("Administration", "Records", "SysAdmin"))
+                .AddPolicy("Records", policy => policy.RequireRole("Records", "SysAdmin"))
+                .AddPolicy("Patient", policy => policy.RequireRole("Patient"))
+                .AddPolicy("Staff", policy => policy.RequireRole("Doctor", "Nurse", "OPDNurse", "Wards", "Pharmacist", "Pharmacy", "Billing", "Administration", "Records", "Developer", "SysAdmin"));
+
             builder.Services.AddHealthChecks()
                 .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection")!)
                 .AddRedis(builder.Configuration.GetConnectionString("Valkey")!);
@@ -129,8 +145,31 @@ namespace ShimsServer
             if (builder.Environment.IsDevelopment())
             {
                 builder.Services.AddOpenApi("shims-server");
-                builder.Services.AddSwaggerGen();  // Add this
-            }
+                builder.Services.AddSwaggerGen(options =>
+                {
+                    options.SwaggerDoc("v1", new OpenApiInfo
+                    {
+                        Version = "v1",
+                        Title = "BStudio EHR API",
+                        Description = "API for managing EHR",
+                        Contact = new OpenApiContact
+                        {
+                            Name = "BStudio",
+                            Email = "bstudio@bstudio.com"
+                        }
+                    });
+
+                    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                    {
+                        Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
+                        Name = "Authorization",
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.ApiKey,
+                        Scheme = "Bearer",
+                        BearerFormat = "JWT"
+                    });
+                });
+                }
 
             var app = builder.Build();
 
@@ -151,11 +190,13 @@ namespace ShimsServer
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
-                app.UseSwagger();           // Add this
-                app.UseSwaggerUI(c =>    // Add this
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"); ;
-                    c.RoutePrefix = "swagger";  // Set the route prefix for Swagger UI
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                    c.RoutePrefix = "swagger";
+                    c.DefaultModelsExpandDepth(0);
+                    c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.List);
                 });
             }
             app.Run();
