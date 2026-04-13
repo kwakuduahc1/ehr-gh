@@ -484,3 +484,5 @@ src/environments/environment.prod.ts
 src/environments/environment.staging.ts
 src/environments/environment.development.ts
 /ShimsServer/appsettings.**
+/ShimsServer/appsettings.Development.json
+/ShimsServer/appsettings.Production.json
