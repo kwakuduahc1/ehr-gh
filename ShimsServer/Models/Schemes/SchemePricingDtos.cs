@@ -9,12 +9,11 @@ namespace ShimsServer.Models.Schemes
     /// </summary>
     public record SchemeDrugDTO(
         Guid SchemeDrugsID,
-        Guid SchemesID,
-        Guid DrugsID,
-        string SchemeName,
         string Drug,
         decimal Price,
-        DateTime DateSet);
+        string DrugCode,
+        string Tags,
+        string? Description);
 
     /// <summary>
     /// Data transfer object for creating scheme drug pricing

@@ -1,6 +1,7 @@
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ShimsServer.Context;
+using Npgsql;
 using ShimsServer.Models.Schemes;
 using System.ComponentModel.DataAnnotations;
 
@@ -9,27 +10,25 @@ namespace ShimsServer.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
-    public class SchemesController(DbContextOptions<ApplicationDbContext> opitons, CancellationToken token) : ControllerBase
+    public class SchemesController(NpgsqlDataSource dsource, ILogger<SchemesController> logger, CancellationToken token) : ControllerBase
     {
-        private readonly ApplicationDbContext db = new(opitons);
 
         /// <summary>
         /// Get all schemes
         /// </summary>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)]
+
         public async Task<ActionResult<IEnumerable<SchemesDTO>>> GetSchemes()
         {
-            var schemes = await db.Schemes
-                .Select(x => new SchemesDTO(
-                    x.SchemesID,
-                    x.SchemeName,
-                    x.Coverage,
-                    x.MaxPayable,
-                    x.Recovery
-                ))
-                .ToListAsync(token);
-
+            const string sql = """
+                SELECT schemesid, schemename, coverage, maxpayable, recovery
+                FROM schemes
+                WHERE isactive = true  
+                """;
+            using var con = dsource.CreateConnection();
+            var schemes = await con.QueryAsync<SchemesDTO>(sql);
             return Ok(schemes);
         }
 
@@ -41,17 +40,13 @@ namespace ShimsServer.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SchemesDTO>> GetSchemeById(Guid id)
         {
-            var scheme = await db.Schemes
-                .Where(p => p.SchemesID == id)
-                .Select(p => new SchemesDTO(
-                    p.SchemesID,
-                    p.SchemeName,
-                    p.Coverage,
-                    p.MaxPayable,
-                    p.Recovery
-                ))
-                .FirstOrDefaultAsync(token);
-
+            const string sql = """
+                SELECT schemesid, schemename, coverage, maxpayable, recovery
+                FROM schemes
+                WHERE schemesid = @id AND isactive = true
+                """;
+            using var con = dsource.CreateConnection();
+            var scheme = await con.QueryFirstOrDefaultAsync<SchemesDTO>(sql, new { id });
             return scheme == null ? NotFound() : Ok(scheme);
         }
 
@@ -60,8 +55,14 @@ namespace ShimsServer.Controllers
         /// </summary>
         private async Task<bool> SchemeExists(string name)
         {
-            var exists = await db.Schemes.AnyAsync(x => x.SchemeName == name, token);
-            return exists;
+            const string sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM schemes
+                    WHERE SchemeName = @name
+                )
+                """;
+            return await dsource.CreateConnection().ExecuteScalarAsync<bool>(sql, new { name });
         }
 
         /// <summary>
@@ -73,7 +74,7 @@ namespace ShimsServer.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<ActionResult<Guid>> AddScheme([FromBody] AddSchemeDto schemeDto)
         {
-           if(await this.SchemeExists(schemeDto.SchemeName))
+            if (await this.SchemeExists(schemeDto.SchemeName))
                 return Conflict(new { message = $"Scheme with name {schemeDto.SchemeName} already exists." });
 
             var scheme = new Schemes
@@ -84,9 +85,23 @@ namespace ShimsServer.Controllers
                 MaxPayable = schemeDto.MaxPayable,
                 Recovery = schemeDto.Recovery
             };
-
-            db.Schemes.Add(scheme);
-            await db.SaveChangesAsync(token);
+            const string sql = """
+                INSERT INTO schemes (schemesid, schemename, coverage, maxpayable, recovery, isactive)
+                VALUES (@SchemesID, @SchemeName, @Coverage, @MaxPayable, @Recovery, true)
+                """;
+            using var con = dsource.CreateConnection();
+            using var tran = await con.BeginTransactionAsync(token);
+            try
+            {
+                var res = await con.ExecuteAsync(sql, scheme, transaction: tran);
+                await tran.CommitAsync(token);
+            }
+            catch (PostgresException ex)
+            {
+                await tran.RollbackAsync(token);
+                logger.LogError(ex, "Error inserting scheme {SchemeName}", schemeDto.SchemeName);
+                return BadRequest(new { message = $"There was a database level error" });
+            }
             return Ok(scheme.SchemesID);
         }
 
@@ -100,16 +115,37 @@ namespace ShimsServer.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> UpdateScheme(UpdateSchemeDto scheme)
         {
-            var _scheme = await db.Schemes.FindAsync(scheme.SchemesID);
+            const string sql = """
+                SELECT SchemesID, SchemeName, Coverage, MaxPayable, Recovery
+                FROM schemes
+                WHERE schemesid = @id
+                """;
+            using var con = dsource.CreateConnection();
+            using var tran = await con.BeginTransactionAsync(token);
+            var _scheme = await con.QueryFirstOrDefaultAsync<Schemes>(sql, new { id = scheme.SchemesID }, transaction: tran);
             if (_scheme == null)
-                return BadRequest(new {Message =  $"Scheme {scheme.SchemeName} does not exists"});
-            _scheme.SchemeName = scheme.SchemeName;
-            _scheme.Coverage = scheme.Coverage;
-            _scheme.MaxPayable = scheme.MaxPayable;
-            _scheme.Recovery = scheme.Recovery;
-            db.Entry(_scheme).State = EntityState.Modified;
-            await db.SaveChangesAsync(token);
-            return Accepted();
+                return BadRequest(new { Message = $"Scheme {scheme.SchemeName} does not exists" });
+            const string insSql = """
+                UPDATE schemes
+                SET schemename = @SchemeName, 
+                    coverage = @Coverage, 
+                    maxpayable = @MaxPayable, 
+                    recovery = @Recovery,
+                    isactive = true
+                WHERE schemesid = @SchemesID
+                """;
+            try
+            {
+                var res = await con.ExecuteScalarAsync(insSql, scheme, transaction: tran);
+                await tran.CommitAsync(token);
+                return Accepted();
+            }
+            catch (PostgresException ex)
+            {
+                await tran.RollbackAsync(token);
+                logger.LogError(ex, "Error updating scheme {SchemeName}", scheme.SchemeName);
+                return BadRequest(new { message = $"There was a database level error" });
+            }
         }
 
         /// <summary>
@@ -120,12 +156,24 @@ namespace ShimsServer.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteScheme(Guid id)
         {
-            var scheme = await db.Schemes.FindAsync(id, token);
-            if (scheme == null)
-                return NotFound();
-            db.Schemes.Remove(scheme);
-            await db.SaveChangesAsync(token);
-            return Ok();
+            using var con = dsource.CreateConnection(); 
+            using var tran = await con.BeginTransactionAsync(token);
+            try
+            {
+                var exists = await con.ExecuteScalarAsync<bool>("SELECT EXISTS (SELECT 1 FROM schemes WHERE schemesid = @id)", new { id }, transaction: tran);
+                if (!exists)
+                    return NotFound();
+                const string delSql = "DELETE FROM schemes WHERE schemesid = @id";
+                await con.ExecuteAsync(delSql, new { id }, transaction: tran);
+                await tran.CommitAsync(token);
+                return Ok();
+            }
+            catch (PostgresException ex)
+            {
+                await tran.RollbackAsync(token);
+                logger.LogError(ex, "Error deleting scheme with ID {SchemeID}", id);
+                return BadRequest(new { message = "There was a database level error" });
+            }
         }
     }
 

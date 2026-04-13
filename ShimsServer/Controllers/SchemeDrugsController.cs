@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ShimsServer.Context;
 using ShimsServer.Models.Schemes;
 using Dapper;
 using Npgsql;
@@ -11,7 +9,7 @@ namespace ShimsServer.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
-    [Authorize(Policy = "SysAdmin")]
+    //[Authorize(Policy = "SysAdmin")]
     public class SchemeDrugsController(NpgsqlDataSource ds, ILogger<SchemeDrugsController> logger, CancellationToken token) : ControllerBase
     {
 
@@ -23,7 +21,7 @@ namespace ShimsServer.Controllers
         public async Task<IEnumerable<SchemeDrugDTO>> GetDrugsByScheme(Guid id)
         {
             const string sql = """
-                SELECT sd.schemedrugsid, sd.schemesid, sd.drugsid, s.schemename, d.drug, sd.price, sd.dateset
+                SELECT sd.schemedrugsid, d.drug, sd.price, sd.drugcode, d.tags, d.description
                 FROM schemedrugs sd
                 INNER JOIN schemes s ON sd.schemesid = s.schemesid
                 INNER JOIN drugs d ON sd.drugsid = d.drugsid

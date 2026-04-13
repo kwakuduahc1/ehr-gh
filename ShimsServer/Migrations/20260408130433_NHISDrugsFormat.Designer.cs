@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ShimsServer.Context;
@@ -11,9 +12,11 @@ using ShimsServer.Context;
 namespace ShimsServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260408130433_NHISDrugsFormat")]
+    partial class NHISDrugsFormat
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -649,8 +652,8 @@ namespace ShimsServer.Migrations
                         .HasColumnName("dateadded");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("description");
 
                     b.Property<string>("Drug")
@@ -1148,6 +1151,12 @@ namespace ShimsServer.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("schemedrugsid");
 
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("code");
+
                     b.Property<DateTime>("DateSet")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("dateset");
@@ -1157,12 +1166,6 @@ namespace ShimsServer.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("dosageform");
-
-                    b.Property<string>("DrugCode")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("drugcode");
 
                     b.Property<Guid>("DrugsID")
                         .HasColumnType("uuid")
@@ -1193,8 +1196,8 @@ namespace ShimsServer.Migrations
 
                     b.Property<string>("Strength")
                         .IsRequired()
-                        .HasMaxLength(75)
-                        .HasColumnType("character varying(75)")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
                         .HasColumnName("strength");
 
                     b.Property<string>("UserName")
@@ -1209,8 +1212,6 @@ namespace ShimsServer.Migrations
                     b.HasIndex("DrugsID");
 
                     b.HasIndex("SchemesID");
-
-                    b.HasIndex("DrugCode", "DateSet", "DosageForm", "Strength", "PricingUnit");
 
                     b.ToTable("schemedrugs", (string)null);
                 });
@@ -1309,10 +1310,6 @@ namespace ShimsServer.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)")
                         .HasColumnName("coverage");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("isactive");
 
                     b.Property<decimal>("MaxPayable")
                         .HasColumnType("numeric")

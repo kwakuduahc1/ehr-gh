@@ -24,5 +24,8 @@ namespace ShimsServer.Models.Schemes
         [DefaultValue(100)]
         [Range(1,100.0)]
         public required decimal Recovery { get; set; }
+
+        [DefaultValue(true)]
+        public bool IsActive { get; set; } = true;
     }
 }

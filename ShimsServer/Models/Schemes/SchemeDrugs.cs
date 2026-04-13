@@ -1,10 +1,13 @@
-﻿using ShimsServer.Models.Drugs;
+﻿using Microsoft.EntityFrameworkCore;
+using ShimsServer.Models.Drugs;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ShimsServer.Models.Schemes
 {
+
+    [Index(nameof(DrugCode), [nameof(DateSet), nameof(DosageForm), nameof(Strength), nameof(PricingUnit)])]
     public class SchemeDrugs
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -15,6 +18,22 @@ namespace ShimsServer.Models.Schemes
 
         [Required]
         public required Guid DrugsID { get; set; }
+
+        [Required, StringLength(50)]
+        public required string DrugCode { get; set; }
+
+        [Required, StringLength(100)]
+        public required string DosageForm { get; set; }
+
+        [Required,  StringLength(75)]
+        public required string Strength { get; set; }
+
+        [StringLength(50), Required]
+        public required string PricingUnit { get; set; }
+
+        [StringLength(50)]
+        public string? PrescriptionLevel { get; set; }
+
 
         [Required]
         [Range(0.5D, double.MaxValue)]

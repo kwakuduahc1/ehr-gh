@@ -15,7 +15,7 @@ namespace ShimsServer.Models.Drugs
 
         public string? Tags { get; set; }
 
-        [StringLength(100)]
+        [StringLength(500)]
         public string? Description { get; set; }
 
         public DateTime DateAdded { get; set; }
