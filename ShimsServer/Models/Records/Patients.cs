@@ -27,8 +27,9 @@ namespace ShimsServer.Models.Records
         [Required, StringLength(6, MinimumLength = 4), AllowedValues(["Male", "Female"])]
         public required string Sex { get; set; }
 
-        [Required, DataType(DataType.PhoneNumber)]
-        public required string PhoneNumber { get; set; }
+        [DataType(DataType.PhoneNumber)]
+        [StringLength(15, MinimumLength = 7)]
+        public string? PhoneNumber { get; set; }
 
         [Required, StringLength(75, MinimumLength = 10)]
         public required string UserName { get; set; }

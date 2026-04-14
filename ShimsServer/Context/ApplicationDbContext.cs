@@ -26,7 +26,7 @@ namespace ShimsServer.Context
         public virtual DbSet<Schemes> Schemes { get; set; }
         public virtual DbSet<SchemeDrugs> SchemeDrugs { get; set; }
         public virtual DbSet<SchemeServices> SchemeServices { get; set; }
-        public virtual DbSet<SchemeInvestigations> SchemeLabs { get; set; }
+        public virtual DbSet<SchemeInvestigations> SchemeInvestigations { get; set; }
 
         // Services
         public virtual DbSet<Models.Services.Services> Services { get; set; }
@@ -44,10 +44,15 @@ namespace ShimsServer.Context
 
         // Labs
         public virtual DbSet<Investigations> Investigations  { get; set; }
-        public virtual DbSet<InvestigationParameters> LabParameters { get; set; }
-        public virtual DbSet<InvestigationsRequests> LabRequests { get; set; }
-        public virtual DbSet<InvestigationsPayment> LabPayments { get; set; }
-        public virtual DbSet<InvestigationsResults> LabResults { get; set; }
+        //public virtual DbSet<InvestigationParameters> InvestigationParameters { get; set; }
+        public virtual DbSet<InvestigationsRequests> InvestigationsRequests { get; set; }
+        public virtual DbSet<InvestigationsPayment> InvestigationsPayments { get; set; }
+        public virtual DbSet<InvestigationsResults> InvestigationsResults { get; set; }
+
+        //Diagnoses
+        public virtual DbSet<Diagnoses> Diagnoses { get; set; }
+
+        public virtual DbSet<SchemeDiagnoses> SchemeDiagnoses { get; set; }
 
         // Wards
         public virtual DbSet<Wards> Wards { get; set; }
@@ -58,7 +63,6 @@ namespace ShimsServer.Context
         public virtual DbSet<PatientOutcomes> PatientOutcomes { get; set; }
         public virtual DbSet<PatientDiagnosis> PatientDiagnoses { get; set; }
         public virtual DbSet<PatientSignsAndSymptoms> PatientSignsAndSymptoms { get; set; }
-        public virtual DbSet<Diagnoses> Diagnoses { get; set; }
 
         // OPD
         public virtual DbSet<Vitals> Vitals { get; set; }

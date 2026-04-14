@@ -10,7 +10,7 @@ namespace ShimsServer.Models.Labs
         public required Guid InvestigationsPaymentID { get; set; }
 
         [Required]
-        [ForeignKey(nameof(InvestigationParameters))]
+        //[ForeignKey(nameof(InvestigationParameters))]
         public required Guid LabParametersID { get; set; }
 
         [Required, StringLength(50, MinimumLength = 1)]

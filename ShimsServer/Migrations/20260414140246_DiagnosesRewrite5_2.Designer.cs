@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ShimsServer.Context;
@@ -11,9 +12,11 @@ using ShimsServer.Context;
 namespace ShimsServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260414140246_DiagnosesRewrite5_2")]
+    partial class DiagnosesRewrite5_2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1002,10 +1005,6 @@ namespace ShimsServer.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("datetested");
 
-                    b.Property<Guid?>("InvestigationParametersID")
-                        .HasColumnType("uuid")
-                        .HasColumnName("investigationparametersid");
-
                     b.Property<Guid>("LabParametersID")
                         .HasColumnType("uuid")
                         .HasColumnName("labparametersid");
@@ -1034,7 +1033,7 @@ namespace ShimsServer.Migrations
                     b.HasKey("InvestigationsPaymentID")
                         .HasName("pk_investigationsresults");
 
-                    b.HasIndex("InvestigationParametersID");
+                    b.HasIndex("LabParametersID");
 
                     b.ToTable("investigationsresults", (string)null);
                 });
@@ -1929,17 +1928,19 @@ namespace ShimsServer.Migrations
 
             modelBuilder.Entity("ShimsServer.Models.Labs.InvestigationsResults", b =>
                 {
-                    b.HasOne("ShimsServer.Models.Labs.InvestigationParameters", "InvestigationParameters")
-                        .WithMany()
-                        .HasForeignKey("InvestigationParametersID")
-                        .HasConstraintName("fk_investigationsresults_investigationparameters_investigation~");
-
                     b.HasOne("ShimsServer.Models.Labs.InvestigationsPayment", "InvestigationsPayment")
                         .WithOne("LabResults")
                         .HasForeignKey("ShimsServer.Models.Labs.InvestigationsResults", "InvestigationsPaymentID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_investigationsresults_investigationspayments_investigations~");
+
+                    b.HasOne("ShimsServer.Models.Labs.InvestigationParameters", "InvestigationParameters")
+                        .WithMany()
+                        .HasForeignKey("LabParametersID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_investigationsresults_investigationparameters_labparameters~");
 
                     b.Navigation("InvestigationParameters");
 

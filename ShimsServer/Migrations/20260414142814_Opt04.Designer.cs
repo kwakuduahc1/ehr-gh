@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ShimsServer.Context;
@@ -11,9 +12,11 @@ using ShimsServer.Context;
 namespace ShimsServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260414142814_Opt04")]
+    partial class Opt04
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -855,18 +858,12 @@ namespace ShimsServer.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("investigationparameter");
 
-                    b.Property<Guid>("InvestigationsID")
-                        .HasColumnType("uuid")
-                        .HasColumnName("investigationsid");
-
                     b.Property<short>("ParameterOrder")
                         .HasColumnType("smallint")
                         .HasColumnName("parameterorder");
 
                     b.HasKey("InvestigationParametersID")
                         .HasName("pk_investigationparameters");
-
-                    b.HasIndex("InvestigationsID");
 
                     b.ToTable("investigationparameters", (string)null);
                 });
@@ -1884,18 +1881,6 @@ namespace ShimsServer.Migrations
                     b.Navigation("Drugs");
                 });
 
-            modelBuilder.Entity("ShimsServer.Models.Labs.InvestigationParameters", b =>
-                {
-                    b.HasOne("ShimsServer.Models.Labs.Investigations", "Investigations")
-                        .WithMany("LabParameters")
-                        .HasForeignKey("InvestigationsID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_investigationparameters_investigations_investigationsid");
-
-                    b.Navigation("Investigations");
-                });
-
             modelBuilder.Entity("ShimsServer.Models.Labs.InvestigationsPayment", b =>
                 {
                     b.HasOne("ShimsServer.Models.Labs.InvestigationsRequests", "LabRequests")
@@ -2122,8 +2107,6 @@ namespace ShimsServer.Migrations
 
             modelBuilder.Entity("ShimsServer.Models.Labs.Investigations", b =>
                 {
-                    b.Navigation("LabParameters");
-
                     b.Navigation("SchemeLabs");
                 });
 

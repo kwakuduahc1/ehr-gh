@@ -15,7 +15,8 @@ namespace ShimsServer.Models.Labs
         public short ParameterOrder { get; set; }
 
         [Required]
-        public required int InvestigationsID { get; set; }
+        [ForeignKey(nameof(Investigations))]
+        public required Guid InvestigationsID { get; set; }
 
         public virtual Investigations? Investigations { get; set; }
     }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ShimsServer.Context;
@@ -11,9 +12,11 @@ using ShimsServer.Context;
 namespace ShimsServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260414121636_RenameLabsToInvestigations5")]
+    partial class RenameLabsToInvestigations5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -362,45 +365,32 @@ namespace ShimsServer.Migrations
 
             modelBuilder.Entity("ShimsServer.Models.ConsultingRoom.Diagnoses", b =>
                 {
-                    b.Property<Guid>("DiagnosesID")
+                    b.Property<Guid>("DiagnosisID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("diagnosesid");
+                        .HasColumnName("diagnosisid");
 
-                    b.Property<string>("Category")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("category");
+                    b.Property<string>("GDRG")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("gdrg");
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)")
-                        .HasColumnName("description");
-
-                    b.Property<string>("DiagnosisName")
+                    b.Property<string>("ICD")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("diagnosisname");
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)")
+                        .HasColumnName("icd");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("isactive");
+                    b.Property<string>("SNOMED")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("snomed");
 
-                    b.PrimitiveCollection<string[]>("Levels")
-                        .IsRequired()
-                        .HasColumnType("varchar(5)[]")
-                        .HasColumnName("levels");
-
-                    b.Property<string>("SubCategory")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("subcategory");
-
-                    b.HasKey("DiagnosesID")
+                    b.HasKey("DiagnosisID")
                         .HasName("pk_diagnoses");
 
-                    b.HasIndex("DiagnosisName", "Category", "SubCategory");
+                    b.HasIndex("ICD", "GDRG", "SNOMED")
+                        .IsUnique();
 
                     b.ToTable("diagnoses", (string)null);
                 });
@@ -471,9 +461,9 @@ namespace ShimsServer.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("description");
 
-                    b.Property<Guid?>("DiagnosesID")
+                    b.Property<Guid?>("DiagnosesDiagnosisID")
                         .HasColumnType("uuid")
-                        .HasColumnName("diagnosesid");
+                        .HasColumnName("diagnosesdiagnosisid");
 
                     b.Property<Guid>("DiagnosisID")
                         .HasColumnType("uuid")
@@ -500,7 +490,7 @@ namespace ShimsServer.Migrations
                     b.HasKey("PatientDiagnosisID")
                         .HasName("pk_patientdiagnoses");
 
-                    b.HasIndex("DiagnosesID");
+                    b.HasIndex("DiagnosesDiagnosisID");
 
                     b.HasIndex("PatientAttendancesID");
 
@@ -551,78 +541,6 @@ namespace ShimsServer.Migrations
                         .HasName("pk_patientsignsandsymptoms");
 
                     b.ToTable("patientsignsandsymptoms", (string)null);
-                });
-
-            modelBuilder.Entity("ShimsServer.Models.ConsultingRoom.SchemeDiagnoses", b =>
-                {
-                    b.Property<Guid>("SchemeDiagnosesID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("schemediagnosesid");
-
-                    b.Property<DateTime>("DateSet")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("dateset");
-
-                    b.Property<Guid>("DiagnosesID")
-                        .HasColumnType("uuid")
-                        .HasColumnName("diagnosesid");
-
-                    b.Property<string>("GDRG")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("gdrg");
-
-                    b.Property<string>("ICDCode")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("icdcode");
-
-                    b.Property<string>("ICDVersion")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("icdversion");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("isactive");
-
-                    b.Property<Guid>("SchemesID")
-                        .HasColumnType("uuid")
-                        .HasColumnName("schemesid");
-
-                    b.Property<string>("Snomed")
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)")
-                        .HasColumnName("snomed");
-
-                    b.Property<decimal>("Tariff")
-                        .HasColumnType("numeric")
-                        .HasColumnName("tariff");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasMaxLength(75)
-                        .HasColumnType("character varying(75)")
-                        .HasColumnName("username");
-
-                    b.Property<string>("Variation")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("variation");
-
-                    b.HasKey("SchemeDiagnosesID")
-                        .HasName("pk_schemediagnoses");
-
-                    b.HasIndex("DiagnosesID");
-
-                    b.HasIndex("SchemesID");
-
-                    b.ToTable("schemediagnoses", (string)null);
                 });
 
             modelBuilder.Entity("ShimsServer.Models.Drugs.Dispensing", b =>
@@ -855,9 +773,13 @@ namespace ShimsServer.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("investigationparameter");
 
-                    b.Property<Guid>("InvestigationsID")
-                        .HasColumnType("uuid")
+                    b.Property<int>("InvestigationsID")
+                        .HasColumnType("integer")
                         .HasColumnName("investigationsid");
+
+                    b.Property<Guid?>("InvestigationsID1")
+                        .HasColumnType("uuid")
+                        .HasColumnName("investigationsid1");
 
                     b.Property<short>("ParameterOrder")
                         .HasColumnType("smallint")
@@ -866,7 +788,7 @@ namespace ShimsServer.Migrations
                     b.HasKey("InvestigationParametersID")
                         .HasName("pk_investigationparameters");
 
-                    b.HasIndex("InvestigationsID");
+                    b.HasIndex("InvestigationsID1");
 
                     b.ToTable("investigationparameters", (string)null);
                 });
@@ -1002,10 +924,6 @@ namespace ShimsServer.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("datetested");
 
-                    b.Property<Guid?>("InvestigationParametersID")
-                        .HasColumnType("uuid")
-                        .HasColumnName("investigationparametersid");
-
                     b.Property<Guid>("LabParametersID")
                         .HasColumnType("uuid")
                         .HasColumnName("labparametersid");
@@ -1034,7 +952,7 @@ namespace ShimsServer.Migrations
                     b.HasKey("InvestigationsPaymentID")
                         .HasName("pk_investigationsresults");
 
-                    b.HasIndex("InvestigationParametersID");
+                    b.HasIndex("LabParametersID");
 
                     b.ToTable("investigationsresults", (string)null);
                 });
@@ -1220,8 +1138,8 @@ namespace ShimsServer.Migrations
                         .HasColumnName("othernames");
 
                     b.Property<string>("PhoneNumber")
-                        .HasMaxLength(15)
-                        .HasColumnType("character varying(15)")
+                        .IsRequired()
+                        .HasColumnType("text")
                         .HasColumnName("phonenumber");
 
                     b.Property<string>("Sex")
@@ -1324,28 +1242,22 @@ namespace ShimsServer.Migrations
 
             modelBuilder.Entity("ShimsServer.Models.Schemes.SchemeInvestigations", b =>
                 {
-                    b.Property<Guid>("SchemeInvestigationsID")
+                    b.Property<Guid>("SchemeLabsID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("schemeinvestigationsid");
+                        .HasColumnName("schemelabsid");
 
                     b.Property<DateTime>("DateSet")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("dateset");
 
-                    b.Property<string>("GDRG")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("gdrg");
-
-                    b.Property<Guid>("InvestigationsID")
+                    b.Property<Guid?>("InvestigationsID")
                         .HasColumnType("uuid")
                         .HasColumnName("investigationsid");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("isactive");
+                    b.Property<Guid>("LabsGroupID")
+                        .HasColumnType("uuid")
+                        .HasColumnName("labsgroupid");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric")
@@ -1361,14 +1273,14 @@ namespace ShimsServer.Migrations
                         .HasColumnType("character varying(75)")
                         .HasColumnName("username");
 
-                    b.HasKey("SchemeInvestigationsID")
-                        .HasName("pk_schemeinvestigations");
+                    b.HasKey("SchemeLabsID")
+                        .HasName("pk_schemelabs");
 
                     b.HasIndex("InvestigationsID");
 
                     b.HasIndex("SchemesID");
 
-                    b.ToTable("schemeinvestigations", (string)null);
+                    b.ToTable("schemelabs", (string)null);
                 });
 
             modelBuilder.Entity("ShimsServer.Models.Schemes.SchemeServices", b =>
@@ -1764,8 +1676,8 @@ namespace ShimsServer.Migrations
                 {
                     b.HasOne("ShimsServer.Models.ConsultingRoom.Diagnoses", "Diagnoses")
                         .WithMany()
-                        .HasForeignKey("DiagnosesID")
-                        .HasConstraintName("fk_patientdiagnoses_diagnoses_diagnosesid");
+                        .HasForeignKey("DiagnosesDiagnosisID")
+                        .HasConstraintName("fk_patientdiagnoses_diagnoses_diagnosesdiagnosisid");
 
                     b.HasOne("ShimsServer.Models.Records.PatientAttendance", "PatientAttendance")
                         .WithMany()
@@ -1787,27 +1699,6 @@ namespace ShimsServer.Migrations
                         .HasConstraintName("fk_patientoutcomes_patientattendances_patientsattendancesid");
 
                     b.Navigation("PatientAttendance");
-                });
-
-            modelBuilder.Entity("ShimsServer.Models.ConsultingRoom.SchemeDiagnoses", b =>
-                {
-                    b.HasOne("ShimsServer.Models.ConsultingRoom.Diagnoses", "Diagnoses")
-                        .WithMany("SchemeDiagnoses")
-                        .HasForeignKey("DiagnosesID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_schemediagnoses_diagnoses_diagnosesid");
-
-                    b.HasOne("ShimsServer.Models.Schemes.Schemes", "Schemes")
-                        .WithMany()
-                        .HasForeignKey("SchemesID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_schemediagnoses_schemes_schemesid");
-
-                    b.Navigation("Diagnoses");
-
-                    b.Navigation("Schemes");
                 });
 
             modelBuilder.Entity("ShimsServer.Models.Drugs.Dispensing", b =>
@@ -1888,10 +1779,8 @@ namespace ShimsServer.Migrations
                 {
                     b.HasOne("ShimsServer.Models.Labs.Investigations", "Investigations")
                         .WithMany("LabParameters")
-                        .HasForeignKey("InvestigationsID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_investigationparameters_investigations_investigationsid");
+                        .HasForeignKey("InvestigationsID1")
+                        .HasConstraintName("fk_investigationparameters_investigations_investigationsid1");
 
                     b.Navigation("Investigations");
                 });
@@ -1920,7 +1809,7 @@ namespace ShimsServer.Migrations
                         .HasForeignKey("SchemeLabsID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_investigationsrequests_schemeinvestigations_schemelabsid");
+                        .HasConstraintName("fk_investigationsrequests_schemelabs_schemelabsid");
 
                     b.Navigation("PatientAttendance");
 
@@ -1929,17 +1818,19 @@ namespace ShimsServer.Migrations
 
             modelBuilder.Entity("ShimsServer.Models.Labs.InvestigationsResults", b =>
                 {
-                    b.HasOne("ShimsServer.Models.Labs.InvestigationParameters", "InvestigationParameters")
-                        .WithMany()
-                        .HasForeignKey("InvestigationParametersID")
-                        .HasConstraintName("fk_investigationsresults_investigationparameters_investigation~");
-
                     b.HasOne("ShimsServer.Models.Labs.InvestigationsPayment", "InvestigationsPayment")
                         .WithOne("LabResults")
                         .HasForeignKey("ShimsServer.Models.Labs.InvestigationsResults", "InvestigationsPaymentID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_investigationsresults_investigationspayments_investigations~");
+
+                    b.HasOne("ShimsServer.Models.Labs.InvestigationParameters", "InvestigationParameters")
+                        .WithMany()
+                        .HasForeignKey("LabParametersID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_investigationsresults_investigationparameters_labparameters~");
 
                     b.Navigation("InvestigationParameters");
 
@@ -1994,16 +1885,14 @@ namespace ShimsServer.Migrations
                     b.HasOne("ShimsServer.Models.Labs.Investigations", "Investigations")
                         .WithMany("SchemeLabs")
                         .HasForeignKey("InvestigationsID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_schemeinvestigations_investigations_investigationsid");
+                        .HasConstraintName("fk_schemelabs_investigations_investigationsid");
 
                     b.HasOne("ShimsServer.Models.Schemes.Schemes", "Schemes")
                         .WithMany()
                         .HasForeignKey("SchemesID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_schemeinvestigations_schemes_schemesid");
+                        .HasConstraintName("fk_schemelabs_schemes_schemesid");
 
                     b.Navigation("Investigations");
 
@@ -2091,11 +1980,6 @@ namespace ShimsServer.Migrations
                     b.Navigation("PatientAttendance");
 
                     b.Navigation("Wards");
-                });
-
-            modelBuilder.Entity("ShimsServer.Models.ConsultingRoom.Diagnoses", b =>
-                {
-                    b.Navigation("SchemeDiagnoses");
                 });
 
             modelBuilder.Entity("ShimsServer.Models.Drugs.DispensingCalculations", b =>
