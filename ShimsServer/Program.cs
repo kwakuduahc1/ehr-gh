@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Serilog;
 using ShimsServer.Context;
+using ShimsServer.Data.Repositories;
 using System.Net;
 using System.Text;
 
@@ -17,14 +18,18 @@ namespace ShimsServer
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Configure Serilog
+            // Configure Serilog with memory optimization
+            var minLevel = builder.Environment.IsDevelopment()
+                ? Serilog.Events.LogEventLevel.Information
+                : Serilog.Events.LogEventLevel.Warning; // Reduce logging in production
+
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
+                .MinimumLevel.Is(minLevel)
                 .WriteTo.Console()
                 .WriteTo.File(
                     "logs/shims-.txt",
                     rollingInterval: RollingInterval.Day,
-                    retainedFileCountLimit: 30,
+                    retainedFileCountLimit: 7, // Reduced from 30 for low-memory environments
                     outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
                 .CreateLogger();
 
@@ -40,7 +45,7 @@ namespace ShimsServer
                 }).UseLowerCaseNamingConvention()
                 .EnableDetailedErrors(builder.Environment.IsDevelopment())
                 .EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
-            });
+            }, poolSize: 16); // Reduced from default 128 for low-memory environments
 
             builder.Services.AddNpgsqlDataSource(builder.Configuration.GetConnectionString("DefaultConnection")!, x =>
             {
@@ -48,10 +53,25 @@ namespace ShimsServer
                  .EnableParameterLogging(builder.Environment.IsDevelopment());
             });
 
+            // Register repositories as Singleton for memory efficiency
+            builder.Services.AddSingleton<ISchemesRepository, SchemesRepository>();
+            builder.Services.AddSingleton<ISchemeDrugsRepository, SchemeDrugsRepository>();
+            builder.Services.AddSingleton<ISchemeServiceRepository, SchemeServiceRepository>();
+
             builder.Services.AddStackExchangeRedisCache(o =>
             {
                 o.Configuration = builder.Configuration.GetConnectionString("Valkey");
                 o.InstanceName = "shims_";
+                // Configure for low-memory environment
+                o.ConfigurationOptions = new StackExchange.Redis.ConfigurationOptions
+                {
+                    AbortOnConnectFail = false,
+                    ConnectRetry = 3,
+                    ConnectTimeout = 5000,
+                    SyncTimeout = 5000,
+                    KeepAlive = 180,
+                    DefaultDatabase = 0
+                };
             });
             builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(x =>
             {
@@ -135,6 +155,8 @@ namespace ShimsServer
             builder.Services.AddResponseCaching();
             builder.Services.AddRateLimiter();
 
+
+
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddScoped(typeof(CancellationToken), sp =>
@@ -169,7 +191,7 @@ namespace ShimsServer
                         BearerFormat = "JWT"
                     });
                 });
-                }
+            }
 
             var app = builder.Build();
 

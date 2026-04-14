@@ -106,6 +106,7 @@ namespace ShimsServer.Models.Schemes
         Guid ServicesID,
        [StringLength(20)] string GDRG,
        [StringLength(150)] string Narration,
+       string[] AllowedTiers,
         [Range(0.5D, double.MaxValue, ErrorMessage = "Price must be greater than 0.5")] decimal Price);
 
     /// <summary>
