@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ShimsServer.Models.Schemes
 {
-    public class SchemeLabs
+    public class SchemeInvestigations
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid SchemeLabsID { get; set; } = Guid.CreateVersion7();
@@ -28,8 +28,8 @@ namespace ShimsServer.Models.Schemes
 
         public virtual Schemes? Schemes { get; set; }
 
-        public virtual LabGroups? LabGroups { get; set; }
+        public virtual Investigations? Investigations { get; set; }
 
-        public virtual ICollection<LabRequests>? LabRequests { get; set; }
+        public virtual ICollection<InvestigationsRequests>? InvestigationsRequests { get; set; }
     }
 }

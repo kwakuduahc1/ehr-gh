@@ -5,7 +5,7 @@ using ShimsServer.Models.Schemes;
 
 namespace ShimsServer.Models.Labs
 {
-    public class LabRequests
+    public class InvestigationsRequests
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid LabRequestsID { get; set; } = Guid.CreateVersion7();
@@ -25,8 +25,8 @@ namespace ShimsServer.Models.Labs
 
         public virtual PatientAttendance? PatientAttendance { get; set; }
 
-        public virtual SchemeLabs? SchemeLabs { get; set; }
+        public virtual SchemeInvestigations? SchemeLabs { get; set; }
 
-        public virtual LabPayment? LabPayment { get; set; }
+        public virtual InvestigationsPayment? LabPayment { get; set; }
     }
 }

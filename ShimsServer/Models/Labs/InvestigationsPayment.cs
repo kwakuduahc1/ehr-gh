@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ShimsServer.Models.Labs
 {
-    public class LabPayment
+    public class InvestigationsPayment
     {
         [Key, Required]
         [ForeignKey(nameof(LabRequests))]
-        public required Guid LabRequestsID { get; set; }
+        public required Guid InvestigationsRequestsID { get; set; }
 
         [Required]
         [StringLength(20, MinimumLength = 8)]
@@ -29,8 +29,8 @@ namespace ShimsServer.Models.Labs
         [Required]
         public required string UserName { get; set; }
 
-        public virtual LabRequests? LabRequests { get; set; }
+        public virtual InvestigationsRequests? LabRequests { get; set; }
 
-        public virtual LabResults? LabResults { get; set; }
+        public virtual InvestigationsResults? LabResults { get; set; }
     }
 }

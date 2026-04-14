@@ -11,17 +11,17 @@ namespace ShimsServer.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     //[Authorize(Policy = "SysAdmin")]
-    public class SchemeServicesController(ISchemeServiceRepository repository, ILogger<SchemeDrugsController> logger, CancellationToken token) : ControllerBase
+    public class SchemeServicesController(ISchemeServiceRepository repository, ILogger<SchemeServicesController> logger, CancellationToken token) : ControllerBase
     {
 
         /// <summary>
-        /// Get drugs for a specific scheme
+        /// Get services for a specific scheme
         /// </summary>
         [HttpGet("scheme/{id:guid}")]
         [ProducesResponseType(typeof(IEnumerable<SchemeServiceDTO>), StatusCodes.Status200OK)]
 
         [ResponseCache(Duration = 8640*20, Location = ResponseCacheLocation.Client, VaryByQueryKeys = ["id"] )]
-        public async Task<IEnumerable<SchemeServiceDTO>> GetDrugsByScheme(Guid id)
+        public async Task<IEnumerable<SchemeServiceDTO>> GetServicesByScheme(Guid id)
         {
             const string sql = """
                 SELECT schemeservicesid, servicesid, price, tiers, gdrg, narration, service, servicegroup
@@ -32,7 +32,7 @@ namespace ShimsServer.Controllers
         }
 
         /// <summary>
-        /// Create a new scheme drug pricing
+        /// Create a new scheme service pricing
         /// </summary>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -41,10 +41,11 @@ namespace ShimsServer.Controllers
         {
             var scID = Guid.CreateVersion7();
 
-            await using var con = await repository.GetConnectionAsync(token);
-            await using var tran = await con.BeginTransactionAsync(token);
             try
             {
+                await using var con = await repository.GetConnectionAsync(token);
+                await using var tran = await con.BeginTransactionAsync(token);
+
                 // Deactivate previous pricing
                 using (var cmd = con.CreateCommand())
                 {
@@ -55,13 +56,13 @@ namespace ShimsServer.Controllers
                         WHERE schemesid = @id AND servicesid = @did AND isactive;
                         """;
                     cmd.Parameters.Add(new NpgsqlParameter("@id", dto.SchemesID));
-                    cmd.Parameters.Add(new NpgsqlParameter("@sid", dto.ServicesID));
+                    cmd.Parameters.Add(new NpgsqlParameter("@did", dto.ServicesID));
                     await cmd.ExecuteNonQueryAsync(token);
                 }
 
                 // Insert new pricing record
                 using var cmd2 = con.CreateCommand();
-                    cmd2.Transaction = tran;
+                cmd2.Transaction = tran;
                 cmd2.CommandText = """
                         INSERT INTO public.schemeservices(
                         schemeservicesid, schemesid, servicesid, price, dateset, username, allowedtiers, isactive, gdrg, narration)
@@ -81,14 +82,17 @@ namespace ShimsServer.Controllers
             }
             catch (NpgsqlException ex)
             {
-                logger.LogError(ex, "Database error occurred while adding scheme drug pricing");
-                await tran.RollbackAsync(token);
+                logger.LogError(ex, "Database error occurred while adding scheme service pricing");
                 return BadRequest(new { message = "A database error occurred." });
+            }
+            catch (OperationCanceledException ex)
+            {
+                logger.LogError(ex, "Operation cancelled while adding scheme service pricing");
+                return BadRequest(new { message = "The operation was cancelled." });
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Unexpected error occurred while adding scheme drug pricing");
-                await tran.RollbackAsync(token);
+                logger.LogError(ex, "Unexpected error occurred while adding scheme service pricing");
                 return BadRequest(new { message = "An unexpected error occurred." });
             }
         }

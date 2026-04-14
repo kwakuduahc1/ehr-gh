@@ -29,7 +29,7 @@ namespace ShimsServer.EndPoints
                     x.SchemesID,
                     x.LabsGroupID,
                     x.Schemes!.SchemeName,
-                    x.LabGroups!.LabGroup,
+                    x.Investigations!.Investigation,
                     x.Price,
                     x.DateSet
                 )).ToListAsync());
@@ -41,7 +41,7 @@ namespace ShimsServer.EndPoints
                     x.SchemesID,
                     x.LabsGroupID,
                     x.Schemes!.SchemeName,
-                    x.LabGroups!.LabGroup,
+                    x.Investigations!.Investigation,
                     x.Price,
                     x.DateSet
                 )).FirstOrDefaultAsync(token) is SchemeLabDTO schemeLab ?
@@ -54,11 +54,11 @@ namespace ShimsServer.EndPoints
             if (!schemeExists)
                 return TypedResults.NotFound("Scheme not found.");
 
-            var labExists = await db.LabGroups.AnyAsync(x => x.LabGroupsID == labDto.LabsGroupID, token);
+            var labExists = await db.Investigations.AnyAsync(x => x.InvestigationsID == labDto.LabsGroupID, token);
             if (!labExists)
                 return TypedResults.NotFound("Lab group not found.");
 
-            var schemeLab = new SchemeLabs
+            var schemeLab = new SchemeInvestigations
             {
                 SchemeLabsID = Guid.CreateVersion7(),
                 SchemesID = schemeId,
@@ -106,9 +106,9 @@ namespace ShimsServer.EndPoints
                 .Select(x => new SchemeLabAvailabilityDto(
                     x.SchemeLabsID,
                     x.Schemes!.SchemeName,
-                    x.LabGroups!.LabGroup,
+                    x.Investigations!.Investigation ,
                     x.Price,
-                    x.LabGroups.LabParameters!.Count // Count available tests
+                    x.Investigations.LabParameters!.Count // Count available tests
                 )).ToListAsync());
     }
 }
