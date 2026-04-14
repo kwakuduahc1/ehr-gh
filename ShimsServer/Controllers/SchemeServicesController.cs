@@ -10,30 +10,28 @@ namespace ShimsServer.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     //[Authorize(Policy = "SysAdmin")]
-    public class SchemeDrugsController(NpgsqlDataSource ds, ILogger<SchemeDrugsController> logger, CancellationToken token) : ControllerBase
+    public class SchemeServicesController(NpgsqlDataSource ds, ILogger<SchemeDrugsController> logger, CancellationToken token) : ControllerBase
     {
 
         /// <summary>
         /// Get drugs for a specific scheme
         /// </summary>
         [HttpGet("scheme/{id:guid}")]
-        [ProducesResponseType(typeof(IEnumerable<SchemeDrugDTO>), StatusCodes.Status200OK)]
-        public async Task<IEnumerable<SchemeDrugDTO>> GetDrugsByScheme(Guid id)
+        [ProducesResponseType(typeof(IEnumerable<SchemeServiceDTO>), StatusCodes.Status200OK)]
+
+        [ResponseCache(Duration = 8640*20, Location = ResponseCacheLocation.Client, VaryByQueryKeys = ["id"] )]
+        public async Task<IEnumerable<SchemeServiceDTO>> GetDrugsByScheme(Guid id)
         {
             const string sql = """
-                SELECT sd.schemedrugsid, d.drug, sd.price, sd.drugcode, d.tags, d.description
-                FROM schemedrugs sd
-                INNER JOIN schemes s ON sd.schemesid = s.schemesid
-                INNER JOIN drugs d ON sd.drugsid = d.drugsid
-                WHERE sd.schemesid = @id AND sd.isactive
+                SELECT schemeservicesid, servicesid, price, tiers, gdrg, narration, service, servicegroup
+                FROM public.vwm_services;
                 """;
             await using var connection = await ds.OpenConnectionAsync(token);
-            return await connection.QueryAsync<SchemeDrugDTO>(sql, new { id });
+            return await connection.QueryAsync<SchemeServiceDTO>(sql, new { id });
         }
 
         /// <summary>
-        /// Create a new scheme drug pricing.
-        /// New entries automatically set previous entries to false so that the current entry can be used for billing
+        /// Create a new scheme drug pricing
         /// </summary>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -42,6 +40,7 @@ namespace ShimsServer.Controllers
         {
             var scID = Guid.CreateVersion7();
             var userName = User.Identity!.Name;
+
             await using var con = await ds.OpenConnectionAsync(token);
             await using var tran = await con.BeginTransactionAsync(token);
             try

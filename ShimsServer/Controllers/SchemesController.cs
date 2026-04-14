@@ -24,8 +24,7 @@ namespace ShimsServer.Controllers
         {
             const string sql = """
                 SELECT schemesid, schemename, coverage, maxpayable, recovery
-                FROM schemes
-                WHERE isactive = true  
+                FROM vwm_schemes
                 """;
             using var con = dsource.CreateConnection();
             var schemes = await con.QueryAsync<SchemesDTO>(sql);

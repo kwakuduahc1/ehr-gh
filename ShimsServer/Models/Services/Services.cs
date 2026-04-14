@@ -10,12 +10,12 @@ namespace ShimsServer.Models.Services
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid ServicesID { get; set; }
 
-        [StringLength(100)]
+        [StringLength(200)]
         [Required]
         public required string Service { get; set; }
 
         [Required]
-        [StringLength(50)]
+        [StringLength(200)]
         public required string ServiceGroup { get; set; }
 
         public virtual ICollection<SchemeServices>? SchemeServices{ get; set; }

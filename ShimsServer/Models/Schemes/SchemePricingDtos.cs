@@ -90,12 +90,13 @@ namespace ShimsServer.Models.Schemes
     /// </summary>
     public record SchemeServiceDTO(
         Guid SchemeServicesID,
-        Guid SchemesID,
         Guid ServicesID,
-        string SchemeName,
-        string ServiceName,
         decimal Price,
-        DateTime DateSet);
+        Array Tiers,
+        string? GDRG,
+        string? Narration,
+        string Service,
+        string ServiceGroup);
 
     /// <summary>
     /// Data transfer object for creating scheme service pricing
@@ -103,6 +104,8 @@ namespace ShimsServer.Models.Schemes
     public record AddSchemeServiceDto(
         Guid SchemesID,
         Guid ServicesID,
+       [StringLength(20)] string GDRG,
+       [StringLength(150)] string Narration,
         [Range(0.5D, double.MaxValue, ErrorMessage = "Price must be greater than 0.5")] decimal Price);
 
     /// <summary>

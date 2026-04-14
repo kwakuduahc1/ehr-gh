@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ShimsServer.Context;
@@ -11,9 +12,11 @@ using ShimsServer.Context;
 namespace ShimsServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260413213356_SchemeStatus3")]
+    partial class SchemeStatus3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1270,29 +1273,18 @@ namespace ShimsServer.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("schemeservicesid");
 
-                    b.PrimitiveCollection<string[]>("AllowedTiers")
+                    b.PrimitiveCollection<short[]>("AllowedTiers")
                         .IsRequired()
-                        .HasColumnType("varchar(3)[]")
+                        .HasColumnType("smallint[]")
                         .HasColumnName("allowedtiers");
 
                     b.Property<DateTime>("DateSet")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("dateset");
 
-                    b.Property<string>("GDRG")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("gdrg");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
                         .HasColumnName("isactive");
-
-                    b.Property<string>("Narration")
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)")
-                        .HasColumnName("narration");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric")
@@ -1482,10 +1474,22 @@ namespace ShimsServer.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("servicesid");
 
+                    b.Property<string>("ICDCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("icdcode");
+
+                    b.Property<string>("ICDVersion")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)")
+                        .HasColumnName("icdversion");
+
                     b.Property<string>("Service")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
                         .HasColumnName("service");
 
                     b.Property<string>("ServiceGroup")
