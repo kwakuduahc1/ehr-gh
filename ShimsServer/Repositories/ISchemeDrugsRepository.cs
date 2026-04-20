@@ -2,7 +2,7 @@ using Dapper;
 using Npgsql;
 using ShimsServer.Models.Schemes;
 
-namespace ShimsServer.Data.Repositories
+namespace ShimsServer.Repositories
 {
     /// <summary>
     /// Repository abstraction for scheme drugs database operations

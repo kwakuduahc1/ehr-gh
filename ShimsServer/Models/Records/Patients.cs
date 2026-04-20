@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ShimsServer.Models.Records
@@ -21,6 +22,9 @@ namespace ShimsServer.Models.Records
         [RegularExpression(@"^GHA-\d{10}-(?:0[1-9]|1[0-6])$", ErrorMessage = "GhanaCard must follow the format: GHA-xxxxxxxxxx-01 to 16")]
         public string? GhanaCard { get; set; }
 
+        [DefaultValue(true)]
+        public bool IsActive { get; set; } = true;
+
         [Required]
         public required DateTime DateOfBirth { get; set; }
 
@@ -34,51 +38,4 @@ namespace ShimsServer.Models.Records
         [Required, StringLength(75, MinimumLength = 10)]
         public required string UserName { get; set; }
     }
-
-    public record AddPatientDto(
-     [Required]
-    string HospitalID,
-
-     [Required, StringLength(30, MinimumLength = 3)]
-    string Surname,
-
-     [Required, StringLength(50, MinimumLength = 3)]
-    string OtherNames,
-
-     [Required]
-    DateTime DateOfBirth,
-
-     [Required, StringLength(6, MinimumLength = 4)]
-    [AllowedValues("Male", "Female")] // assuming you have this custom attribute
-    string Sex,
-
-     [Required, DataType(DataType.PhoneNumber)]
-    string PhoneNumber
- );
-
-    public record EditPatientDto(
-
-    [Required]
-    Guid PatientID,
-
-    [Required]
-    string HospitalID,
-
-    [Required, StringLength(30, MinimumLength = 3)]
-    string Surname,
-
-    [Required, StringLength(50, MinimumLength = 3)]
-    string OtherNames,
-
-    [Required]
-    DateTime DateOfBirth,
-
-    [Required, StringLength(6, MinimumLength = 4)]
-    [AllowedValues("Male", "Female")] // assuming you have this custom attribute
-    string Sex,
-
-    [Required, DataType(DataType.PhoneNumber)]
-    string PhoneNumber
-);
-
 }

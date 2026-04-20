@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using ShimsServer.Data.Repositories;
 using ShimsServer.Models.Schemes;
 using Microsoft.AspNetCore.Authorization;
 using Npgsql;
+using ShimsServer.Repositories;
 
 namespace ShimsServer.Controllers
 {

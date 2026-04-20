@@ -3,8 +3,8 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Npgsql;
 using ShimsServer.Controllers;
-using ShimsServer.Data.Repositories;
 using ShimsServer.Models.Schemes;
+using ShimsServer.Repositories;
 using Xunit;
 
 namespace ShimsServer.Tests.Controllers

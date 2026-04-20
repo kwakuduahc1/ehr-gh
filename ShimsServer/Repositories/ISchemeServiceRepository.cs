@@ -1,6 +1,6 @@
 using Npgsql;
 
-namespace ShimsServer.Data.Repositories
+namespace ShimsServer.Repositories
 {
     /// <summary>
     /// Repository abstraction for database operations

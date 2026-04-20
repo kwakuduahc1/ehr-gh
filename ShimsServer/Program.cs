@@ -6,7 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Serilog;
 using ShimsServer.Context;
-using ShimsServer.Data.Repositories;
+using ShimsServer.Repositories;
 using System.Net;
 using System.Text;
 
@@ -52,11 +52,6 @@ namespace ShimsServer
                 x.EnableDynamicJson()
                  .EnableParameterLogging(builder.Environment.IsDevelopment());
             });
-
-            // Register repositories as Singleton for memory efficiency
-            builder.Services.AddSingleton<ISchemesRepository, SchemesRepository>();
-            builder.Services.AddSingleton<ISchemeDrugsRepository, SchemeDrugsRepository>();
-            builder.Services.AddSingleton<ISchemeServiceRepository, SchemeServiceRepository>();
 
             builder.Services.AddStackExchangeRedisCache(o =>
             {

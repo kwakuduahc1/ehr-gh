@@ -11,6 +11,9 @@ namespace ShimsServer.Models.Records
 
         [Required]
         public required Guid PatientsID { get; set; }
+        
+        [Required, StringLength(50)]
+        public required string HospitalID { get; set; }
 
         [Required]
         public required Guid SchemesID { get; set; }
@@ -31,31 +34,32 @@ namespace ShimsServer.Models.Records
         public required string UserName { get; set; }
     }
 
-    public record AddPatientInsuranceDto(
+    public record AddPatientSchemeDto(
     [Required]
     Guid PatientsID,
 
     [Required]
     Guid SchemesID,
-    [DefaultValue(true)]
-    bool IsActive,
 
     [Required, StringLength(30, MinimumLength = 10)]
     string CardID,
+
+    [DefaultValue(true)]
+    bool IsActive,
 
     [Required]
     DateTime ExpiryDate
 );
 
-    public record EditPatientInsuranceDto(
+    public record EditPatientSchemeDto(
         [Required]
-    Guid PatientInsurancesID, // needed to identify the record
+    Guid PatientSchemesID, // needed to identify the record
 
         [Required]
     Guid PatientsID,
 
         [Required]
-    Guid InsurancesID,
+    Guid SchemesID,
 
         [DefaultValue(true)]
     bool Status,

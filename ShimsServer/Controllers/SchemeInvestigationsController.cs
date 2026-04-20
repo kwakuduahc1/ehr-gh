@@ -11,35 +11,35 @@ namespace ShimsServer.Controllers
     [Route("api/[controller]")]
     [Produces("application/json")]
     //[Authorize(Policy = "SysAdmin")]
-    public class SchemeServicesController(ISchemeServiceRepository repository, ILogger<SchemeServicesController> logger, CancellationToken token) : ControllerBase
+    public class SchemeInvestigationsController(ISchemeServiceRepository repository, ILogger<SchemeInvestigationsController> logger, CancellationToken token) : ControllerBase
     {
 
         /// <summary>
-        /// Get services for a specific scheme
+        /// Get investigations for a specific scheme
         /// </summary>
         [HttpGet("scheme/{id:guid}")]
-        [ProducesResponseType(typeof(IEnumerable<SchemeServiceDTO>), StatusCodes.Status200OK)]
-
-        [ResponseCache(Duration = 8640*20, Location = ResponseCacheLocation.Client, VaryByQueryKeys = ["id"] )]
-        public async Task<IEnumerable<SchemeServiceDTO>> GetServicesByScheme(Guid id)
+        [ProducesResponseType(typeof(IEnumerable<SchemeInvestigationDTO>), StatusCodes.Status200OK)]
+        [ResponseCache(Duration = 8640 * 20, Location = ResponseCacheLocation.Client, VaryByQueryKeys = ["id"])]
+        public async Task<IEnumerable<SchemeInvestigationDTO>> GetInvestigationsByScheme(Guid id)
         {
             const string sql = """
-                SELECT schemeservicesid, servicesid, price, tiers, gdrg, narration, service, servicegroup
-                FROM public.vwm_services;
+                SELECT schemeinvestigationsid, investigationsid, schemesid, gdrg, price, isactive, investigation, narration
+                FROM public.vwm_investigations
+                WHERE schemesid = @id;
                 """;
             await using var connection = await repository.GetConnectionAsync(token);
-            return await connection.QueryAsync<SchemeServiceDTO>(sql, new { id });
+            return await connection.QueryAsync<SchemeInvestigationDTO>(sql, new { id });
         }
 
         /// <summary>
-        /// Create a new scheme service pricing
+        /// Create a new scheme investigation pricing
         /// </summary>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Guid>> AddSchemeService([FromBody] AddSchemeServiceDto dto)
+        public async Task<ActionResult<Guid>> AddSchemeInvestigation([FromBody] AddSchemeInvestigationDto dto)
         {
-            var scID = Guid.CreateVersion7();
+            var siID = Guid.CreateVersion7();
 
             try
             {
@@ -51,12 +51,12 @@ namespace ShimsServer.Controllers
                 {
                     cmd.Transaction = tran;
                     cmd.CommandText = """
-                        UPDATE schemeservices
+                        UPDATE schemeinvestigations
                         SET isactive = false
-                        WHERE schemesid = @id AND servicesid = @did AND isactive;
+                        WHERE schemesid = @id AND investigationsid = @iid AND isactive;
                         """;
                     cmd.Parameters.Add(new NpgsqlParameter("@id", dto.SchemesID));
-                    cmd.Parameters.Add(new NpgsqlParameter("@did", dto.ServicesID));
+                    cmd.Parameters.Add(new NpgsqlParameter("@iid", dto.InvestigationsID));
                     await cmd.ExecuteNonQueryAsync(token);
                 }
 
@@ -64,35 +64,34 @@ namespace ShimsServer.Controllers
                 using var cmd2 = con.CreateCommand();
                 cmd2.Transaction = tran;
                 cmd2.CommandText = """
-                        INSERT INTO public.schemeservices(
-                        schemeservicesid, schemesid, servicesid, price, dateset, username, allowedtiers, isactive, gdrg, narration)
-                        VALUES (@sdid, @sid, @did, @price, now(), @user, @tiers, true, @gdrg, @narration);
+                        INSERT INTO public.schemeinvestigations(
+                        schemeinvestigationsid, schemesid, investigationsid, price, dateset, username, gdrg, isactive, narration)
+                        VALUES (@siid, @sid, @iid, @price, now(), @user, @gdrg, true, @narration);
                         """;
-                cmd2.Parameters.Add(new NpgsqlParameter("@sdid", scID));
+                cmd2.Parameters.Add(new NpgsqlParameter("@siid", siID));
                 cmd2.Parameters.Add(new NpgsqlParameter("@sid", dto.SchemesID));
-                cmd2.Parameters.Add(new NpgsqlParameter("@did", dto.ServicesID));
+                cmd2.Parameters.Add(new NpgsqlParameter("@iid", dto.InvestigationsID));
                 cmd2.Parameters.Add(new NpgsqlParameter("@price", dto.Price));
                 cmd2.Parameters.Add(new NpgsqlParameter("@user", User.Identity!.Name));
-                cmd2.Parameters.Add(new NpgsqlParameter("@tiers", NpgsqlTypes.NpgsqlDbType.Array | NpgsqlTypes.NpgsqlDbType.Varchar) { Value = dto.AllowedTiers });
                 cmd2.Parameters.Add(new NpgsqlParameter("@gdrg", dto.GDRG));
-                cmd2.Parameters.Add(new NpgsqlParameter("@narration", dto.Narration));  
+                cmd2.Parameters.Add(new NpgsqlParameter("@narration", dto.Narration ?? (object)DBNull.Value));
                 await cmd2.ExecuteNonQueryAsync(token);
                 await tran.CommitAsync(token);
-                return Ok(scID);
+                return CreatedAtAction(nameof(GetInvestigationsByScheme), new { id = dto.SchemesID }, siID);
             }
             catch (NpgsqlException ex)
             {
-                logger.LogError(ex, "Database error occurred while adding scheme service pricing");
+                logger.LogError(ex, "Database error occurred while adding scheme investigation pricing");
                 return BadRequest(new { message = "A database error occurred." });
             }
             catch (OperationCanceledException ex)
             {
-                logger.LogError(ex, "Operation cancelled while adding scheme service pricing");
+                logger.LogError(ex, "Operation cancelled while adding scheme investigation pricing");
                 return BadRequest(new { message = "The operation was cancelled." });
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Unexpected error occurred while adding scheme service pricing");
+                logger.LogError(ex, "Unexpected error occurred while adding scheme investigation pricing");
                 return BadRequest(new { message = "An unexpected error occurred." });
             }
         }
