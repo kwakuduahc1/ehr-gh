@@ -1,0 +1,1268 @@
+{
+    "openapi": "3.0.4",
+    "info": {
+        "title": "BStudio EHR API",
+        "description": "API for managing EHR",
+        "contact": {
+            "name": "BStudio",
+            "email": "bstudio@bstudio.com"
+        },
+        "version": "v1"
+    },
+    "paths": {
+        "/api/Attendances": {
+            "get": {
+                "tags": [
+                    "Attendances"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ListPatientsDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Attendances"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddAttendanceDto"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddAttendanceDto"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddAttendanceDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int32"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Registrations/register": {
+            "post": {
+                "tags": [
+                    "Registrations"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddPatientDto"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddPatientDto"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddPatientDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Registrations": {
+            "get": {
+                "tags": [
+                    "Registrations"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ListPatientsDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Registrations/{id}": {
+            "get": {
+                "tags": [
+                    "Registrations"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListPatientsDto"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Registrations"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EditPatientDto"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EditPatientDto"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EditPatientDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Registrations"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Registrations/search": {
+            "get": {
+                "tags": [
+                    "Registrations"
+                ],
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ListPatientsDto"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/SchemeDrugs/scheme/{id}": {
+            "get": {
+                "tags": [
+                    "SchemeDrugs"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/SchemeDrugDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/SchemeDrugs": {
+            "post": {
+                "tags": [
+                    "SchemeDrugs"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddSchemeDrugDto"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddSchemeDrugDto"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddSchemeDrugDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/SchemeInvestigations/scheme/{id}": {
+            "get": {
+                "tags": [
+                    "SchemeInvestigations"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/SchemeInvestigationDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/SchemeInvestigations": {
+            "post": {
+                "tags": [
+                    "SchemeInvestigations"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddSchemeInvestigationDto"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddSchemeInvestigationDto"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddSchemeInvestigationDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Schemes": {
+            "get": {
+                "tags": [
+                    "Schemes"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/SchemesDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Schemes"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddSchemeDto"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddSchemeDto"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddSchemeDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Schemes"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateSchemeDto"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateSchemeDto"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateSchemeDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/Schemes/{id}": {
+            "get": {
+                "tags": [
+                    "Schemes"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SchemesDTO"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Schemes"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/SchemeServices/scheme/{id}": {
+            "get": {
+                "tags": [
+                    "SchemeServices"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/SchemeServiceDTO"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/SchemeServices": {
+            "post": {
+                "tags": [
+                    "SchemeServices"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddSchemeServiceDto"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddSchemeServiceDto"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddSchemeServiceDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProblemDetails"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AddAttendanceDto": {
+                "type": "object",
+                "properties": {
+                    "patientSchemesID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "visitType": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "AddPatientDto": {
+                "type": "object",
+                "properties": {
+                    "surname": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "otherNames": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "dateOfBirth": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "ghanaCard": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "sex": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "schemesID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "cardID": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "expiryDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "phoneNumber": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "AddSchemeDrugDto": {
+                "type": "object",
+                "properties": {
+                    "schemesID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "drugsID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "AddSchemeDto": {
+                "type": "object",
+                "properties": {
+                    "schemeName": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "coverage": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "maxPayable": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "recovery": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "AddSchemeInvestigationDto": {
+                "type": "object",
+                "properties": {
+                    "investigationsID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "schemesID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "gdrg": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "narration": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "AddSchemeServiceDto": {
+                "type": "object",
+                "properties": {
+                    "schemesID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "servicesID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "gdrg": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "narration": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "allowedTiers": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "nullable": true
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "EditPatientDto": {
+                "type": "object",
+                "properties": {
+                    "patientID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "hospitalID": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "ghanaCard": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "surname": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "otherNames": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "dateOfBirth": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "sex": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "phoneNumber": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ListPatientsDto": {
+                "type": "object",
+                "properties": {
+                    "patientID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "schemesID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "age": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "gender": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "fullName": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "scheme": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "hospitalID": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "cardID": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "expiryDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "visitType": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "attendanceDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "patientSchemesID": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ProblemDetails": {
+                "type": "object",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "title": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "integer",
+                        "format": "int32",
+                        "nullable": true
+                    },
+                    "detail": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "instance": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": {}
+            },
+            "SchemeDrugDTO": {
+                "type": "object",
+                "properties": {
+                    "schemeDrugsID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "drug": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "drugCode": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "tags": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "description": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "SchemeInvestigationDTO": {
+                "type": "object",
+                "properties": {
+                    "schemeInvestigationsID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "investigationsID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "schemesID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "gdrg": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "isActive": {
+                        "type": "boolean"
+                    },
+                    "investigation": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "narration": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "SchemeServiceDTO": {
+                "type": "object",
+                "properties": {
+                    "schemeServicesID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "servicesID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "tiers": {
+                        "type": "array",
+                        "items": {},
+                        "nullable": true
+                    },
+                    "gdrg": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "narration": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "service": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "serviceGroup": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "SchemesDTO": {
+                "type": "object",
+                "properties": {
+                    "schemesID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "schemeName": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "coverage": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "maxPayable": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "recovery": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "UpdateSchemeDto": {
+                "type": "object",
+                "properties": {
+                    "schemesID": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "schemeName": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "coverage": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "maxPayable": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "recovery": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                },
+                "additionalProperties": false
+            }
+        },
+        "securitySchemes": {
+            "Bearer": {
+                "type": "apiKey",
+                "description": "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Attendances"
+        },
+        {
+            "name": "Registrations"
+        },
+        {
+            "name": "SchemeDrugs"
+        },
+        {
+            "name": "SchemeInvestigations"
+        },
+        {
+            "name": "Schemes"
+        },
+        {
+            "name": "SchemeServices"
+        }
+    ]
+}

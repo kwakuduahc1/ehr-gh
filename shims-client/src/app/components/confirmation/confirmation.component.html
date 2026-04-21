@@ -1,0 +1,14 @@
+<div class="confirmation-modal">
+    <div class="modal-header">
+        <h2 class="modal-title">{{data}}</h2>
+    </div>
+    <div class="modal-footer">
+        <button type="button" mat-icon-button matTooltip="Continue action" data-test="confirm-btn"
+            (click)="close(true)">
+            <mat-icon class="success">check</mat-icon>
+        </button>
+        <button type="button" (click)="close(false)" mat-icon-button matTooltip="Cancel action" data-test="cancel-btn">
+            <mat-icon class="warning">close</mat-icon>
+        </button>
+    </div>
+</div>

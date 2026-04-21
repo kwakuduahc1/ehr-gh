@@ -1,0 +1,65 @@
+<div class="login-container">
+    <h1 class="login-title">Sign in to continue</h1>
+    <form data-test="login-form" class="login-form" [formGroup]="form" (submit)="login(form.value)">
+        <fieldset class="login-fieldset">
+            <mat-form-field class="login-field">
+                <mat-label>Email</mat-label>
+                <input type="email" title="User name" matInput data-test="email" autocomplete="email"
+                    formControlName="email">
+                <mat-error>
+                    @if (form.get('email')?.errors; as err) {
+                    @if (err?.['required']) {
+                    <span>*</span>
+                    }
+                    @if (err?.['minlength']) {
+                    <span>Min: {{err?.['minlength']?.['requiredLength']}}</span>
+                    }
+                    @if (err?.['maxlength']) {
+                    <span>Max: {{err?.['maxlength']?.['requiredLength']}}</span>
+                    }
+                    @if(err?.['pattern']) {
+                    <span class="email-failure">
+                        You must enter a valid email address
+                    </span>
+                    }
+                    }
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="login-field">
+                <mat-label>Password</mat-label>
+                <input title="Password" matInput data-test="password" autocomplete="current-password"
+                    formControlName="password" type="password" placeholder="">
+                <mat-error>
+                    @if (form.get('password')?.errors; as err) {
+                    @if (err?.['required']) {
+                    <span>*</span>
+                    }
+                    @if (err?.['minlength']) {
+                    <span>min chars: {{err?.['minlength']?.['requiredLength']}}</span>
+                    }
+                    @if (err?.['maxlength']) {
+                    <span>max chars: {{err?.['maxlength']?.['requiredLength']}}</span>
+                    }
+                    @if (err?.['pattern']) {
+                    <span class="password-failure">
+                        Password validation failure
+                    </span>
+                    }
+                    }
+                </mat-error>
+            </mat-form-field>
+            <div class="login-actions">
+                <button type="submit" mat-icon-button
+                    [disabled]="form.invalid || form.pristine || act.act().isProcessing">
+                    <mat-icon [class.value]="'success-light'" [class.invalid]="'warning-light'">
+                        login
+                    </mat-icon>
+                </button>
+            </div>
+            <div class="login-links">
+                <button type="button" mat-button [routerLink]="['/register']">Register an account</button>
+                <button type="button" mat-button>Reset password</button>
+            </div>
+        </fieldset>
+    </form>
+</div>

@@ -1,0 +1,22 @@
+// Ensure the close button is positioned within its parent container
+:host {
+    display: inline-block;
+    position: relative;
+}
+
+.ag-dialog-close {
+    // Override any fixed positioning that might be inherited
+    position: absolute !important;
+    top: 8px;
+    right: 8px;
+    z-index: 10;
+}
+
+// If the parent needs to be made relative for proper positioning
+:host-context(.mat-dialog-container) {
+    .ag-dialog-close {
+        position: absolute;
+        top: var(--ag-spacing-sm, 8px);
+        right: var(--ag-spacing-sm, 8px);
+    }
+}

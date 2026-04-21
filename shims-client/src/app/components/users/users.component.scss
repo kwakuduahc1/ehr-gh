@@ -1,0 +1,8 @@
+:host {
+    display: block;
+}
+
+button {
+    $bottom-margin: 1.1rem;
+    margin: auto auto $bottom-margin $bottom-margin;
+}

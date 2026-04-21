@@ -1,0 +1,10 @@
+<button type="button" 
+        mat-icon-button 
+        mat-dialog-close 
+        class="ag-dialog-close" 
+        [class]="prop().class"
+        [aria-label]="prop().ariaLabel" 
+        [title]="prop().title"
+        (click)="close()">
+    <mat-icon>close</mat-icon>
+</button>

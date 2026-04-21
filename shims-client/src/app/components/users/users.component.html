@@ -1,0 +1,27 @@
+<h1 class="txt-header-2 text-center">User management</h1>
+<button type="button" mat-button class="icon-success-1" matTooltip="Add a new user" routerLink="/auth/register">
+    <mat-icon>person_add</mat-icon> New user
+</button>
+<table class="table table-hover table-responsive">
+    <thead>
+        <tr>
+            <th>Full Name</th>
+            <th>Phone</th>
+            <th>Roles</th>
+            <th>Remove</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let u of users$ |async">
+            <td>{{u.fullName}}</td>
+            <td>
+                <button type="button" routerLink="/auth/user/{{u.id}}" class="icon-cool-3" mat-button>
+                    <mat-icon>group</mat-icon> Projects</button>
+            </td>
+            <td>
+                <button type="button" mat-mini-fab class="icon-hot-1">
+                    <mat-icon>delete</mat-icon></button>
+            </td>
+        </tr>
+    </tbody>
+</table>

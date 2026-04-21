@@ -1,0 +1,43 @@
+<nav class="nav">
+        <div [routerLink]="['/home']" class="brand">
+                <span>KCCR</span>
+        </div>
+
+        <button type="button" class="mobile-menu" (click)="toggleMenu()" aria-label="Toggle navigation menu">
+                <span class="menu-line"></span>
+                <span class="menu-line"></span>
+                <span class="menu-line"></span>
+        </button>
+
+        <ul class="nav-links" [class.open]="menuOpen()">
+                @if (status.isLoggedIn()) {
+                @if (status.isAdmin()) {
+                <li>
+                        <a [routerLink]="['/reservations']" routerLinkActive="active"
+                                (click)="onNavLinkClick()"><mat-icon class="icon--reservations">event</mat-icon>
+                                Reservations</a>
+                </li>
+                <li>
+                        <a [routerLink]="['/services']" routerLinkActive="active" (click)="onNavLinkClick()"><mat-icon
+                                        class="icon--services">build</mat-icon> Services</a>
+                </li>
+                }
+                <li>
+                        <a [routerLink]="['/my-bookings']" routerLinkActive="active"
+                                (click)="onNavLinkClick()"><mat-icon class="icon--book">book</mat-icon> Book</a>
+                </li>
+                <li>
+                        <button type="button" class="logout-button" (click)="status.logout()"><mat-icon
+                                        class="icon--logout">logout</mat-icon> Logout</button>
+                </li>
+                }
+                @else {
+                <li>
+                        <a [routerLink]="['/login']" routerLinkActive="active" (click)="onNavLinkClick()"><mat-icon
+                                        class="icon--login">login</mat-icon> Login/Sign up</a>
+                </li>
+                }
+                <li><a [routerLink]="['/contact']" routerLinkActive="active" (click)="onNavLinkClick()"><mat-icon
+                                        class="icon--contact">contact_mail</mat-icon> Contact</a></li>
+        </ul>
+</nav>
