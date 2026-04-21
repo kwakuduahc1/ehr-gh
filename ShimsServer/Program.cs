@@ -53,6 +53,15 @@ namespace ShimsServer
                  .EnableParameterLogging(builder.Environment.IsDevelopment());
             });
 
+            builder.Services.AddScoped<IConnection, Connection>();
+            builder.Services.AddScoped<IRegistrationRepository, RegistrationRepository>();
+            builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
+            builder.Services.AddScoped<ISchemesRepository, SchemesRepository>();
+            builder.Services.AddScoped<ISchemeDrugsRepository, SchemeDrugsRepository>();
+            builder.Services.AddScoped<ISchemeServiceRepository, SchemeServiceRepository>();
+            builder.Services.AddScoped<ISchemeInvestigationRepository, SchemeInvestigationRepository>();
+            builder.Services.AddScoped<ISchemeServicePricingRepository, SchemeServicePricingRepository>();
+
             builder.Services.AddStackExchangeRedisCache(o =>
             {
                 o.Configuration = builder.Configuration.GetConnectionString("Valkey");

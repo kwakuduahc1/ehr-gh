@@ -7,49 +7,45 @@ namespace ShimsServer.Repositories
 {
     public interface IAttendanceRepository
     {
-        public Task<int> AddAttendace(AddAttendanceDto dto, Guid PtID, string UserName);
+        public Task<int> AddAttendance(AddAttendanceDto dto, Guid PtID, string UserName, CancellationToken cancellationToken = default);
 
-        public Task<ListPatientsDto> ActiveSessions(Guid id);
-
-        Task<NpgsqlConnection> ConnectionAsync();
+        public Task<IEnumerable<ListPatientsDto>> ActiveSessions(Guid id, CancellationToken cancellationToken = default);
     }
 
-    public class AttendanceRepository(NpgsqlDataSource dsource, CancellationToken token=default): IAttendanceRepository
+    public class AttendanceRepository(IConnection connection) : IAttendanceRepository
     {
-        /// <summary>
-        ///  Use GetPatientByIdAsync method on the registration repository
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public Task<ListPatientsDto> ActiveSessions(Guid id)
+        public async Task<IEnumerable<ListPatientsDto>> ActiveSessions(Guid id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            const string sql =
+                """
+                    SELECT patientid, schemesid, age, gender, fullname, scheme, hospitalid, cardid, expirydate, attendancedate
+                    FROM vw_patients
+                    WHERE patientid = @id;
+                """;
+            using var con = await connection.ConnectionAsync(cancellationToken);
+            return await con.QueryAsync<ListPatientsDto>(sql, new { id });
         }
 
-        public async Task<int> AddAttendace(AddAttendanceDto dto, Guid PtID, string user)
+        public async Task<int> AddAttendance(AddAttendanceDto dto, Guid PtID, string user, CancellationToken cancellationToken = default)
         {
             const string sql = """
+                  UPDATE patientattendances SET isactive = false
+                  WHERE patientschemesid = @ptsid;
                   INSERT INTO public.patientattendances(
-                	patientattendancesid, patientschemesid, visittype, dateseen, username, isactive)
-                  VALUES (@ptid, @ptsid, @vtype, now(), @user, now());
+                    patientattendancesid, patientschemesid, visittype, dateseen, username, isactive)
+                  VALUES (@ptid, @ptsid, @vtype, now(), @user, true);
                 """;
-            using var con = await ConnectionAsync();
-            using var tran = await con.BeginTransactionAsync(token);
-            return await con.ExecuteScalarAsync<int>(sql, new
+            using var con = await connection.ConnectionAsync(cancellationToken);
+            using var tran = await con.BeginTransactionAsync(cancellationToken);
+            var result = await con.ExecuteAsync(sql, new
             {
                 PtID,
                 ptsid = dto.PatientSchemesID,
                 vtype = dto.VisitType,
                 user
-            });
-        }
-
-        public async Task<NpgsqlConnection> ConnectionAsync()
-        {
-            var connection = dsource.CreateConnection();
-            await connection.OpenAsync(token);
-            return connection;
+            }, transaction: tran);
+            await tran.CommitAsync(cancellationToken);
+            return result;
         }
     }
 

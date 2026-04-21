@@ -36,22 +36,4 @@ namespace ShimsServer.Models.OPD
         [Range(50.0, 110.0, ErrorMessage = "SPO2 must be between 50 and 110%")] double? SPO2,
         [Required, StringLength(200, MinimumLength = 3, ErrorMessage = "Complaints must be between 3 and 200 characters")] string Complaints,
         [StringLength(200, MinimumLength = 5, ErrorMessage = "Notes must be between 5 and 200 characters")] string? Notes);
-
-    /// <summary>
-    /// Data transfer object for vital signs with patient information
-    /// </summary>
-    public record VitalsSummaryDto(
-        Guid VitalsID,
-        string PatientName,
-        string OPDNumber,
-        DateTime DateSeen,
-        double Temperature,
-        double Weight,
-        double? Pulse,
-        double? Systol,
-        double? Diastol,
-        double? Respiration,
-        double? SPO2,
-        string Complaints,
-        string UserName);
 }

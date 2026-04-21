@@ -10,11 +10,6 @@ namespace ShimsServer.Repositories
     public interface ISchemeServiceRepository
     {
         /// <summary>
-        /// Opens a new database connection asynchronously
-        /// </summary>
-        Task<NpgsqlConnection> GetConnectionAsync(CancellationToken cancellationToken = default);
-
-        /// <summary>
         /// Executes a query that returns no results (INSERT, UPDATE, DELETE)
         /// </summary>
         Task<int> ExecuteCommandAsync(
@@ -31,24 +26,17 @@ namespace ShimsServer.Repositories
     }
 
     /// <summary>
-    /// Default implementation wrapping NpgsqlDataSource
+    /// Default implementation wrapping IConnection
     /// </summary>
-    public class SchemeServiceRepository(NpgsqlDataSource dataSource) : ISchemeServiceRepository
+    public class SchemeServiceRepository(IConnection connection) : ISchemeServiceRepository
     {
-        private readonly NpgsqlDataSource _dataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
-
-        public async Task<NpgsqlConnection> GetConnectionAsync(CancellationToken cancellationToken = default)
-        {
-            return await _dataSource.OpenConnectionAsync(cancellationToken);
-        }
-
         public async Task<int> ExecuteCommandAsync(
             string commandText,
             Dictionary<string, object?>? parameters = null,
             CancellationToken cancellationToken = default)
         {
-            await using var connection = await GetConnectionAsync(cancellationToken);
-            using var command = connection.CreateCommand();
+            await using var conn = await connection.ConnectionAsync(cancellationToken);
+            using var command = conn.CreateCommand();
 
             command.CommandText = commandText;
 
@@ -67,20 +55,12 @@ namespace ShimsServer.Repositories
             Func<NpgsqlConnection, NpgsqlTransaction, CancellationToken, Task<T>> operation,
             CancellationToken cancellationToken = default)
         {
-            await using var connection = await GetConnectionAsync(cancellationToken);
-            await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
+            await using var conn = await connection.ConnectionAsync(cancellationToken);
+            await using var transaction = await conn.BeginTransactionAsync(cancellationToken);
 
-            try
-            {
-                var result = await operation(connection, transaction, cancellationToken);
-                await transaction.CommitAsync(cancellationToken);
-                return result;
-            }
-            catch
-            {
-                await transaction.RollbackAsync(cancellationToken);
-                throw;
-            }
+            var result = await operation(conn, transaction, cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+            return result;
         }
     }
 }

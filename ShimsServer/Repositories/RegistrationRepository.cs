@@ -6,8 +6,6 @@ namespace ShimsServer.Repositories
 {
     public interface IRegistrationRepository
     {
-        Task<NpgsqlConnection> ConnectionAsync(CancellationToken cancellationToken = default);
-
         Task AddPatientAsync(AddPatientDto dto, (Guid PatientsID, Guid PatientAttendancesID, string UserName) ids, CancellationToken cancellationToken = default);
 
         Task<int> EditPatientAsync(EditPatientDto dto, string UserName, CancellationToken cancellationToken = default);
@@ -23,7 +21,7 @@ namespace ShimsServer.Repositories
         Task<IEnumerable<ListPatientsDto>> SearchPatientsAsync(string search, CancellationToken cancellationToken = default);
     }
 
-    public class RegistrationRepository(NpgsqlDataSource dsource) : IRegistrationRepository
+    public class RegistrationRepository(IConnection connection) : IRegistrationRepository
     {
         public async Task AddPatientAsync(AddPatientDto dto, (Guid PatientsID, Guid PatientAttendancesID, string UserName) ids, CancellationToken cancellationToken = default)
         {
@@ -39,7 +37,7 @@ namespace ShimsServer.Repositories
                     VALUES (@PatientAttendancesID, @PatientsID, 'Acute', @UserName, now());
                 """;
 
-            using var con = await ConnectionAsync(cancellationToken);
+            using var con = await connection.ConnectionAsync(cancellationToken);
             using var transaction = await con.BeginTransactionAsync(cancellationToken);
             using var res = await con.QueryMultipleAsync(sql, new
             {
@@ -72,7 +70,7 @@ namespace ShimsServer.Repositories
                 UPDATE PatientAttendances SET IsActive = false
                 WHERE PatientsID = @id;
                 """;
-            using var con = await ConnectionAsync(cancellationToken);
+            using var con = await connection.ConnectionAsync(cancellationToken);
             using var transaction = await con.BeginTransactionAsync(cancellationToken);
             using var res = await con.QueryMultipleAsync(sql, new { id });
             await transaction.CommitAsync(cancellationToken);
@@ -92,7 +90,7 @@ namespace ShimsServer.Repositories
                         UserName = @UserName
                     WHERE PatientID = @PatientID;
                 """;
-            using var con = await ConnectionAsync(cancellationToken);
+            using var con = await connection.ConnectionAsync(cancellationToken);
             using var transaction = await con.BeginTransactionAsync(cancellationToken);
             var n = await con.ExecuteAsync(sql, new
             {
@@ -109,13 +107,6 @@ namespace ShimsServer.Repositories
             return n;
         }
 
-        public async Task<NpgsqlConnection> ConnectionAsync(CancellationToken cancellationToken = default)
-        {
-            var connection = dsource.CreateConnection();
-            await connection.OpenAsync(cancellationToken);
-            return connection;
-        }
-
         public async Task<ListPatientsDto?> GetPatientByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             const string sql =
@@ -124,7 +115,7 @@ namespace ShimsServer.Repositories
                     FROM vw_patients
                     WHERE patientid = @id;
                 """;
-            using var con = await ConnectionAsync(cancellationToken);
+            using var con = await connection.ConnectionAsync(cancellationToken);
             return await con.QueryFirstOrDefaultAsync<ListPatientsDto>(sql, new { id });
         }
 
@@ -132,10 +123,10 @@ namespace ShimsServer.Repositories
         {
             const string sql =
                 """
-                    SELECT patientid, schemesid, age, gender, fullname, scheme, hospitalid, cardid, expirydate, attendancedate
+                    SELECT patientid, schemesid, age, gender, fullname, scheme, hospitalid, cardid, expirydate, attendancedate, patientschemesid
                     FROM vw_patients;
                 """;
-            using var con = await ConnectionAsync(cancellationToken);
+            using var con = await connection.ConnectionAsync(cancellationToken);
             return await con.QueryAsync<ListPatientsDto>(sql);
         }
 
@@ -145,7 +136,7 @@ namespace ShimsServer.Repositories
                 """
                     SELECT EXISTS(SELECT 1 FROM Patients WHERE PatientsID = @id AND IsActive = true);
                 """;
-            using var con = await ConnectionAsync(cancellationToken);
+            using var con = await connection.ConnectionAsync(cancellationToken);
             return await con.ExecuteScalarAsync<bool>(sql, new { id });
         }
 
@@ -153,14 +144,14 @@ namespace ShimsServer.Repositories
         {
             const string sql =
                 """
-                    SELECT patientid, schemesid, age, gender, fullname, scheme, hospitalid, cardid, expirydate, attendancedate
+                    SELECT patientid, schemesid, age, gender, fullname, scheme, hospitalid, cardid, expirydate, attendancedate, patientschemesid
                     FROM vw_patients
                     WHERE fullname ILIKE @search
                         OR cardid ILIKE @search
                         OR hospitalid ILIKE @search
                     ORDER BY attendancedate DESC;
                 """;
-            using var con = await ConnectionAsync(cancellationToken);
+            using var con = await connection.ConnectionAsync(cancellationToken);
             return await con.QueryAsync<ListPatientsDto>(sql, new { search = $"%{search}%" });
         }
     }
@@ -210,6 +201,7 @@ namespace ShimsServer.Repositories
         string CardID,
         DateTime ExpiryDate,
         string VisitType,
-        DateTime AttendanceDate
+        DateTime AttendanceDate,
+        Guid PatientSchemesID
         );
 }

@@ -12,11 +12,6 @@ namespace ShimsServer.Repositories
     public interface ISchemeDrugsRepository
     {
         /// <summary>
-        /// Opens a new database connection asynchronously
-        /// </summary>
-        Task<NpgsqlConnection> GetConnectionAsync(CancellationToken cancellationToken = default);
-
-        /// <summary>
         /// Gets all active drugs for a specific scheme
         /// </summary>
         Task<IEnumerable<SchemeDrugDTO>> GetDrugsBySchemeAsync(Guid schemeId, CancellationToken cancellationToken = default);
@@ -34,17 +29,10 @@ namespace ShimsServer.Repositories
     }
 
     /// <summary>
-    /// Default implementation wrapping NpgsqlDataSource
+    /// Default implementation wrapping IConnection
     /// </summary>
-    public class SchemeDrugsRepository(NpgsqlDataSource dataSource) : ISchemeDrugsRepository
+    public class SchemeDrugsRepository(IConnection connection) : ISchemeDrugsRepository
     {
-        private readonly NpgsqlDataSource _dataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
-
-        public async Task<NpgsqlConnection> GetConnectionAsync(CancellationToken cancellationToken = default)
-        {
-            return await _dataSource.OpenConnectionAsync(cancellationToken);
-        }
-
         public async Task<IEnumerable<SchemeDrugDTO>> GetDrugsBySchemeAsync(Guid schemeId, CancellationToken cancellationToken = default)
         {
             const string sql = """
@@ -54,9 +42,9 @@ namespace ShimsServer.Repositories
                 INNER JOIN drugs d ON sd.drugsid = d.drugsid
                 WHERE sd.schemesid = @schemeId AND sd.isactive
                 """;
-            
-            await using var connection = await GetConnectionAsync(cancellationToken);
-            return await connection.QueryAsync<SchemeDrugDTO>(sql, new { schemeId });
+
+            await using var conn = await connection.ConnectionAsync(cancellationToken);
+            return await conn.QueryAsync<SchemeDrugDTO>(sql, new { schemeId });
         }
 
         public async Task<Guid> AddSchemeDrugAsync(
@@ -68,49 +56,41 @@ namespace ShimsServer.Repositories
         {
             var schemeDrugId = Guid.CreateVersion7();
 
-            await using var connection = await GetConnectionAsync(cancellationToken);
-            await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
+            await using var conn = await connection.ConnectionAsync(cancellationToken);
+            await using var transaction = await conn.BeginTransactionAsync(cancellationToken);
 
-            try
+            // Deactivate previous pricing
+            using (var cmd = conn.CreateCommand())
             {
-                // Deactivate previous pricing
-                using (var cmd = connection.CreateCommand())
-                {
-                    cmd.Transaction = transaction;
-                    cmd.CommandText = """
-                        UPDATE schemedrugs
-                        SET isactive = false
-                        WHERE schemesid = @schemeId AND drugsid = @drugId AND isactive;
-                        """;
-                    cmd.Parameters.Add(new NpgsqlParameter("@schemeId", schemeId));
-                    cmd.Parameters.Add(new NpgsqlParameter("@drugId", drugId));
-                    await cmd.ExecuteNonQueryAsync(cancellationToken);
-                }
-
-                // Insert new pricing record
-                using (var cmd = connection.CreateCommand())
-                {
-                    cmd.Transaction = transaction;
-                    cmd.CommandText = """
-                        INSERT INTO schemedrugs (schemedrugsid, schemesid, drugsid, price, dateset, isactive, username)
-                        VALUES (@schemeDrugId, @schemeId, @drugId, @price, now(), true, @userName);
-                        """;
-                    cmd.Parameters.Add(new NpgsqlParameter("@schemeDrugId", schemeDrugId));
-                    cmd.Parameters.Add(new NpgsqlParameter("@schemeId", schemeId));
-                    cmd.Parameters.Add(new NpgsqlParameter("@drugId", drugId));
-                    cmd.Parameters.Add(new NpgsqlParameter("@price", price));
-                    cmd.Parameters.Add(new NpgsqlParameter("@userName", userName));
-                    await cmd.ExecuteNonQueryAsync(cancellationToken);
-                }
-
-                await transaction.CommitAsync(cancellationToken);
-                return schemeDrugId;
+                cmd.Transaction = transaction;
+                cmd.CommandText = """
+                    UPDATE schemedrugs
+                    SET isactive = false
+                    WHERE schemesid = @schemeId AND drugsid = @drugId AND isactive;
+                    """;
+                cmd.Parameters.Add(new NpgsqlParameter("@schemeId", schemeId));
+                cmd.Parameters.Add(new NpgsqlParameter("@drugId", drugId));
+                await cmd.ExecuteNonQueryAsync(cancellationToken);
             }
-            catch
+
+            // Insert new pricing record
+            using (var cmd = conn.CreateCommand())
             {
-                await transaction.RollbackAsync(cancellationToken);
-                throw;
+                cmd.Transaction = transaction;
+                cmd.CommandText = """
+                    INSERT INTO schemedrugs (schemedrugsid, schemesid, drugsid, price, dateset, isactive, username)
+                    VALUES (@schemeDrugId, @schemeId, @drugId, @price, now(), true, @userName);
+                    """;
+                cmd.Parameters.Add(new NpgsqlParameter("@schemeDrugId", schemeDrugId));
+                cmd.Parameters.Add(new NpgsqlParameter("@schemeId", schemeId));
+                cmd.Parameters.Add(new NpgsqlParameter("@drugId", drugId));
+                cmd.Parameters.Add(new NpgsqlParameter("@price", price));
+                cmd.Parameters.Add(new NpgsqlParameter("@userName", userName));
+                await cmd.ExecuteNonQueryAsync(cancellationToken);
             }
+
+            await transaction.CommitAsync(cancellationToken);
+            return schemeDrugId;
         }
     }
 }

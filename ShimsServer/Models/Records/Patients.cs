@@ -10,6 +10,7 @@ namespace ShimsServer.Models.Records
         public Guid PatientsID { get; set; } = Guid.CreateVersion7();
 
         [Required]
+        [StringLength(50, MinimumLength = 5)]
         public required string HospitalID { get; set; }
 
         [Required, StringLength(30, MinimumLength = 3)]

@@ -7,7 +7,7 @@ namespace ShimsServer.Controllers.Records
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
-    public class RegistrationsController(IRegistrationRepository repository, ILogger<RegistrationsController> logger, CancellationToken token) : ControllerBase
+    public class RegistrationsController(IRegistrationRepository repository, ILogger<RegistrationsController> logger) : ControllerBase
     {
         /// <summary>
         /// Register a new patient with scheme and initial attendance
@@ -23,7 +23,7 @@ namespace ShimsServer.Controllers.Records
                 var attendanceId = Guid.CreateVersion7();
                 var userName = User.Identity?.Name ?? "system";
 
-                await repository.AddPatientAsync(dto, (patientId, attendanceId, userName), token);
+                await repository.AddPatientAsync(dto, (patientId, attendanceId, userName), HttpContext.RequestAborted);
 
                 return Ok(new { message = "Patient registered successfully", patientId });
             }
@@ -47,7 +47,7 @@ namespace ShimsServer.Controllers.Records
         [ResponseCache(Duration = 30, Location = ResponseCacheLocation.Any)]
         public async Task<ActionResult<IEnumerable<ListPatientsDto>>> GetPatients()
         {
-            var patients = await repository.GetPatientsAsync(token);
+            var patients = await repository.GetPatientsAsync(HttpContext.RequestAborted);
             return Ok(patients);
         }
 
@@ -59,7 +59,7 @@ namespace ShimsServer.Controllers.Records
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ListPatientsDto>> GetPatientById(Guid id)
         {
-            var patient = await repository.GetPatientByIdAsync(id, token);
+            var patient = await repository.GetPatientByIdAsync(id, HttpContext.RequestAborted);
             return patient == null ? NotFound() : Ok(patient);
         }
 
@@ -74,7 +74,7 @@ namespace ShimsServer.Controllers.Records
             if (string.IsNullOrWhiteSpace(search))
                 return BadRequest(new { message = "Search term cannot be empty" });
 
-            var patients = await repository.SearchPatientsAsync(search.Trim(), token);
+            var patients = await repository.SearchPatientsAsync(search.Trim(), HttpContext.RequestAborted);
             return Ok(patients);
         }
 
@@ -93,10 +93,10 @@ namespace ShimsServer.Controllers.Records
             try
             {
             // Check if patient exists
-            if (!await repository.PatientExists(id, token))
+            if (!await repository.PatientExists(id, HttpContext.RequestAborted))
                 return NotFound(new { message = "Patient not found" });
                 var userName = User.Identity?.Name ?? "system";
-                var rowsAffected = await repository.EditPatientAsync(dto, userName, token);
+                var rowsAffected = await repository.EditPatientAsync(dto, userName, HttpContext.RequestAborted);
 
                 if (rowsAffected == 0)
                     return NotFound(new { message = "Patient not found" });
@@ -126,10 +126,10 @@ namespace ShimsServer.Controllers.Records
             try
             {
             // Check if patient exists
-            if (!await repository.PatientExists(id, token))
+            if (!await repository.PatientExists(id, HttpContext.RequestAborted))
                 return NotFound(new { message = "Patient not found" });
 
-                await repository.DeletePatientAsync(id, token);
+                await repository.DeletePatientAsync(id, HttpContext.RequestAborted);
                 return Ok(new { message = "Patient deleted successfully" });
             }
             catch (PostgresException ex)
