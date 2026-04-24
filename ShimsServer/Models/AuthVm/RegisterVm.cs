@@ -3,17 +3,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ShimsServer.Models.AuthVm
 {
-    
-
-    public class GuestsVM
+    public class RegisterVM
     {
         [Required]
-        [StringLength(20, MinimumLength = 6)]
-        public required string UserName { get; set; }
+        [StringLength(100, MinimumLength = 10)]
+        [DataType(DataType.EmailAddress)]
+        public required string Email { get; set; }
 
+        [StringLength(30, MinimumLength = 5)]
         [Required]
-        [StringLength(10, MinimumLength = 2)]
-        public required string Title { get; set; }
+        public required string UserRole { get; set; }
 
         [Required]
         [StringLength(15, MinimumLength = 6)]
@@ -32,9 +31,6 @@ namespace ShimsServer.Models.AuthVm
         [StringLength(10, MinimumLength = 10)]
         public required string PhoneNumber { get; set; }
 
-        [StringLength(150, MinimumLength = 3)]
-        public string? Institution { get; set; }
-
-        public ApplicationUser Transform() => new() { Email = UserName, Password = Password, PhoneNumber = PhoneNumber, FullName = FullName, UserName = UserName, ConfirmPassword = ConfirmPassword };
+        public ApplicationUser Transform ()=> new() { Email = Email, Password = Password, PhoneNumber = PhoneNumber, FullName = FullName, UserName = Email, ConfirmPassword = ConfirmPassword};
     }
 }

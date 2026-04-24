@@ -1,43 +1,86 @@
-<nav class="nav">
-        <div [routerLink]="['/home']" class="brand">
-                <span>KCCR</span>
+<nav class="navbar" [class.open]="menuOpen()">
+        <div class="nav-container">
+                <!-- Logo/Brand -->
+                <div class="nav-brand">
+                        <h1>SHIMS</h1>
+                </div>
+
+                <!-- Hamburger Menu Button -->
+                <button type="button" class="hamburger" (click)="toggleMenu()" [attr.aria-expanded]="menuOpen()"
+                        aria-label="Toggle navigation menu" title="Toggle navigation menu">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                </button>
+
+                <!-- Navigation Menu -->
+                <ul class="nav-menu" [class.active]="menuOpen()" role="menubar">
+                        <!-- Home Item -->
+                        <li class="nav-item" role="none">
+                                <a class="nav-link" routerLink="/home" (click)="onNavLinkClick()" role="menuitem">
+                                        <mat-icon class="nav-icon">home</mat-icon>
+                                        <span>Home</span>
+                                </a>
+                        </li>
+                        @if(status.isLoggedIn()){
+                        <!-- Management Dropdown -->
+                        <li class="nav-item dropdown" role="none">
+                                <button type="button" class="nav-link dropdown-toggle"
+                                        [matMenuTriggerFor]="managementMenu" title="Management submenu" role="menuitem">
+                                        <mat-icon class="nav-icon">admin_panel_settings</mat-icon>
+                                        <span>Management</span>
+                                        <mat-icon class="dropdown-icon">expand_more</mat-icon>
+                                </button>
+                        </li>
+
+                        <!-- Account Dropdown -->
+                        <li class="nav-item dropdown" role="none">
+                                <button type="button" class="nav-link dropdown-toggle" [matMenuTriggerFor]="accountMenu"
+                                        title="Account submenu" role="menuitem">
+                                        <mat-icon class="nav-icon">account_circle</mat-icon>
+                                        <span>Account</span>
+                                        <mat-icon class="dropdown-icon">expand_more</mat-icon>
+                                </button>
+                        </li>
+                        }
+                        @else {
+                        <!-- Login Button -->
+                        <li class="nav-item" role="none">
+                                <button type="button" mat-stroked-button class="nav-login" (click)="login()"
+                                        role="menuitem" title="Login to your account">
+                                        <mat-icon class="nav-icon">login</mat-icon>
+                                        <span>Login</span>
+                                </button>
+                        </li>
+                        }
+                </ul>
         </div>
-
-        <button type="button" class="mobile-menu" (click)="toggleMenu()" aria-label="Toggle navigation menu">
-                <span class="menu-line"></span>
-                <span class="menu-line"></span>
-                <span class="menu-line"></span>
-        </button>
-
-        <ul class="nav-links" [class.open]="menuOpen()">
-                @if (status.isLoggedIn()) {
-                @if (status.isAdmin()) {
-                <li>
-                        <a [routerLink]="['/reservations']" routerLinkActive="active"
-                                (click)="onNavLinkClick()"><mat-icon class="icon--reservations">event</mat-icon>
-                                Reservations</a>
-                </li>
-                <li>
-                        <a [routerLink]="['/services']" routerLinkActive="active" (click)="onNavLinkClick()"><mat-icon
-                                        class="icon--services">build</mat-icon> Services</a>
-                </li>
-                }
-                <li>
-                        <a [routerLink]="['/my-bookings']" routerLinkActive="active"
-                                (click)="onNavLinkClick()"><mat-icon class="icon--book">book</mat-icon> Book</a>
-                </li>
-                <li>
-                        <button type="button" class="logout-button" (click)="status.logout()"><mat-icon
-                                        class="icon--logout">logout</mat-icon> Logout</button>
-                </li>
-                }
-                @else {
-                <li>
-                        <a [routerLink]="['/login']" routerLinkActive="active" (click)="onNavLinkClick()"><mat-icon
-                                        class="icon--login">login</mat-icon> Login/Sign up</a>
-                </li>
-                }
-                <li><a [routerLink]="['/contact']" routerLinkActive="active" (click)="onNavLinkClick()"><mat-icon
-                                        class="icon--contact">contact_mail</mat-icon> Contact</a></li>
-        </ul>
 </nav>
+
+<!-- Management Menu -->
+<mat-menu #managementMenu="matMenu" panelClass="nav-menu-panel">
+        <a mat-menu-item routerLink="/users" (click)="onNavLinkClick()">
+                <mat-icon class="nav-icon">people</mat-icon>
+                <span>Users</span>
+        </a>
+        <a mat-menu-item routerLink="/schemes" (click)="onNavLinkClick()">
+                <mat-icon class="nav-icon">layers</mat-icon>
+                <span>Schemes</span>
+        </a>
+        <a mat-menu-item routerLink="/settings" (click)="onNavLinkClick()">
+                <mat-icon class="nav-icon">settings</mat-icon>
+                <span>Settings</span>
+        </a>
+</mat-menu>
+
+<!-- Account Menu -->
+<mat-menu #accountMenu="matMenu" panelClass="nav-menu-panel">
+        <a mat-menu-item routerLink="/profile" (click)="onNavLinkClick()">
+                <mat-icon class="nav-icon">person</mat-icon>
+                <span>Profile</span>
+        </a>
+        <button mat-button mat-menu-item type="button" (click)="logout()" title="Logout from your account">
+                <mat-icon class="nav-icon">logout</mat-icon>
+                <span>Logout</span>
+        </button>
+</mat-menu>

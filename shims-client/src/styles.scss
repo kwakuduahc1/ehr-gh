@@ -4,19 +4,16 @@
 // Learn more about theming and how to use it for your application's
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
+@use 'app/styles/variables' as *;
 
 html {
   height: 100%;
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$magenta-palette,
+  @include mat.theme((color: (primary: mat.$magenta-palette,
         tertiary: mat.$violet-palette,
       ),
       typography: Roboto,
       density: 0,
-    )
-  );
+    ));
 }
 
 body {
@@ -36,4 +33,47 @@ body {
   margin: 0;
   height: 100%;
 }
+
 /* You can add global styles to this file, and also import other style files */
+
+// ============================================================================
+// Nav Component — Angular Material overlay overrides
+// These must be global because mat-menu renders in a CDK overlay outside the
+// component's shadow DOM.
+// ============================================================================
+
+.mat-mdc-menu-panel.nav-menu-panel {
+  @include mat.menu-overrides((container-color: $primary-color,
+      item-label-text-color: $white,
+      item-icon-color: $white,
+      item-hover-state-layer-color: rgba($white, 0.15),
+      item-focus-state-layer-color: rgba($white, 0.2),
+    ));
+
+  background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+  box-shadow: $shadow-md;
+
+  // Force vertical stacking — Material v21 M3 sets display:flex on the content
+  // container; !important is required here to override the component stylesheet.
+  .mat-mdc-menu-content {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: $spacing-sm 0;
+  }
+
+  .mat-mdc-menu-item {
+    flex-shrink: 0;
+    width: 100%;
+    transition: background-color $transition-base, transform $transition-base;
+
+    &:hover {
+      background-color: rgba($white, 0.15);
+      transform: translateY(-2px);
+    }
+
+    &:focus-visible {
+      outline: 2px solid $white;
+      outline-offset: -2px;
+    }
+  }
+}

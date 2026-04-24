@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { ChangePasswordVm, ILogin, IRoles, IUsers, LoginVm, RegisterVm, URoles } from '../models/IUsers';
+import { ChangePasswordVm, IRoles, IUsers, LoginVm, RegisterVm, URoles } from '../models/IUsers';
 import { environment } from '../../environments/environment';
 
 

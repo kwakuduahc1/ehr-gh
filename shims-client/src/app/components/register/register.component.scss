@@ -1,3 +1,5 @@
+@use '../../styles/variables' as *;
+
 :host {
     display: block;
 }
@@ -8,15 +10,15 @@
     align-items: center;
     min-height: 100vh;
     padding: 2rem 1rem;
-    background: linear-gradient(135deg, var(--ag-background) 0%, var(--ag-primary-dark) 100%);
+    background: linear-gradient(135deg, $bg-primary 0%, $primary-dark 100%);
 }
 
 .register-container {
     width: 100%;
     max-width: 500px;
-    background: var(--ag-white);
-    border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    background: $white;
+    border-radius: $border-radius-lg;
+    box-shadow: 0 10px 40px rgba($black, 0.15);
     padding: 2.5rem 2rem;
 }
 
@@ -24,7 +26,7 @@
     font-size: 1.75rem;
     font-weight: 600;
     margin: 0 0 2rem 0;
-    color: var(--ag-text);
+    color: $text-primary;
     text-align: center;
 }
 
@@ -55,14 +57,14 @@ mat-form-field {
 
 .password-mismatch-error {
     padding: 0.75rem;
-    background-color: var(--ag-error-light);
-    border-left: 4px solid var(--ag-error-dark);
+    background-color: $error-light;
+    border-left: $border-width-medium solid $error-dark;
     border-radius: 4px;
     margin-bottom: 0.5rem;
     width: 100%;
 
     mat-error {
-        color: var(--ag-error-dark);
+        color: $error-dark;
         display: block;
 
         span {
@@ -75,15 +77,15 @@ mat-form-field {
 .back-btn {
     width: auto;
     min-width: 150px;
-    padding: 1.25rem 1.5rem !important;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-    font-size: 1rem !important;
-    font-weight: 500 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
-    border-radius: 8px !important;
-    transition: all 0.3s ease !important;
+    padding: $spacing-xl $spacing-xl;
+    margin-top: $spacing-sm;
+    margin-bottom: $spacing-sm;
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    text-transform: uppercase;
+    letter-spacing: $letter-spacing-wide;
+    border-radius: $border-radius-lg;
+    transition: all $transition-base;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -92,11 +94,11 @@ mat-form-field {
 }
 
 .register-btn {
-    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3) !important;
+    box-shadow: 0 4px 12px rgba($primary-color, 0.3);
 
     &:hover:not(:disabled) {
-        box-shadow: var(--ag-shadow-hover) !important;
-        transform: translateY(-2px) !important;
+        box-shadow: $shadow-md;
+        transform: translateY(-2px);
     }
 
     &:disabled {
@@ -105,14 +107,14 @@ mat-form-field {
 }
 
 .back-btn {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-    border: 2px solid var(--ag-primary-dark) !important;
-    color: var(--ag-accent) !important;
+    box-shadow: 0 2px 8px rgba($black, 0.1);
+    border: $border-width-medium solid $primary-dark;
+    color: $accent-color;
 
     &:hover:not(:disabled) {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-        border-color: var(--ag-background-dark) !important;
-        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 12px rgba($black, 0.15);
+        border-color: $bg-dark;
+        transform: translateY(-2px);
     }
 }
 

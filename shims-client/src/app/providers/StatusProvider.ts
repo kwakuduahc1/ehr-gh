@@ -4,7 +4,6 @@ import { LoginHttpService } from '../http/login-http-service';
 import { IUsers, LoginVm } from '../models/IUsers';
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { map, tap } from 'rxjs';
-import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class StatusProvider {
@@ -13,7 +12,6 @@ export class StatusProvider {
   private snack = inject(MatSnackBar);
   private jwt = inject(JwtHelperService);
   private http = inject(LoginHttpService);
-  private router = inject(Router);
 
   private token = signal<string | null>(null);
 
@@ -61,8 +59,7 @@ export class StatusProvider {
       this.snack.open('You were logged out', 'Ok');
     }
     else {
-      this.snack.open("Authorization check in progress", 'Dismiss');
-      this.router.navigate(['/auth/login']);
+      this.snack.open("Wait to be verified", 'Dismiss');
     }
   }
 

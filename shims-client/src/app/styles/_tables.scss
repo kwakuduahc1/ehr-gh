@@ -1,0 +1,590 @@
+// ============================================================================
+// TABLES
+// ============================================================================
+// Table component styles and variants
+
+@use 'variables' as *;
+
+// ============================================================================
+// Basic Table
+// ============================================================================
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-bottom: $spacing-lg;
+    font-size: $font-size-base;
+    color: $text-primary;
+    background-color: $bg-primary;
+
+    // Caption styling
+    caption {
+        padding: $spacing-md;
+        text-align: left;
+        font-weight: $font-weight-bold;
+        color: $text-primary;
+        margin-bottom: $spacing-md;
+    }
+}
+
+// ============================================================================
+// Table Headers
+// ============================================================================
+thead {
+    background-color: $gray-50;
+    border-bottom: $border-width-medium solid $border-color-light;
+}
+
+th {
+    padding: $spacing-md $spacing-lg;
+    text-align: left;
+    font-weight: $font-weight-bold;
+    font-size: $font-size-sm;
+    color: $text-primary;
+    white-space: nowrap;
+    vertical-align: middle;
+    text-transform: uppercase;
+    letter-spacing: $letter-spacing-wide;
+
+    &:first-child {
+        border-radius: $border-radius-md 0 0 0;
+    }
+
+    &:last-child {
+        border-radius: 0 $border-radius-md 0 0;
+    }
+}
+
+// ============================================================================
+// Table Body and Rows
+// ============================================================================
+tbody {
+    tr {
+        border-bottom: $border-width-thin solid $border-color-light;
+        transition: background-color $transition-base;
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+}
+
+td {
+    padding: $spacing-md $spacing-lg;
+    vertical-align: middle;
+    color: $text-primary;
+}
+
+// ============================================================================
+// Table Striped (Zebra Striping)
+// ============================================================================
+.table-striped {
+    tbody tr {
+        &:nth-child(odd) {
+            background-color: $gray-50;
+        }
+
+        &:nth-child(even) {
+            background-color: $bg-primary;
+        }
+    }
+}
+
+// ============================================================================
+// Table Hover (Interactive Rows)
+// ============================================================================
+.table-hover {
+    tbody tr {
+        cursor: pointer;
+
+        &:hover {
+            background-color: $gray-100;
+        }
+    }
+}
+
+// ============================================================================
+// Table Bordered
+// ============================================================================
+.table-bordered {
+    border: $border-width-thin solid $border-color-light;
+    border-radius: $border-radius-lg;
+    overflow: hidden;
+
+    thead th,
+    tbody td {
+        border-right: $border-width-thin solid $border-color-light;
+
+        &:last-child {
+            border-right: none;
+        }
+    }
+}
+
+// ============================================================================
+// Table Sizes
+// ============================================================================
+.table-sm {
+
+    thead th,
+    tbody td {
+        padding: $spacing-sm $spacing-md;
+        font-size: $font-size-sm;
+    }
+}
+
+.table-lg {
+
+    thead th,
+    tbody td {
+        padding: $spacing-lg $spacing-xl;
+        font-size: $font-size-lg;
+    }
+}
+
+.table-compact {
+
+    thead th,
+    tbody td {
+        padding: $spacing-xs $spacing-md;
+        font-size: $font-size-xs;
+    }
+}
+
+// ============================================================================
+// Table Variants
+// ============================================================================
+.table-primary {
+    thead {
+        background-color: $primary-color;
+
+        th {
+            color: $white;
+            border-bottom-color: $primary-dark;
+        }
+    }
+
+    tbody tr:hover {
+        background-color: rgba($primary-color, 0.05);
+    }
+}
+
+.table-secondary {
+    thead {
+        background-color: $secondary-color;
+
+        th {
+            color: $white;
+            border-bottom-color: $secondary-dark;
+        }
+    }
+
+    tbody tr:hover {
+        background-color: rgba($secondary-color, 0.05);
+    }
+}
+
+.table-success {
+    thead {
+        background-color: $success-color;
+
+        th {
+            color: $white;
+            border-bottom-color: $success-dark;
+        }
+    }
+
+    tbody tr {
+        &:hover {
+            background-color: rgba($success-color, 0.05);
+        }
+
+        .badge-success {
+            background-color: $success-color;
+        }
+    }
+}
+
+.table-warning {
+    thead {
+        background-color: $warning-color;
+
+        th {
+            color: $white;
+            border-bottom-color: $warning-dark;
+        }
+    }
+
+    tbody tr {
+        &:hover {
+            background-color: rgba($warning-color, 0.05);
+        }
+
+        .badge-warning {
+            background-color: $warning-color;
+        }
+    }
+}
+
+.table-error {
+    thead {
+        background-color: $error-color;
+
+        th {
+            color: $white;
+            border-bottom-color: $error-dark;
+        }
+    }
+
+    tbody tr {
+        &:hover {
+            background-color: rgba($error-color, 0.05);
+        }
+
+        .badge-error {
+            background-color: $error-color;
+        }
+    }
+}
+
+// ============================================================================
+// Row States
+// ============================================================================
+.table-active {
+    background-color: $gray-100;
+
+    td {
+        color: $text-primary;
+    }
+}
+
+.table-disabled {
+    background-color: $gray-50;
+    opacity: 0.6;
+
+    td {
+        color: $text-disabled;
+    }
+}
+
+.table-success-row {
+    background-color: rgba($success-color, 0.1);
+    border-left: $border-width-thick solid $success-color;
+}
+
+.table-warning-row {
+    background-color: rgba($warning-color, 0.1);
+    border-left: $border-width-thick solid $warning-color;
+}
+
+.table-error-row {
+    background-color: rgba($error-color, 0.1);
+    border-left: $border-width-thick solid $error-color;
+}
+
+.table-info-row {
+    background-color: rgba($info-color, 0.1);
+    border-left: $border-width-thick solid $info-color;
+}
+
+// ============================================================================
+// Responsive Table
+// ============================================================================
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    >table {
+        margin-bottom: 0;
+    }
+
+    @media (min-width: $breakpoint-md) {
+        display: table;
+        overflow-x: visible;
+    }
+}
+
+.table-responsive-sm {
+    @media (max-width: $breakpoint-sm) {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+.table-responsive-md {
+    @media (max-width: $breakpoint-md) {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+// Mobile stacked table
+@media (max-width: $breakpoint-sm) {
+    .table-stacked {
+        thead {
+            display: none;
+        }
+
+        tbody tr {
+            display: block;
+            margin-bottom: $spacing-md;
+            border: $border-width-thin solid $border-color-light;
+            border-radius: $border-radius-md;
+        }
+
+        td {
+            display: block;
+            text-align: right;
+            padding-left: 50%;
+            position: relative;
+            border: none;
+            border-bottom: $border-width-thin solid $border-color-light;
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            &::before {
+                content: attr(data-label);
+                position: absolute;
+                left: $spacing-md;
+                font-weight: $font-weight-bold;
+                text-align: left;
+                text-transform: uppercase;
+                font-size: $font-size-xs;
+                color: $text-secondary;
+            }
+        }
+    }
+}
+
+// ============================================================================
+// Table with Expandable Rows
+// ============================================================================
+.table-expandable {
+    tbody tr {
+        cursor: pointer;
+
+        &.expanded {
+            background-color: $gray-50;
+
+            +tr.table-expanded-content {
+                display: table-row;
+            }
+        }
+    }
+}
+
+.table-expanded-content {
+    display: none;
+
+    td {
+        padding: $spacing-lg;
+        background-color: $gray-50;
+        border-bottom: $border-width-thin solid $border-color-light;
+    }
+}
+
+// ============================================================================
+// Table with Selection (Checkboxes)
+// ============================================================================
+.table-selectable {
+
+    thead th:first-child,
+    tbody td:first-child {
+        width: 2.5rem;
+        padding: $spacing-sm;
+        text-align: center;
+    }
+
+    input[type='checkbox'] {
+        cursor: pointer;
+    }
+}
+
+.table-selected {
+    background-color: rgba($primary-color, 0.1);
+    border-left: $border-width-thick solid $primary-color;
+}
+
+// ============================================================================
+// Sortable Table Headers
+// ============================================================================
+.table-sortable {
+    thead th {
+        cursor: pointer;
+        user-select: none;
+        padding-right: $spacing-xl;
+        position: relative;
+
+        &:hover {
+            background-color: $gray-100;
+        }
+
+        &.sortable-asc,
+        &.sortable-desc {
+            background-color: $primary-light;
+            color: $white;
+        }
+
+        &.sortable-asc::after,
+        &.sortable-desc::after {
+            content: '';
+            position: absolute;
+            right: $spacing-md;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+        }
+
+        &.sortable-asc::after {
+            border-bottom: 5px solid $white;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        &.sortable-desc::after {
+            border-top: 5px solid $white;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    }
+}
+
+// ============================================================================
+// Fixed Header Table (Scrollable Body)
+// ============================================================================
+.table-fixed-header {
+    max-height: 21.875rem;
+    overflow-y: auto;
+
+    thead {
+        position: sticky;
+        top: 0;
+        z-index: $z-index-modal - 10;
+    }
+}
+
+// ============================================================================
+// Table Loading State
+// ============================================================================
+.table-loading {
+    opacity: 0.7;
+    pointer-events: none;
+
+    tbody {
+        position: relative;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid $primary-light;
+            border-radius: 50%;
+            border-top-color: $primary-color;
+            animation: spin 0.6s linear infinite;
+            transform: translate(-50%, -50%);
+        }
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+// ============================================================================
+// Table Empty State
+// ============================================================================
+.table-empty-state {
+    tbody {
+        tr {
+            &:only-child td {
+                padding: $spacing-2xl $spacing-lg;
+                text-align: center;
+                color: $text-secondary;
+            }
+        }
+    }
+}
+
+// ============================================================================
+// Pagination Table
+// ============================================================================
+.table-pagination {
+    margin-top: $spacing-lg;
+    display: flex;
+    gap: $spacing-md;
+    align-items: center;
+    justify-content: space-between;
+    padding: $spacing-md $spacing-lg;
+    background-color: $gray-50;
+    border-radius: $border-radius-md;
+
+    .pagination-info {
+        font-size: $font-size-sm;
+        color: $text-secondary;
+    }
+
+    .pagination-controls {
+        display: flex;
+        gap: $spacing-sm;
+
+        button {
+            padding: $spacing-sm $spacing-md;
+            font-size: $font-size-sm;
+        }
+    }
+}
+
+// ============================================================================
+// Vertical Table Layout
+// ============================================================================
+.table-vertical {
+    thead {
+        display: none;
+    }
+
+    tbody tr {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: $spacing-md;
+        border: $border-width-thin solid $border-color-light;
+        border-radius: $border-radius-md;
+        overflow: hidden;
+    }
+
+    td {
+        flex: 1;
+        min-width: 12.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border-right: $border-width-thin solid $border-color-light;
+        border-bottom: none;
+
+        &:last-child {
+            border-right: none;
+        }
+
+        &::before {
+            content: attr(data-label);
+            font-weight: $font-weight-bold;
+            font-size: $font-size-xs;
+            color: $text-secondary;
+            text-transform: uppercase;
+            margin-bottom: $spacing-xs;
+        }
+    }
+}

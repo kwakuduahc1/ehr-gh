@@ -1,0 +1,505 @@
+// ============================================================================
+// CARDS
+// ============================================================================
+// Card component styles and variants
+
+@use 'variables' as *;
+
+// Card base mixin
+@mixin card-base {
+    background-color: $bg-primary;
+    border: $border-width-thin solid $border-color-light;
+    border-radius: $border-radius-lg;
+    overflow: hidden;
+    transition: all $transition-base;
+}
+
+// ============================================================================
+// Basic Card
+// ============================================================================
+.card {
+    @include card-base;
+    box-shadow: $shadow-sm;
+
+    &:hover {
+        box-shadow: $shadow-md;
+    }
+}
+
+// ============================================================================
+// Card Padding Variants
+// ============================================================================
+.card-sm {
+    @include card-base;
+    padding: $spacing-md;
+    box-shadow: $shadow-sm;
+
+    &:hover {
+        box-shadow: $shadow-md;
+    }
+}
+
+.card-md {
+    @include card-base;
+    padding: $spacing-lg;
+    box-shadow: $shadow-sm;
+
+    &:hover {
+        box-shadow: $shadow-md;
+    }
+}
+
+.card-lg {
+    @include card-base;
+    padding: $spacing-xl;
+    box-shadow: $shadow-sm;
+
+    &:hover {
+        box-shadow: $shadow-md;
+    }
+}
+
+// ============================================================================
+// Card Sections
+// ============================================================================
+.card-header {
+    padding: $spacing-lg;
+    border-bottom: $border-width-thin solid $border-color-light;
+    background-color: $gray-50;
+
+    &:first-child {
+        border-radius: $border-radius-lg $border-radius-lg 0 0;
+    }
+
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        margin: 0;
+    }
+
+    p {
+        margin: 0;
+        font-size: $font-size-sm;
+        color: $text-secondary;
+    }
+}
+
+.card-body {
+    padding: $spacing-lg;
+
+    &:last-child {
+        border-radius: 0 0 $border-radius-lg $border-radius-lg;
+    }
+
+    > :last-child {
+        margin-bottom: 0;
+    }
+}
+
+.card-footer {
+    padding: $spacing-lg;
+    border-top: $border-width-thin solid $border-color-light;
+    background-color: $gray-50;
+    display: flex;
+    gap: $spacing-md;
+    align-items: center;
+    justify-content: flex-end;
+
+    &:last-child {
+        border-radius: 0 0 $border-radius-lg $border-radius-lg;
+    }
+
+    .btn {
+        margin: 0;
+    }
+}
+
+// ============================================================================
+// Card Image
+// ============================================================================
+.card-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0;
+    border-radius: $border-radius-lg $border-radius-lg 0 0;
+    object-fit: cover;
+
+    &:only-child {
+        border-radius: $border-radius-lg;
+    }
+}
+
+.card-image-container {
+    width: 100%;
+    height: 10rem;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: $gray-100;
+    border-radius: $border-radius-lg $border-radius-lg 0 0;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    &.card-image-sm {
+        height: 6.25rem;
+    }
+
+    &.card-image-lg {
+        height: 15rem;
+    }
+}
+
+// ============================================================================
+// Card Styles/Variants
+// ============================================================================
+.card-primary {
+    @include card-base;
+    border-color: $primary-color;
+    box-shadow: $shadow-sm;
+
+    .card-header {
+        background-color: $primary-color;
+        border-bottom-color: $primary-dark;
+        color: $white;
+
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            color: $white;
+        }
+
+        p {
+            color: rgba($white, 0.8);
+        }
+    }
+
+    &:hover {
+        box-shadow: 0 4px 12px rgba($primary-color, 0.15);
+    }
+}
+
+.card-secondary {
+    @include card-base;
+    border-color: $secondary-color;
+    box-shadow: $shadow-sm;
+
+    .card-header {
+        background-color: $secondary-color;
+        border-bottom-color: $secondary-dark;
+        color: $white;
+
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            color: $white;
+        }
+
+        p {
+            color: rgba($white, 0.8);
+        }
+    }
+
+    &:hover {
+        box-shadow: 0 4px 12px rgba($secondary-color, 0.15);
+    }
+}
+
+.card-success {
+    @include card-base;
+    border-color: $success-color;
+    border-left-width: 4px;
+    box-shadow: $shadow-sm;
+
+    &:hover {
+        box-shadow: 0 4px 12px rgba($success-color, 0.15);
+    }
+}
+
+.card-warning {
+    @include card-base;
+    border-color: $warning-color;
+    border-left-width: 4px;
+    box-shadow: $shadow-sm;
+
+    &:hover {
+        box-shadow: 0 4px 12px rgba($warning-color, 0.15);
+    }
+}
+
+.card-error {
+    @include card-base;
+    border-color: $error-color;
+    border-left-width: 4px;
+    box-shadow: $shadow-sm;
+
+    &:hover {
+        box-shadow: 0 4px 12px rgba($error-color, 0.15);
+    }
+}
+
+.card-info {
+    @include card-base;
+    border-color: $info-color;
+    border-left-width: 4px;
+    box-shadow: $shadow-sm;
+
+    &:hover {
+        box-shadow: 0 4px 12px rgba($info-color, 0.15);
+    }
+}
+
+// ============================================================================
+// Elevated Cards
+// ============================================================================
+.card-elevated {
+    @include card-base;
+    box-shadow: $shadow-md;
+
+    &:hover {
+        box-shadow: $shadow-lg;
+    }
+}
+
+.card-elevated-lg {
+    @include card-base;
+    box-shadow: $shadow-lg;
+
+    &:hover {
+        box-shadow: $shadow-xl;
+    }
+}
+
+// ============================================================================
+// Outlined Cards
+// ============================================================================
+.card-outline {
+    @include card-base;
+    border-width: $border-width-medium;
+    box-shadow: none;
+
+    &:hover {
+        border-color: $primary-color;
+    }
+}
+
+// ============================================================================
+// Clickable/Interactive Cards
+// ============================================================================
+.card-clickable,
+.card-interactive {
+    @include card-base;
+    cursor: pointer;
+    box-shadow: $shadow-sm;
+    transition: all $transition-base;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: $shadow-md;
+        border-color: $primary-color;
+    }
+
+    &:active {
+        transform: translateY(0);
+        box-shadow: $shadow-sm;
+    }
+
+    &:focus-within {
+        outline: 2px solid $primary-color;
+        outline-offset: 2px;
+    }
+}
+
+// ============================================================================
+// Flat Cards (No Shadow/Border)
+// ============================================================================
+.card-flat {
+    background-color: $gray-50;
+    border: none;
+    box-shadow: none;
+    padding: $spacing-lg;
+    border-radius: $border-radius-md;
+}
+
+// ============================================================================
+// Minimal Cards
+// ============================================================================
+.card-minimal {
+    @include card-base;
+    border: none;
+    box-shadow: none;
+    padding: $spacing-lg;
+
+    &:hover {
+        background-color: $gray-50;
+    }
+}
+
+// ============================================================================
+// Card Sizes
+// ============================================================================
+.card-compact {
+    @include card-base;
+    padding: $spacing-sm;
+    box-shadow: $shadow-sm;
+
+    .card-header,
+    .card-body,
+    .card-footer {
+        padding: $spacing-sm;
+    }
+
+    &:hover {
+        box-shadow: $shadow-md;
+    }
+}
+
+// ============================================================================
+// Card Grid Layout
+// ============================================================================
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: $spacing-lg;
+    padding: $spacing-lg;
+
+    @media (max-width: $breakpoint-md) {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: $spacing-md;
+        padding: $spacing-md;
+    }
+
+    @media (max-width: $breakpoint-sm) {
+        grid-template-columns: 1fr;
+        gap: $spacing-md;
+    }
+}
+
+// ============================================================================
+// Card with Badge
+// ============================================================================
+.card-badge {
+    position: relative;
+
+    .badge {
+        position: absolute;
+        top: -$spacing-sm;
+        right: $spacing-md;
+        z-index: 10;
+    }
+}
+
+// ============================================================================
+// Horizontal Card (Image Left, Content Right)
+// ============================================================================
+.card-horizontal {
+    @include card-base;
+    display: flex;
+    gap: 0;
+    box-shadow: $shadow-sm;
+
+    .card-image-container,
+    .card-image {
+        width: 10rem;
+        height: 100%;
+        min-height: 7.5rem;
+        flex-shrink: 0;
+        border-radius: $border-radius-lg 0 0 $border-radius-lg;
+    }
+
+    .card-body {
+        flex: 1;
+    }
+
+    @media (max-width: $breakpoint-sm) {
+        flex-direction: column;
+
+        .card-image-container,
+        .card-image {
+            width: 100%;
+            height: 10rem;
+            border-radius: $border-radius-lg $border-radius-lg 0 0;
+        }
+    }
+
+    &:hover {
+        box-shadow: $shadow-md;
+    }
+}
+
+// ============================================================================
+// Loading State for Cards
+// ============================================================================
+.card-loading {
+    opacity: 0.7;
+    pointer-events: none;
+
+    .card-body::after {
+        content: '';
+        position: absolute;
+        width: 1.25rem;
+        height: 1.25rem;
+        border: 2px solid $primary-light;
+        border-radius: 50%;
+        border-top-color: $primary-color;
+        animation: spin 0.6s linear infinite;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
+
+// ============================================================================
+// Skeleton Card (Placeholder)
+// ============================================================================
+.card-skeleton {
+    @include card-base;
+    padding: $spacing-lg;
+
+    .skeleton {
+        background: linear-gradient(90deg, $gray-200 25%, $gray-100 50%, $gray-200 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+        border-radius: $border-radius-sm;
+
+        &.skeleton-text {
+            height: 0.875rem;
+            margin-bottom: $spacing-sm;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        &.skeleton-title {
+            height: 1.25rem;
+            margin-bottom: $spacing-md;
+        }
+
+        &.skeleton-image {
+            height: 10rem;
+            margin-bottom: $spacing-md;
+        }
+    }
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}

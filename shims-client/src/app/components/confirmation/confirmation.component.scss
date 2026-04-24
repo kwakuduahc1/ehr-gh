@@ -1,3 +1,5 @@
+@use '../../styles/variables' as *;
+
 :host {
     display: block;
 }
@@ -8,10 +10,10 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: var(--ag-white);
-    border-radius: 16px;
-    box-shadow: var(--ag-shadow-sm);
-    padding: 2rem 2.5rem;
+    background: $white;
+    border-radius: $border-radius-xl;
+    box-shadow: $shadow-sm;
+    padding: $spacing-2xl $spacing-3xl;
     min-width: 320px;
     max-width: 90vw;
     z-index: 1000;

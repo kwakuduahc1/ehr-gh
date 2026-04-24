@@ -1,8 +1,8 @@
 import { AgEnvironment } from "./IEnvironment";
 
 export const environment: AgEnvironment = {
-    AppUrl: 'http://server/api/',
-    AppName: 'KCCR-GHID Conference Room Booking System',
-    shortName: 'KCCR-GHID',
+    AppUrl: 'https://localhost:7199/api/',
+    AppName: 'Simple Health Information Management Systems',
     Production: false,
+    shortName: 'SHIMS',
 } as const;

@@ -39,15 +39,16 @@ export interface IUserRoles {
 
 export interface LoginVm {
   email: string;
-  password: string | null;
+  password: string;
 }
 
 export interface RegisterVm {
-  userName: string;
-  password: string | null;
+  email: string;
+  password: string;
   confirmPassword: string;
   fullName: string;
-  role: string;
+  userRole: string;
+  phoneNumber: string;
 }
 
 export interface UsersDto {

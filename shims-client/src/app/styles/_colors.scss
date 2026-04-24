@@ -1,0 +1,236 @@
+// ============================================================================
+// COLORS
+// ============================================================================
+// Color utility classes and color-related styles
+
+@use 'variables' as *;
+
+// Color utility classes
+.color-primary {
+    color: $primary-color;
+}
+
+.color-primary-dark {
+    color: $primary-dark;
+}
+
+.color-primary-light {
+    color: $primary-light;
+}
+
+.color-secondary {
+    color: $secondary-color;
+}
+
+.color-secondary-dark {
+    color: $secondary-dark;
+}
+
+.color-secondary-light {
+    color: $secondary-light;
+}
+
+.color-accent {
+    color: $accent-color;
+}
+
+.color-success {
+    color: $success-color;
+}
+
+.color-warning {
+    color: $warning-color;
+}
+
+.color-error {
+    color: $error-color;
+}
+
+.color-info {
+    color: $info-color;
+}
+
+.color-text-primary {
+    color: $text-primary;
+}
+
+.color-text-secondary {
+    color: $text-secondary;
+}
+
+.color-text-disabled {
+    color: $text-disabled;
+}
+
+.color-white {
+    color: $white;
+}
+
+.color-black {
+    color: $black;
+}
+
+.color-gray {
+    color: $gray-600;
+}
+
+// Background color utility classes
+.bg-primary {
+    background-color: $bg-primary;
+}
+
+.bg-secondary {
+    background-color: $bg-secondary;
+}
+
+.bg-tertiary {
+    background-color: $bg-tertiary;
+}
+
+.bg-dark {
+    background-color: $bg-dark;
+    color: $text-primary-light;
+}
+
+.bg-primary-color {
+    background-color: $primary-color;
+    color: $text-primary-light;
+
+    &:hover {
+        background-color: $primary-dark;
+    }
+}
+
+.bg-secondary-color {
+    background-color: $secondary-color;
+    color: $text-primary-light;
+
+    &:hover {
+        background-color: $secondary-dark;
+    }
+}
+
+.bg-accent-color {
+    background-color: $accent-color;
+    color: $text-primary-light;
+
+    &:hover {
+        background-color: $accent-dark;
+    }
+}
+
+.bg-success {
+    background-color: $success-color;
+    color: $text-primary-light;
+
+    &:hover {
+        background-color: $success-dark;
+    }
+}
+
+.bg-warning {
+    background-color: $warning-color;
+    color: $text-primary-light;
+
+    &:hover {
+        background-color: $warning-dark;
+    }
+}
+
+.bg-error {
+    background-color: $error-color;
+    color: $text-primary-light;
+
+    &:hover {
+        background-color: $error-dark;
+    }
+}
+
+.bg-info {
+    background-color: $info-color;
+    color: $text-primary-light;
+
+    &:hover {
+        background-color: $info-dark;
+    }
+}
+
+// Border color utility classes
+.border-primary {
+    border-color: $primary-color;
+}
+
+.border-secondary {
+    border-color: $secondary-color;
+}
+
+.border-success {
+    border-color: $success-color;
+}
+
+.border-warning {
+    border-color: $warning-color;
+}
+
+.border-error {
+    border-color: $error-color;
+}
+
+.border-info {
+    border-color: $info-color;
+}
+
+.border-light {
+    border-color: $border-color-light;
+}
+
+.border-medium {
+    border-color: $border-color-medium;
+}
+
+.border-dark {
+    border-color: $border-color-dark;
+}
+
+// Opacity utility classes
+.opacity-0 {
+    opacity: 0;
+}
+
+.opacity-25 {
+    opacity: 0.25;
+}
+
+.opacity-50 {
+    opacity: 0.5;
+}
+
+.opacity-75 {
+    opacity: 0.75;
+}
+
+.opacity-100 {
+    opacity: 1;
+}
+
+// Color hover effects
+@mixin color-hover($base-color, $hover-color) {
+    color: $base-color;
+    transition: color $transition-base;
+
+    &:hover {
+        color: $hover-color;
+    }
+}
+
+.color-hover-primary {
+    @include color-hover($gray-600, $primary-color);
+}
+
+.color-hover-secondary {
+    @include color-hover($gray-600, $secondary-color);
+}
+
+.color-hover-success {
+    @include color-hover($gray-600, $success-color);
+}
