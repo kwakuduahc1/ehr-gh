@@ -27,10 +27,10 @@ export class ValidatorMessages {
     }
 
     maxMsg(f: MaxValidationError | any) {
-        return (`min chars: ${(f as MaxValidationError).max}`);
+        return (`max: ${(f as MaxValidationError).max}`);
     }
 
     minMsg(f: MinValidationError | any) {
-        return (`min chars: ${(f as MinValidationError).min}`);
+        return (`min: ${(f as MinValidationError).min}`);
     }
 }

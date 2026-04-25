@@ -56,7 +56,8 @@ namespace ShimsServer.Controllers
                 SchemeName = schemeDto.SchemeName,
                 Coverage = schemeDto.Coverage,
                 MaxPayable = schemeDto.MaxPayable,
-                Recovery = schemeDto.Recovery
+                Recovery = schemeDto.Recovery,
+                IsActive = true
             };
 
             try

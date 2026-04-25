@@ -13,10 +13,6 @@ export interface AddSchemeDto {
     recovery: number;
 }
 
-export interface UpdateSchemeDto {
+export interface UpdateSchemeDto extends AddSchemeDto {
     schemesID: string;
-    schemeName: string;
-    coverage: string;
-    maxPayable: number;
-    recovery: number;
 }

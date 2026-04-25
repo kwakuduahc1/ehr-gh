@@ -1,1 +1,32 @@
-<p>schemes-component works!</p>
+<h1>Schemes</h1>
+<button type="button" mat-button title="Add new scheme" (click)="addScheme()">
+    <mat-icon>add_new</mat-icon> New scheme
+</button>
+<table class="table">
+    <thead>
+        <th>Scheme</th>
+        <th>Coverage</th>
+        <th>Max payable</th>
+        <th>Recovery</th>
+        <th>Actions</th>
+    </thead>
+    <tbody>
+        @for (s of schemes(); track s.schemesID) {
+        <tr>
+            <td>{{s.schemeName}}</td>
+            <td>{{s.coverage}}</td>
+            <td>{{s.maxPayable}}</td>
+            <td>{{s.recovery}}</td>
+            <td>
+                <button (click)="addScheme(s)" mat-button type="button" title="Edit {{s.schemeName}}">
+                    <mat-icon>edit</mat-icon> Edit
+                </button>
+                <button (click)="deleteScheme(s.schemesID)" mat-button color="warn" type="button"
+                    title="Delete {{s.schemeName}}">
+                    <mat-icon>delete</mat-icon> Delete
+                </button>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

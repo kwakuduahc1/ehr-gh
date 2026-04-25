@@ -1,0 +1,47 @@
+.add-scheme-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+.add-scheme-container {
+    width: 100%;
+    max-width: 500px;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.add-scheme-title {
+    margin-bottom: 2rem;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.add-scheme-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.add-scheme-fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.add-scheme-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+
+    button {
+        min-width: 120px;
+    }
+}

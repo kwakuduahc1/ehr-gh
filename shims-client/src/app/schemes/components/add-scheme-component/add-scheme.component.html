@@ -1,0 +1,74 @@
+<div class="add-scheme-wrapper">
+    <div class="add-scheme-container">
+        <h1 class="add-scheme-title">Add New Scheme</h1>
+        <form class="add-scheme-form" [formRoot]="form">
+            <fieldset class="add-scheme-fieldset">
+                <mat-form-field appearance="outline">
+                    <mat-label>Scheme Name</mat-label>
+                    <input type="text" title="Scheme Name" matInput [formField]="form.schemeName" autocomplete="on">
+                    @if (form.schemeName().errors(); as err) {
+                    <mat-error>
+                        @if (err.at(0)?.kind === 'required') {<span>*</span>}
+                        @if (err.at(0)?.kind === 'minLength') {<span>{{val.minLenMsg(err?.at(0))}}
+                            characters</span>}
+                        @if (err.at(0)?.kind === 'maxLength') {<span>{{val.maxLenMsg(err?.at(0))}}
+                            characters</span>}
+                    </mat-error>
+                    }
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                    <mat-label>Coverage</mat-label>
+                    <mat-select type="text" title="Coverage" [formField]="form.coverage" autocomplete="on">
+                        @for (c of ['Full', 'Relative', 'Fixed']; track $index) {
+                        <mat-option [value]="c">{{c}}</mat-option>
+                        }
+                        @if (form.coverage().errors(); as err) {
+                        <mat-error>
+                            @if (err.at(0)?.kind === 'required') {<span>*</span>}
+                            @if (err.at(0)?.kind === 'minLength') {<span>{{val.minLenMsg(err?.at(0))}}
+                                characters</span>}
+                            @if (err.at(0)?.kind === 'maxLength') {<span>{{val.maxLenMsg(err?.at(0))}}
+                                characters</span>}
+                        </mat-error>
+                        }
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Max Payable</mat-label>
+                    <input type="number" title="Max Payable" matInput [formField]="form.maxPayable" autocomplete="on">
+                    @if (form.maxPayable().errors(); as err) {
+                    <mat-error>
+                        @if (err.at(0)?.kind === 'required') {<span>*</span>}
+                        @if (err.at(0)?.kind === 'min') {<span>{{val.minMsg(err?.at(0))}}</span>}
+                        @if (err.at(0)?.kind === 'max') {<span>{{val.maxMsg(err?.at(0))}}</span>}
+                    </mat-error>
+                    }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Recovery</mat-label>
+                    <input type="number" title="Recovery" matInput [formField]="form.recovery" autocomplete="on">
+                    @if (form.recovery().errors(); as err) {
+                    <mat-error>
+                        @if (err.at(0)?.kind === 'required') {<span>*</span>}
+                        @if (err.at(0)?.kind === 'min') {<span>{{val.minMsg(err?.at(0))}}</span>}
+                        @if (err.at(0)?.kind === 'max') {<span>{{val.maxMsg(err?.at(0))}}</span>}
+                    </mat-error>
+                    }
+                </mat-form-field>
+            </fieldset>
+
+            <div class="add-scheme-actions">
+                <button mat-raised-button color="primary" type="button" class="submit-btn"
+                    [disabled]="form().invalid() || act.act().isProcessing" (click)="addScheme()">
+                    {{ data?.scheme ? 'Edit' : 'Add' }} Scheme
+                </button>
+                <button type="button" mat-button class="cancel-btn" [disabled]="act.act().isProcessing"
+                    (click)="close()">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
