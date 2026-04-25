@@ -17,15 +17,13 @@ namespace ShimsServer.Controllers.Records
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<string>> RegisterPatient([FromBody] AddPatientDto dto)
         {
+            List<Guid> psids = [];
+            dto.Schemes.ToList().ForEach(s => psids.Add(Guid.CreateVersion7()));
+            var (patientId, attendanceId, userName) = (Guid.CreateVersion7(), Guid.CreateVersion7(), User.Identity?.Name ?? "system");
             try
             {
-                var patientId = Guid.CreateVersion7();
-                var attendanceId = Guid.CreateVersion7();
-                var userName = User.Identity?.Name ?? "system";
-
-                await repository.AddPatientAsync(dto, (patientId, attendanceId, userName), HttpContext.RequestAborted);
-
-                return Ok(new { message = "Patient registered successfully", patientId });
+               var hospitalId = await repository.AddPatientAsync(dto, (patientId, attendanceId, psids.ToArray(), userName), HttpContext.RequestAborted);
+                return Ok(new { message = "Patient registered successfully", patientId, hospitalId });
             }
             catch (PostgresException ex)
             {
@@ -88,7 +86,7 @@ namespace ShimsServer.Controllers.Records
         public async Task<ActionResult<string>> UpdatePatient(Guid id, [FromBody] EditPatientDto dto)
         {
             // Verify the ID in the route matches the DTO
-            if (id != dto.PatientID)
+            if (id != dto.PatientsID)
                 return BadRequest(new { message = "Patient ID mismatch" });
             try
             {

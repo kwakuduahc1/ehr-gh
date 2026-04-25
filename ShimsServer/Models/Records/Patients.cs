@@ -23,6 +23,7 @@ namespace ShimsServer.Models.Records
         [RegularExpression(@"^GHA-\d{10}-(?:0[1-9]|1[0-6])$", ErrorMessage = "GhanaCard must follow the format: GHA-xxxxxxxxxx-01 to 16")]
         public string? GhanaCard { get; set; }
 
+
         [DefaultValue(true)]
         public bool IsActive { get; set; } = true;
 
@@ -38,5 +39,9 @@ namespace ShimsServer.Models.Records
 
         [Required, StringLength(75, MinimumLength = 10)]
         public required string UserName { get; set; }
+
+        public virtual ICollection<PatientAttendance>? PatientAttendances { get; set; }
+
+        public virtual ICollection<PatientSchemes>? PatientSchemes { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ShimsServer.Context;
@@ -11,9 +12,11 @@ using ShimsServer.Context;
 namespace ShimsServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260425224810_SchemeInfo")]
+    partial class SchemeInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1131,9 +1134,9 @@ namespace ShimsServer.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("isactive");
 
-                    b.Property<Guid>("PatientsID")
+                    b.Property<Guid>("PatientSchemesID")
                         .HasColumnType("uuid")
-                        .HasColumnName("patientsid");
+                        .HasColumnName("patientschemesid");
 
                     b.Property<string>("UserName")
                         .IsRequired()
@@ -1150,7 +1153,7 @@ namespace ShimsServer.Migrations
                     b.HasKey("PatientAttendancesID")
                         .HasName("pk_patientattendances");
 
-                    b.HasIndex("PatientsID");
+                    b.HasIndex("PatientSchemesID");
 
                     b.ToTable("patientattendances", (string)null);
                 });
@@ -1195,8 +1198,6 @@ namespace ShimsServer.Migrations
 
                     b.HasKey("PatientSchemesID")
                         .HasName("pk_patientschemes");
-
-                    b.HasIndex("PatientsID");
 
                     b.ToTable("patientschemes", (string)null);
                 });
@@ -1979,26 +1980,14 @@ namespace ShimsServer.Migrations
 
             modelBuilder.Entity("ShimsServer.Models.Records.PatientAttendance", b =>
                 {
-                    b.HasOne("ShimsServer.Models.Records.Patients", "Patients")
-                        .WithMany("PatientAttendances")
-                        .HasForeignKey("PatientsID")
+                    b.HasOne("ShimsServer.Models.Records.PatientSchemes", "PatientSchemes")
+                        .WithMany()
+                        .HasForeignKey("PatientSchemesID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_patientattendances_patients_patientsid");
+                        .HasConstraintName("fk_patientattendances_patientschemes_patientschemesid");
 
-                    b.Navigation("Patients");
-                });
-
-            modelBuilder.Entity("ShimsServer.Models.Records.PatientSchemes", b =>
-                {
-                    b.HasOne("ShimsServer.Models.Records.Patients", "Patients")
-                        .WithMany("PatientSchemes")
-                        .HasForeignKey("PatientsID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_patientschemes_patients_patientsid");
-
-                    b.Navigation("Patients");
+                    b.Navigation("PatientSchemes");
                 });
 
             modelBuilder.Entity("ShimsServer.Models.Schemes.SchemeDrugs", b =>
@@ -2168,13 +2157,6 @@ namespace ShimsServer.Migrations
             modelBuilder.Entity("ShimsServer.Models.Labs.InvestigationsRequests", b =>
                 {
                     b.Navigation("LabPayment");
-                });
-
-            modelBuilder.Entity("ShimsServer.Models.Records.Patients", b =>
-                {
-                    b.Navigation("PatientAttendances");
-
-                    b.Navigation("PatientSchemes");
                 });
 
             modelBuilder.Entity("ShimsServer.Models.Schemes.SchemeDrugs", b =>

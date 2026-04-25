@@ -83,9 +83,10 @@ namespace ShimsServer.Repositories
                     SELECT true
                     FROM drugs
                     WHERE drugsid = @id
+                );
                 """;
-            using var con= await connection.ConnectionAsync(token);
-            return await con.ExecuteScalarAsync<bool>(sql, new {id});
+            using var con = await connection.ConnectionAsync(token);
+            return await con.ExecuteScalarAsync<bool>(sql, new { id });
         }
     }
 }

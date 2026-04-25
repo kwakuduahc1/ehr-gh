@@ -1,12 +1,11 @@
 ﻿using Dapper;
-using Npgsql;
 using System.ComponentModel.DataAnnotations;
 
 namespace ShimsServer.Repositories
 {
     public interface IRegistrationRepository
     {
-        Task AddPatientAsync(AddPatientDto dto, (Guid PatientsID, Guid PatientAttendancesID, string UserName) ids, CancellationToken cancellationToken = default);
+        Task<string> AddPatientAsync(AddPatientDto dto, (Guid PatientsID, Guid PatientAttendancesID, Guid[] PatientSchemesID, string UserName) ids, CancellationToken cancellationToken = default);
 
         Task<int> EditPatientAsync(EditPatientDto dto, string UserName, CancellationToken cancellationToken = default);
 
@@ -23,38 +22,54 @@ namespace ShimsServer.Repositories
 
     public class RegistrationRepository(IConnection connection) : IRegistrationRepository
     {
-        public async Task AddPatientAsync(AddPatientDto dto, (Guid PatientsID, Guid PatientAttendancesID, string UserName) ids, CancellationToken cancellationToken = default)
+        public async Task<string> AddPatientAsync(AddPatientDto dto, (Guid PatientsID, Guid PatientAttendancesID, Guid[] PatientSchemesID, string UserName) ids, CancellationToken cancellationToken = default)
         {
-            const string sql =
+            var sqlBuilder = new System.Text.StringBuilder(
                 """
-                    INSERT INTO Patients (PatientID, Surname, OtherNames, DateOfBirth, GhanaCard, Sex, PhoneNumber, UserName)
-                    VALUES (@PatientsID, @Surname, @OtherNames, @DateOfBirth, @GhanaCard, @Sex, @PhoneNumber, @UserName);
+                    INSERT INTO Patients (PatientsID, Surname, OtherNames, DateOfBirth, GhanaCard, Sex, PhoneNumber, UserName, HospitalID, IsActive)
+                    VALUES (@PatientsID, @Surname, @OtherNames, @DateOfBirth, @GhanaCard, @Sex, @PhoneNumber, @UserName, generate_hospital_id(), true)
+                    RETURNING HospitalID;
+                """);
 
-                    INSERT INTO PatientSchemes (PatientSchemesID, PatientsID, HospitalID, SchemesID, CardID, ExpiryDate, LastUpdateDate, UserName, IsActive)
-                    VALUES (uuidv7(), @PatientsID, generate_hospital_id(), @SchemesID, @CardID, @ExpiryDate, now(), @UserName, true);
+            for (int i = 0; i < dto.Schemes?.Length; i++)
+            {
+                sqlBuilder.Append($"""
+                    INSERT INTO PatientSchemes (PatientSchemesID, PatientsID, IsActive, SchemesID, CardID, ExpiryDate, LastUpdateDate, UserName)
+                    VALUES (@PatientSchemesID{i}, @PatientsID, true, @SchemesID{i}, @CardID{i}, @ExpiryDate{i}, now(), @UserName);
+                """);
+            }
 
-                    INSERT INTO PatientAttendances(PatientAttendancesID, PatientsID, VisitType, UserName, DateSeen)
-                    VALUES (@PatientAttendancesID, @PatientsID, 'Acute', @UserName, now());
-                """;
+            sqlBuilder.Append("""
+                    INSERT INTO PatientAttendances(PatientAttendancesID, PatientsID, VisitType, UserName, DateSeen, IsActive)
+                    VALUES (@PatientAttendancesID, @PatientsID, 'Acute', @UserName, now(), true);
+                """);
+
+            string sql = sqlBuilder.ToString();
+            var parameters = new DynamicParameters();
+            parameters.Add("@PatientsID", ids.PatientsID);
+            parameters.Add("@Surname", dto.Surname);
+            parameters.Add("@OtherNames", dto.OtherNames);
+            parameters.Add("@DateOfBirth", dto.DateOfBirth);
+            parameters.Add("@GhanaCard", dto.GhanaCard);
+            parameters.Add("@Sex", dto.Sex);
+            parameters.Add("@PatientAttendancesID", ids.PatientAttendancesID);
+            parameters.Add("@PhoneNumber", dto.PhoneNumber);
+            parameters.Add("@UserName", ids.UserName);
+
+            for (int i = 0; i < ids.PatientSchemesID.Length; i++)
+            {
+                parameters.Add($"@PatientSchemesID{i}", ids.PatientSchemesID[i]);
+                parameters.Add($"@SchemesID{i}", dto.Schemes[i].SchemesID);
+                parameters.Add($"@CardID{i}", dto.Schemes[i].CardID);
+                parameters.Add($"@ExpiryDate{i}", dto.Schemes[i].ExpiryDate);
+            }
 
             using var con = await connection.ConnectionAsync(cancellationToken);
             using var transaction = await con.BeginTransactionAsync(cancellationToken);
-            using var res = await con.QueryMultipleAsync(sql, new
-            {
-                ids.PatientsID,
-                dto.Surname,
-                dto.OtherNames,
-                dto.DateOfBirth,
-                dto.GhanaCard,
-                dto.Sex,
-                dto.SchemesID,
-                dto.CardID,
-                dto.ExpiryDate,
-                ids.PatientAttendancesID,
-                dto.PhoneNumber,
-                ids.UserName
-            });
+            using var res = await con.QueryMultipleAsync(sql, parameters, transaction);
+            var hid = await res.ReadFirstOrDefaultAsync<string>();
             await transaction.CommitAsync(cancellationToken);
+            return hid ?? string.Empty;
         }
 
         public async Task DeletePatientAsync(Guid id, CancellationToken cancellationToken = default)
@@ -88,13 +103,13 @@ namespace ShimsServer.Repositories
                         PhoneNumber = @PhoneNumber,
                         Sex = @Sex,
                         UserName = @UserName
-                    WHERE PatientID = @PatientID;
+                    WHERE PatientsID = @PatientsID;
                 """;
             using var con = await connection.ConnectionAsync(cancellationToken);
             using var transaction = await con.BeginTransactionAsync(cancellationToken);
             var n = await con.ExecuteAsync(sql, new
             {
-                dto.PatientID,
+                dto.PatientsID,
                 dto.Surname,
                 dto.OtherNames,
                 dto.DateOfBirth,
@@ -111,9 +126,9 @@ namespace ShimsServer.Repositories
         {
             const string sql =
                 """
-                    SELECT patientid, schemesid, age, gender, fullname, scheme, hospitalid, cardid, expirydate, attendancedate
+                    SELECT PatientsID, schemesid, age, gender, fullname, scheme, hospitalid, cardid, expirydate, attendancedate
                     FROM vw_patients
-                    WHERE patientid = @id;
+                    WHERE PatientsID = @id;
                 """;
             using var con = await connection.ConnectionAsync(cancellationToken);
             return await con.QueryFirstOrDefaultAsync<ListPatientsDto>(sql, new { id });
@@ -123,7 +138,7 @@ namespace ShimsServer.Repositories
         {
             const string sql =
                 """
-                    SELECT patientid, schemesid, age, gender, fullname, scheme, hospitalid, cardid, expirydate, attendancedate, patientschemesid
+                    SELECT PatientsID, schemesid, age, gender, fullname, scheme, hospitalid, cardid, expirydate, attendancedate, patientschemesid
                     FROM vw_patients;
                 """;
             using var con = await connection.ConnectionAsync(cancellationToken);
@@ -144,7 +159,7 @@ namespace ShimsServer.Repositories
         {
             const string sql =
                 """
-                    SELECT patientid, schemesid, age, gender, fullname, scheme, hospitalid, cardid, expirydate, attendancedate, patientschemesid
+                    SELECT PatientsID, schemesid, age, gender, fullname, scheme, hospitalid, cardid, expirydate, attendancedate, patientschemesid
                     FROM vw_patients
                     WHERE fullname ILIKE @search
                         OR cardid ILIKE @search
@@ -156,6 +171,12 @@ namespace ShimsServer.Repositories
         }
     }
 
+    public record InsuranceInformation(
+        Guid SchemesID,
+        [StringLength(30, MinimumLength = 10)] string? CardID,
+        DateTime? ExpiryDate
+        );
+
     public record AddPatientDto(
         [StringLength(30, MinimumLength = 3)] string Surname,
 
@@ -166,15 +187,13 @@ namespace ShimsServer.Repositories
 
         [StringLength(6, MinimumLength = 4), AllowedValues("Male", "Female")] string Sex,
 
-        Guid SchemesID,
-        [StringLength(30, MinimumLength = 10)] string CardID,
+        [DataType(DataType.PhoneNumber)] string? PhoneNumber,
 
-        DateTime ExpiryDate,
-        [DataType(DataType.PhoneNumber)] string? PhoneNumber
+        InsuranceInformation[] Schemes
 );
 
     public record EditPatientDto(
-    [Required] Guid PatientID,
+    [Required] Guid PatientsID,
 
     [Required] string HospitalID,
 
@@ -191,7 +210,7 @@ namespace ShimsServer.Repositories
     [Required, DataType(DataType.PhoneNumber)] string PhoneNumber);
 
     public record ListPatientsDto(
-        Guid PatientID,
+        Guid PatientsID,
         Guid SchemesID,
         short Age,
         string Gender,

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ShimsServer.Models.Records
 {
@@ -9,7 +10,8 @@ namespace ShimsServer.Models.Records
         public Guid PatientAttendancesID { get; set; } = Guid.CreateVersion7();
 
         [Required]
-        public required Guid PatientSchemesID { get; set; }
+        [ForeignKey(nameof(Patients))]
+        public required Guid PatientsID { get; set; }
 
         [Required]
         [StringLength(15)]
@@ -26,6 +28,6 @@ namespace ShimsServer.Models.Records
         [Required]
         public required string UserName { get; set; }
 
-        public virtual PatientSchemes? PatientSchemes { get; set; }
+        public virtual Patients? Patients { get; set; }
     }
 }

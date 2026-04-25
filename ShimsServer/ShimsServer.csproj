@@ -47,6 +47,7 @@
 
   <ItemGroup>
     <Folder Include="Controllers\Dispensary\" />
+    <Folder Include="Migrations\PostgreSQL\" />
   </ItemGroup>
 
 </Project>
