@@ -42,6 +42,10 @@ pre {
 h1,
 .h1 {
     @include heading($font-size-5xl, $font-weight-bold);
+    text-align: center;
+    color: $primary-color;
+    padding-top: $spacing-md;
+    padding-bottom: $spacing-md;
 }
 
 h2,

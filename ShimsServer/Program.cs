@@ -57,6 +57,7 @@ namespace ShimsServer
             builder.Services.AddScoped<IRegistrationRepository, RegistrationRepository>();
             builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
             builder.Services.AddScoped<ISchemesRepository, SchemesRepository>();
+            builder.Services.AddScoped<IDrugsRepository, DrugsRepository>();
             builder.Services.AddScoped<ISchemeDrugsRepository, SchemeDrugsRepository>();
             builder.Services.AddScoped<ISchemeServiceRepository, SchemeServiceRepository>();
             builder.Services.AddScoped<ISchemeInvestigationRepository, SchemeInvestigationRepository>();

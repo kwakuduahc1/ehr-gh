@@ -1,0 +1,38 @@
+<h1>Registrations</h1>
+<button type="button" mat-button title="Register new patient" (click)="addRegistration()">
+    <mat-icon>person_add</mat-icon> New registration
+</button>
+<table class="table">
+    <thead>
+        <th>Full Name</th>
+        <th>Hospital ID</th>
+        <th>Card ID</th>
+        <th>Scheme</th>
+        <th>Age</th>
+        <th>Gender</th>
+        <th>Expiry Date</th>
+        <th>Actions</th>
+    </thead>
+    <tbody>
+        @for (p of patients(); track p.patientID) {
+        <tr>
+            <td>{{p.fullName}}</td>
+            <td>{{p.hospitalID}}</td>
+            <td>{{p.cardID}}</td>
+            <td>{{p.scheme}}</td>
+            <td>{{p.age}}</td>
+            <td>{{p.gender}}</td>
+            <td>{{p.expiryDate | date}}</td>
+            <td>
+                <button (click)="addRegistration(p)" mat-button type="button" title="Edit {{p.fullName}}">
+                    <mat-icon>edit</mat-icon> Edit
+                </button>
+                <button (click)="deleteRegistration(p.patientID)" mat-button color="warn" type="button"
+                    title="Delete {{p.fullName}}">
+                    <mat-icon>delete</mat-icon> Delete
+                </button>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

@@ -1,4 +1,5 @@
 using ShimsServer.Models.Schemes;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -13,6 +14,9 @@ namespace ShimsServer.Models.Services
         [StringLength(200)]
         [Required]
         public required string Service { get; set; }
+
+        [DefaultValue(false)]
+        public bool IsDeleted { get; set; } = false;
 
         [Required]
         [StringLength(200)]

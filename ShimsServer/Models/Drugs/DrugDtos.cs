@@ -7,7 +7,7 @@ namespace ShimsServer.Models.Drugs
     /// <summary>
     /// Data transfer object for drug information
     /// </summary>
-    public record DrugDTO(Guid DrugsID, string Drug, string? Tags, string? Description, DateTime DateAdded);
+    public record DrugsDTO(Guid DrugsID, string Drug, string? Tags, string? Description, DateTime DateAdded);
 
     /// <summary>
     /// Data transfer object for creating a new drug

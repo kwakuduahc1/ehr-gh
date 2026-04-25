@@ -9,6 +9,7 @@
         <th>Max payable</th>
         <th>Recovery</th>
         <th>Actions</th>
+        <th>Components</th>
     </thead>
     <tbody>
         @for (s of schemes(); track s.schemesID) {
@@ -25,6 +26,15 @@
                     title="Delete {{s.schemeName}}">
                     <mat-icon>delete</mat-icon> Delete
                 </button>
+            </td>
+            <td>
+                <a mat-button title="View drugs for {{s.schemeName}}">
+                    <mat-icon>medication</mat-icon> Drugs
+                </a>
+                <a title="View services for {{s.schemeName}}" mat-button color="warn" type="button"
+                    title="Delete {{s.schemeName}}">
+                    <mat-icon>miscellaneous_services</mat-icon> Services
+                </a>
             </td>
         </tr>
         }

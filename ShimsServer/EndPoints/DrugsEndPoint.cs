@@ -23,7 +23,7 @@ namespace ShimsServer.EndPoints
         }
 
         static async Task<IResult> GetDrugs(ApplicationDbContext db) =>
-            TypedResults.Ok(await db.Drugs.Select(x => new DrugDTO(
+            TypedResults.Ok(await db.Drugs.Select(x => new DrugsDTO(
                 x.DrugsID,
                 x.Drug,
                 x.Tags,
@@ -33,13 +33,13 @@ namespace ShimsServer.EndPoints
 
         static async Task<IResult> GetDrugById(ApplicationDbContext db, Guid id, CancellationToken token) =>
             await db.Drugs.Where(p => p.DrugsID == id)
-                .Select(p => new DrugDTO(
+                .Select(p => new DrugsDTO(
                     p.DrugsID,
                     p.Drug,
                     p.Tags,
                     p.Description,
                     p.DateAdded
-                )).FirstOrDefaultAsync(token) is DrugDTO drug ?
+                )).FirstOrDefaultAsync(token) is DrugsDTO drug ?
                 TypedResults.Ok(drug) :
                 TypedResults.NotFound();
 

@@ -11,4 +11,14 @@ export const SchemesRoute: Routes = [
             schemes: () => inject(SchemesHttpService).getSchemes()
         }
     },
+    {
+        path: ':id/drugs',
+        loadComponent: () => import('./components/scheme-drug-component/scheme-drug.component')
+            .then(m => m.SchemeDrugComponent)
+    },
+    {
+        path: ':id/services',
+        loadComponent: () => import('./components/scheme-services-component/scheme-services.component')
+            .then(m => m.SchemeServicesComponent)
+    }
 ];

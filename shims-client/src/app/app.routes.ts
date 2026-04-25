@@ -26,6 +26,11 @@ export const routes: Routes = [
         path: 'schemes',
         loadChildren: () => import('../app/schemes/schemes.routes')
             .then(x => x.SchemesRoute)
+    },
+    {
+        path: 'registrations',
+        loadChildren: () => import('../app/registrations/registrations.routes')
+            .then(x => x.RegistrationsRoute)
     }
 
 ];

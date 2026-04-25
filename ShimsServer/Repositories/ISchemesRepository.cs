@@ -139,7 +139,11 @@ namespace ShimsServer.Repositories
         public async Task<bool> DeleteSchemeAsync(Guid id, CancellationToken cancellationToken = default)
         {
             const string checkSql = "SELECT EXISTS (SELECT 1 FROM schemes WHERE schemesid = @id)";
-            const string deleteSql = "DELETE FROM schemes WHERE schemesid = @id";
+            const string deleteSql = """
+                    UPDATE schemes 
+                    SET isactive = false
+                    WHERE schemesid = @id
+                """;
 
             await using var conn = await connection.ConnectionAsync(cancellationToken);
             await using var transaction = await conn.BeginTransactionAsync(cancellationToken);

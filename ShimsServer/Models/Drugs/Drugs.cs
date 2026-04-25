@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -19,6 +20,9 @@ namespace ShimsServer.Models.Drugs
         public string? Description { get; set; }
 
         public DateTime DateAdded { get; set; }
+
+        [DefaultValue(false)]
+        public bool IsDeleted { get; set; } = false;
 
         public virtual ICollection<DrugsRequests>? PatientDrugs { get; set; }
 
