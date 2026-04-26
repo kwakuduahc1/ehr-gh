@@ -1,4 +1,4 @@
-import { Component, inject, model, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, model, ChangeDetectionStrategy, input } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ListPatientsDto, EditPatientDto, AddPatientDto } from '../../../models/registrations/IRegistrations';
 import { MatButton } from '@angular/material/button';
@@ -9,6 +9,7 @@ import { filter, iif, switchMap, tap } from 'rxjs';
 import { RegistrationsHttpService } from '../../registrations-http.service';
 import { ConfirmationComponent } from '../../../components/confirmation/confirmation.component';
 import { AddRegistrationComponent } from '../add-registration-component/add-registration.component';
+import { SchemesDTO } from '../../../models/ISchemes';
 
 @Component({
     selector: 'app-registrations-list',
@@ -18,7 +19,8 @@ import { AddRegistrationComponent } from '../add-registration-component/add-regi
     imports: [MatButton, MatIcon, DatePipe]
 })
 export class RegistrationsListComponent {
-    patients = model.required<ListPatientsDto[]>();
+    list = model.required<ListPatientsDto[]>();
+    schemes = input.required<SchemesDTO[]>();
     private snack = inject(MatSnackBar);
     private diag = inject(MatDialog);
     private http = inject(RegistrationsHttpService);
@@ -84,7 +86,7 @@ export class RegistrationsListComponent {
             )
             .subscribe({
                 next: () => {
-                    this.patients.update(x => x.filter(p => p.patientID !== id));
+                    this.list.update(x => x.filter(p => p.patientID !== id));
                     this.snack.open('Registration deleted');
                 }
             });

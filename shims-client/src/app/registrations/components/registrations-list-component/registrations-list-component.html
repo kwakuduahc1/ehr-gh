@@ -14,7 +14,7 @@
         <th>Actions</th>
     </thead>
     <tbody>
-        @for (p of patients(); track p.patientID) {
+        @for (p of list(); track p.patientID) {
         <tr>
             <td>{{p.fullName}}</td>
             <td>{{p.hospitalID}}</td>

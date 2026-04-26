@@ -9,7 +9,7 @@ export class RegistrationsHttpService {
     private readonly http = inject(HttpClient);
     private readonly baseUrl = `${environment.AppUrl}Registrations`;
 
-    getRegistrations(): Observable<ListPatientsDto[]> {
+    list(): Observable<ListPatientsDto[]> {
         return this.http.get<ListPatientsDto[]>(this.baseUrl);
     }
 
