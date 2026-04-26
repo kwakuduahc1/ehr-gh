@@ -76,12 +76,9 @@
 
                 </fieldset>
 
-                <button type="button" (click)="addScheme()" title="Add a scheme">
-                    <mat-icon>add_new</mat-icon>
-                </button>
-
-                @for (s of form.schemes; track $index) {
+                <!-- @for (s of form.schemes; track $index) {
                 <fieldset class="add-registration-fieldset">
+                    <legend>Add a scheme</legend>
                     <mat-form-field appearance="outline" class="scheme-field">
                         <mat-label>Schemes</mat-label>
                         <mat-select title="Insurance Schemes" [formField]="form.schemes[$index].schemesID">
@@ -100,7 +97,7 @@
                     <mat-form-field appearance="outline">
                         <mat-label>Expiry date</mat-label>
                         <input type="date" title="Expiry date" matInput [formField]="form.schemes[$index].expiryDate">
-                        @if (form.phoneNumber().errors()[0]; as err) {
+                        @if (form.schemes[$index].expiryDate().errors()[0]; as err) {
                         <mat-error>
                             @if (err?.kind === 'required') {<span>*</span>}
                             @if (err?.kind === 'minLength') {<span>{{val.minLenMsg(err)}}</span>}
@@ -110,10 +107,11 @@
                     </mat-form-field>
                     }
                 </fieldset>
-                }
+                } -->
                 <div class="form-actions">
                     <button type="button" mat-button (click)="close()">Cancel</button>
-                    <button type="button" mat-flat-button color="primary" (click)="submit()">
+                    <button type="button" [disabled]="form().invalid() || act.act().isProcessing" mat-flat-button
+                        color="primary" (click)="submit()">
                         {{data.patient ? 'Save' : 'Register'}}
                     </button>
                 </div>

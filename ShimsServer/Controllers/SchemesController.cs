@@ -18,7 +18,7 @@ namespace ShimsServer.Controllers
         /// </summary>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any)]
+        [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Client)]
 
         public async Task<ActionResult<IEnumerable<SchemesDTO>>> GetSchemes()
         {

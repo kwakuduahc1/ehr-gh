@@ -21,8 +21,8 @@ export class RegistrationsHttpService {
         return this.http.get<ListPatientsDto[]>(`${this.baseUrl}/search`, { params: { search: query } });
     }
 
-    register(patient: AddPatientDto): Observable<{ hosid: string, pid: string }> {
-        return this.http.post<{ hosid: string, pid: string }>(`${this.baseUrl}/register`, patient);
+    register(patient: AddPatientDto): Observable<{ hid: string, pid: string }> {
+        return this.http.post<{ hid: string, pid: string }>(`${this.baseUrl}`, patient);
     }
 
     update(patient: EditPatientDto): Observable<void> {

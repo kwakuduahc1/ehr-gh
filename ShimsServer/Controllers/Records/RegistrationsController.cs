@@ -12,18 +12,17 @@ namespace ShimsServer.Controllers.Records
         /// <summary>
         /// Register a new patient with scheme and initial attendance
         /// </summary>
-        [HttpPost("register")]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<string>> RegisterPatient([FromBody] AddPatientDto dto)
+        public async Task<ActionResult> RegisterPatient([FromBody] AddPatientDto dto)
         {
             List<Guid> psids = [];
-            dto.Schemes.ToList().ForEach(s => psids.Add(Guid.CreateVersion7()));
-            var (patientId, attendanceId, userName) = (Guid.CreateVersion7(), Guid.CreateVersion7(), User.Identity?.Name ?? "system");
+            var (pid, attendanceId, userName) = (Guid.CreateVersion7(), Guid.CreateVersion7(), User.Identity?.Name ?? "system");
             try
             {
-               var hospitalId = await repository.AddPatientAsync(dto, (patientId, attendanceId, psids.ToArray(), userName), HttpContext.RequestAborted);
-                return Ok(new { message = "Patient registered successfully", patientId, hospitalId });
+               var hid = await repository.AddPatientAsync(dto, (pid, attendanceId, psids.ToArray(), userName), HttpContext.RequestAborted);
+                return Ok(new { pid, hid });
             }
             catch (PostgresException ex)
             {

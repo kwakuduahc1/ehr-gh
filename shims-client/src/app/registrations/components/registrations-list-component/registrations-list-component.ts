@@ -25,8 +25,7 @@ export class RegistrationsListComponent {
     private diag = inject(MatDialog);
     private http = inject(RegistrationsHttpService);
 
-    addRegistration(patient?: ListPatientsDto) {
-        let isEdit: boolean;
+    addRegistration(patient?: EditPatientDto | ListPatientsDto) {
         let result: { patient: EditPatientDto, edit: boolean };
         this.diag.open<AddRegistrationComponent, {}, { patient: EditPatientDto, edit: boolean }>(
             AddRegistrationComponent,
@@ -38,10 +37,7 @@ export class RegistrationsListComponent {
             .afterClosed()
             .pipe(
                 filter(x => !!x),
-                tap(x => {
-                    isEdit = x!.edit;
-                    result = x!;
-                }),
+                tap(x => result = x!),
                 switchMap(x =>
                     iif(() => x?.edit,
                         this.http.update(x!.patient),
@@ -50,9 +46,9 @@ export class RegistrationsListComponent {
             )
             .subscribe({
                 next: d => {
-                    this.snack.open(isEdit ? 'Patient updated' : 'Patient registered');
+                    this.snack.open(result.edit ? 'Patient updated' : 'Patient registered');
                     // this.patients.update(list =>
-                    //     isEdit
+                    //     result.edit
                     //         ? list.map(p => p.patientID === result.patient.patientID
                     //             ? { ...p, gender: result.patient.sex }
                     //             : p)
@@ -70,7 +66,8 @@ export class RegistrationsListComponent {
                     // );
                 },
                 error: () => {
-                    this.addRegistration(patient);
+                    console.log(result);
+                    this.addRegistration(result.patient);
                 }
             });
     }

@@ -5,13 +5,12 @@ export interface AddPatientDto {
     phoneNumber: string;
     sex: string;
     ghanaCard: string;
-    schemes: InsuranceInformation[];
 }
 
 export interface InsuranceInformation {
     schemesID: string;
-    cardID: string;
-    expiryDate: string;
+    cardID?: string;
+    expiryDate?: string;
 }
 
 export interface EditPatientDto extends AddPatientDto {
