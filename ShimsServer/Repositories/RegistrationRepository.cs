@@ -59,9 +59,11 @@ namespace ShimsServer.Repositories
             for (int i = 0; i < ids.PatientSchemesID.Length; i++)
             {
                 parameters.Add($"@PatientSchemesID{i}", ids.PatientSchemesID[i]);
-                parameters.Add($"@SchemesID{i}", dto.Schemes[i].SchemesID);
-                parameters.Add($"@CardID{i}", dto.Schemes[i].CardID);
-                parameters.Add($"@ExpiryDate{i}", dto.Schemes[i].ExpiryDate);
+                parameters.Add($"@SchemesID{i}", dto.Schemes?[i].SchemesID ?? Guid.Empty);
+                if (dto.Schemes?[i].CardID != string.Empty)
+                    parameters.Add($"@CardID{i}", dto.Schemes?[i].CardID);
+                if (dto.Schemes?[i].ExpiryDate != null)
+                    parameters.Add($"@ExpiryDate{i}", dto.Schemes?[i].ExpiryDate);
             }
 
             using var con = await connection.ConnectionAsync(cancellationToken);
@@ -173,7 +175,7 @@ namespace ShimsServer.Repositories
 
     public record InsuranceInformation(
         Guid SchemesID,
-        [StringLength(30, MinimumLength = 10)] string? CardID,
+        [StringLength(30, MinimumLength = 5)] string? CardID,
         DateTime? ExpiryDate
         );
 
@@ -209,6 +211,9 @@ namespace ShimsServer.Repositories
 
     [Required, DataType(DataType.PhoneNumber)] string PhoneNumber);
 
+    /**
+ * (System.Guid patientsid, System.Guid schemesid, System.Int16 age, System.String gender, System.String fullname, System.String scheme, System.String hospitalid, System.String cardid, System.DateTime expirydate, System.DateTime attendancedate, System.Guid patientschemesid)
+ */
     public record ListPatientsDto(
         Guid PatientsID,
         Guid SchemesID,
@@ -218,8 +223,8 @@ namespace ShimsServer.Repositories
         string Scheme,
         string HospitalID,
         string CardID,
-        DateTime ExpiryDate,
-        string VisitType,
+        DateTime? ExpiryDate,
+        //string VisitType,
         DateTime AttendanceDate,
         Guid PatientSchemesID
         );

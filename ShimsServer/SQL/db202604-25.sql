@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict qg7QjLHuQgUg2hIalpeTzb8UlH0e4ad8IqgjZxlH28fY2ystR04Jg5QNVSWYbUs
+\restrict Eh9DNFk4SJpgDnmHkel1FaIOpAnX2BsGkbc1EpGZoMIMhOZbN8ed86ZJXty1eBY
 
 -- Dumped from database version 18.0
 -- Dumped by pg_dump version 18.2
 
--- Started on 2026-04-25 21:52:56
+-- Started on 2026-04-26 08:21:37
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -339,7 +339,7 @@ CREATE TABLE public.generic_medicines (
 ALTER TABLE public.generic_medicines OWNER TO postgres;
 
 --
--- TOC entry 268 (class 1259 OID 75871)
+-- TOC entry 266 (class 1259 OID 75871)
 -- Name: hospital_id_sequence; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -463,7 +463,7 @@ ALTER TABLE public.medicines_list OWNER TO postgres;
 
 CREATE TABLE public.patientattendances (
     patientattendancesid uuid NOT NULL,
-    patientschemesid uuid NOT NULL,
+    patientsid uuid CONSTRAINT patientattendances_patientschemesid_not_null NOT NULL,
     visittype character varying(15) NOT NULL,
     dateseen timestamp with time zone NOT NULL,
     username character varying(75) NOT NULL,
@@ -558,11 +558,10 @@ CREATE TABLE public.patientschemes (
     patientsid uuid NOT NULL,
     schemesid uuid NOT NULL,
     isactive boolean NOT NULL,
-    cardid character varying(30) NOT NULL,
-    expirydate timestamp with time zone NOT NULL,
+    cardid character varying(30),
+    expirydate timestamp with time zone,
     lastupdatedate timestamp with time zone NOT NULL,
-    username character varying(75) NOT NULL,
-    hospitalid character varying(50) DEFAULT public.generate_hospital_id() NOT NULL
+    username character varying(75) NOT NULL
 );
 
 
@@ -803,7 +802,7 @@ CREATE TABLE public.vitals (
 ALTER TABLE public.vitals OWNER TO postgres;
 
 --
--- TOC entry 267 (class 1259 OID 67651)
+-- TOC entry 268 (class 1259 OID 75889)
 -- Name: vw_active_sessions; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -814,7 +813,7 @@ CREATE VIEW public.vw_active_sessions AS
     p.sex AS gender,
     concat(p.surname, ' ', p.othernames) AS fullname,
     s.schemename AS scheme,
-    ps.hospitalid,
+    p.hospitalid,
     ps.cardid,
     ps.expirydate,
     pa.visittype,
@@ -823,7 +822,7 @@ CREATE VIEW public.vw_active_sessions AS
    FROM (((public.patients p
      JOIN public.patientschemes ps ON ((p.patientsid = ps.patientsid)))
      JOIN public.schemes s ON ((ps.schemesid = s.schemesid)))
-     JOIN public.patientattendances pa ON ((ps.patientschemesid = pa.patientschemesid)))
+     JOIN public.patientattendances pa ON ((ps.patientschemesid = pa.patientsid)))
   WHERE (p.isactive AND ps.isactive AND pa.isactive)
   ORDER BY p.patientsid, ps.patientschemesid, pa.dateseen DESC;
 
@@ -831,7 +830,7 @@ CREATE VIEW public.vw_active_sessions AS
 ALTER VIEW public.vw_active_sessions OWNER TO postgres;
 
 --
--- TOC entry 266 (class 1259 OID 67644)
+-- TOC entry 267 (class 1259 OID 75884)
 -- Name: vw_patients; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -842,7 +841,7 @@ CREATE VIEW public.vw_patients AS
     p.sex AS gender,
     concat(p.surname, ' ', p.othernames) AS fullname,
     s.schemename AS scheme,
-    ps.hospitalid,
+    p.hospitalid,
     ps.cardid,
     ps.expirydate,
     pa.visittype,
@@ -851,7 +850,7 @@ CREATE VIEW public.vw_patients AS
    FROM (((public.patients p
      JOIN public.patientschemes ps ON ((p.patientsid = ps.patientsid)))
      JOIN public.schemes s ON ((ps.schemesid = s.schemesid)))
-     JOIN public.patientattendances pa ON ((ps.patientschemesid = pa.patientschemesid)))
+     JOIN public.patientattendances pa ON ((ps.patientschemesid = pa.patientsid)))
   ORDER BY p.patientsid, ps.patientschemesid, pa.dateseen DESC
  LIMIT 100;
 
@@ -953,7 +952,7 @@ CREATE TABLE public.wards (
 ALTER TABLE public.wards OWNER TO postgres;
 
 --
--- TOC entry 5381 (class 0 OID 25568)
+-- TOC entry 5382 (class 0 OID 25568)
 -- Dependencies: 219
 -- Data for Name: __EFMigrationsHistory; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -998,11 +997,13 @@ COPY public."__EFMigrationsHistory" (migrationid, productversion) FROM stdin;
 20260414183119_PtIsActive2	10.0.5
 20260425033207_SchemeDefs	10.0.6
 20260425212008_DrgServStatus	10.0.6
+20260425224810_SchemeInfo	10.0.6
+20260425234037_AttPats	10.0.6
 \.
 
 
 --
--- TOC entry 5393 (class 0 OID 25688)
+-- TOC entry 5394 (class 0 OID 25688)
 -- Dependencies: 231
 -- Data for Name: aspnetroleclaims; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1012,7 +1013,7 @@ COPY public.aspnetroleclaims (id, roleid, claimtype, claimvalue) FROM stdin;
 
 
 --
--- TOC entry 5382 (class 0 OID 25575)
+-- TOC entry 5383 (class 0 OID 25575)
 -- Dependencies: 220
 -- Data for Name: aspnetroles; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1022,7 +1023,7 @@ COPY public.aspnetroles (id, name, normalizedname, concurrencystamp) FROM stdin;
 
 
 --
--- TOC entry 5395 (class 0 OID 25701)
+-- TOC entry 5396 (class 0 OID 25701)
 -- Dependencies: 233
 -- Data for Name: aspnetuserclaims; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1038,7 +1039,7 @@ COPY public.aspnetuserclaims (id, userid, claimtype, claimvalue) FROM stdin;
 
 
 --
--- TOC entry 5396 (class 0 OID 25713)
+-- TOC entry 5397 (class 0 OID 25713)
 -- Dependencies: 234
 -- Data for Name: aspnetuserlogins; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1048,7 +1049,7 @@ COPY public.aspnetuserlogins (loginprovider, providerkey, providerdisplayname, u
 
 
 --
--- TOC entry 5397 (class 0 OID 25726)
+-- TOC entry 5398 (class 0 OID 25726)
 -- Dependencies: 235
 -- Data for Name: aspnetuserroles; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1058,7 +1059,7 @@ COPY public.aspnetuserroles (userid, roleid) FROM stdin;
 
 
 --
--- TOC entry 5383 (class 0 OID 25581)
+-- TOC entry 5384 (class 0 OID 25581)
 -- Dependencies: 221
 -- Data for Name: aspnetusers; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1069,7 +1070,7 @@ COPY public.aspnetusers (id, email, phonenumber, fullname, username, normalizedu
 
 
 --
--- TOC entry 5398 (class 0 OID 25743)
+-- TOC entry 5399 (class 0 OID 25743)
 -- Dependencies: 236
 -- Data for Name: aspnetusertokens; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1079,7 +1080,7 @@ COPY public.aspnetusertokens (userid, loginprovider, name, value) FROM stdin;
 
 
 --
--- TOC entry 5384 (class 0 OID 25599)
+-- TOC entry 5385 (class 0 OID 25599)
 -- Dependencies: 222
 -- Data for Name: diagnoses; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1247,7 +1248,7 @@ COPY public.diagnoses (diagnosesid, category, description, diagnosisname, isacti
 
 
 --
--- TOC entry 5414 (class 0 OID 26066)
+-- TOC entry 5415 (class 0 OID 26066)
 -- Dependencies: 252
 -- Data for Name: dispensingcalculations; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1257,7 +1258,7 @@ COPY public.dispensingcalculations (drugsrequestsid, quantity, datedone, usernam
 
 
 --
--- TOC entry 5420 (class 0 OID 26169)
+-- TOC entry 5421 (class 0 OID 26169)
 -- Dependencies: 258
 -- Data for Name: dispensings; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1267,7 +1268,7 @@ COPY public.dispensings (drugpaymentsid, datedispensed, quantitydispensed, usern
 
 
 --
--- TOC entry 5417 (class 0 OID 26113)
+-- TOC entry 5418 (class 0 OID 26113)
 -- Dependencies: 255
 -- Data for Name: drugpayments; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1277,7 +1278,7 @@ COPY public.drugpayments (dispensingcaculationsid, receipt, quantitypaid, datepa
 
 
 --
--- TOC entry 5385 (class 0 OID 25606)
+-- TOC entry 5386 (class 0 OID 25606)
 -- Dependencies: 223
 -- Data for Name: drugs; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1567,7 +1568,7 @@ COPY public.drugs (drugsid, drug, tags, description, dateadded, isdeleted) FROM 
 
 
 --
--- TOC entry 5411 (class 0 OID 25995)
+-- TOC entry 5412 (class 0 OID 25995)
 -- Dependencies: 249
 -- Data for Name: drugsrequests; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1577,7 +1578,7 @@ COPY public.drugsrequests (drugsrequestsid, patientsattendancesid, schemedrugsid
 
 
 --
--- TOC entry 5399 (class 0 OID 25758)
+-- TOC entry 5400 (class 0 OID 25758)
 -- Dependencies: 237
 -- Data for Name: drugsstocks; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1587,7 +1588,7 @@ COPY public.drugsstocks (drugsstockid, quantity, trandate, drugsid) FROM stdin;
 
 
 --
--- TOC entry 5421 (class 0 OID 67181)
+-- TOC entry 5422 (class 0 OID 67181)
 -- Dependencies: 259
 -- Data for Name: generic_medicines; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1877,7 +1878,7 @@ COPY public.generic_medicines (id, generic_name, tags, description) FROM stdin;
 
 
 --
--- TOC entry 5400 (class 0 OID 25772)
+-- TOC entry 5401 (class 0 OID 25772)
 -- Dependencies: 238
 -- Data for Name: investigationparameters; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1887,7 +1888,7 @@ COPY public.investigationparameters (investigationparametersid, investigationpar
 
 
 --
--- TOC entry 5425 (class 0 OID 67336)
+-- TOC entry 5426 (class 0 OID 67336)
 -- Dependencies: 263
 -- Data for Name: investigations; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2087,7 +2088,7 @@ COPY public.investigations (investigationsid, investigation, category, investiga
 
 
 --
--- TOC entry 5415 (class 0 OID 26080)
+-- TOC entry 5416 (class 0 OID 26080)
 -- Dependencies: 253
 -- Data for Name: investigationspayments; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2097,7 +2098,7 @@ COPY public.investigationspayments (investigationsrequestsid, receipt, datepaid,
 
 
 --
--- TOC entry 5412 (class 0 OID 26025)
+-- TOC entry 5413 (class 0 OID 26025)
 -- Dependencies: 250
 -- Data for Name: investigationsrequests; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2107,7 +2108,7 @@ COPY public.investigationsrequests (labrequestsid, patientsattendancesid, scheme
 
 
 --
--- TOC entry 5418 (class 0 OID 26130)
+-- TOC entry 5419 (class 0 OID 26130)
 -- Dependencies: 256
 -- Data for Name: investigationsresults; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2117,7 +2118,7 @@ COPY public.investigationsresults (investigationspaymentid, labparametersid, res
 
 
 --
--- TOC entry 5422 (class 0 OID 67203)
+-- TOC entry 5423 (class 0 OID 67203)
 -- Dependencies: 260
 -- Data for Name: medicines_list; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2678,17 +2679,19 @@ ZINCOOTA2	Zinc	Tablet	20 mg	Tablet	0.17	A
 
 
 --
--- TOC entry 5401 (class 0 OID 25786)
+-- TOC entry 5402 (class 0 OID 25786)
 -- Dependencies: 239
 -- Data for Name: patientattendances; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.patientattendances (patientattendancesid, patientschemesid, visittype, dateseen, username, isactive) FROM stdin;
+COPY public.patientattendances (patientattendancesid, patientsid, visittype, dateseen, username, isactive) FROM stdin;
+019dc705-046d-7326-b031-d592d7725cc6	019dc705-046d-73c1-999c-1380443723d9	Acute	2026-04-25 23:41:28.676892+00	system	t
+019dc707-cbd7-7e25-9116-ac3dd719ef47	019dc707-cbd7-77a9-8bea-a5460e9d9b01	Acute	2026-04-25 23:44:30.824167+00	system	t
 \.
 
 
 --
--- TOC entry 5405 (class 0 OID 25870)
+-- TOC entry 5406 (class 0 OID 25870)
 -- Dependencies: 243
 -- Data for Name: patientconsultations; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2698,7 +2701,7 @@ COPY public.patientconsultations (patientconsultationid, patientsattendancesid, 
 
 
 --
--- TOC entry 5406 (class 0 OID 25889)
+-- TOC entry 5407 (class 0 OID 25889)
 -- Dependencies: 244
 -- Data for Name: patientdiagnoses; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2708,7 +2711,7 @@ COPY public.patientdiagnoses (patientdiagnosisid, patientsattendancesid, diagnos
 
 
 --
--- TOC entry 5407 (class 0 OID 25912)
+-- TOC entry 5408 (class 0 OID 25912)
 -- Dependencies: 245
 -- Data for Name: patientoutcomes; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2718,27 +2721,31 @@ COPY public.patientoutcomes (patientsattendancesid, outcome, notes, outcomedate)
 
 
 --
--- TOC entry 5386 (class 0 OID 25623)
+-- TOC entry 5387 (class 0 OID 25623)
 -- Dependencies: 224
 -- Data for Name: patients; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.patients (patientsid, hospitalid, surname, othernames, dateofbirth, sex, phonenumber, username, ghanacard, isactive) FROM stdin;
+019dc705-046d-73c1-999c-1380443723d9	MYHOSP-2026-04-000008	string	string	2026-04-25 22:34:12.649+00	Male	string	system	GHA-1111111111-01	t
+019dc707-cbd7-77a9-8bea-a5460e9d9b01	MYHOSP-2026-04-000009	string	string	2026-04-25 22:34:12.649+00	Male	string	system	GHA-1111111111-01	t
 \.
 
 
 --
--- TOC entry 5387 (class 0 OID 25638)
+-- TOC entry 5388 (class 0 OID 25638)
 -- Dependencies: 225
 -- Data for Name: patientschemes; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.patientschemes (patientschemesid, patientsid, schemesid, isactive, cardid, expirydate, lastupdatedate, username, hospitalid) FROM stdin;
+COPY public.patientschemes (patientschemesid, patientsid, schemesid, isactive, cardid, expirydate, lastupdatedate, username) FROM stdin;
+019dc705-046d-743c-8543-9308c4894829	019dc705-046d-73c1-999c-1380443723d9	019d651e-268a-7a78-a144-b4d717fb9a59	t	\N	\N	2026-04-25 23:41:28.676892+00	system
+019dc707-cbd7-7dd8-abf3-5c80d172824b	019dc707-cbd7-77a9-8bea-a5460e9d9b01	019d651e-268a-7a78-a144-b4d717fb9a59	t	\N	\N	2026-04-25 23:44:30.824167+00	system
 \.
 
 
 --
--- TOC entry 5388 (class 0 OID 25651)
+-- TOC entry 5389 (class 0 OID 25651)
 -- Dependencies: 226
 -- Data for Name: patientsignsandsymptoms; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2748,7 +2755,7 @@ COPY public.patientsignsandsymptoms (patientsignsid, signandsymptoms) FROM stdin
 
 
 --
--- TOC entry 5408 (class 0 OID 25925)
+-- TOC entry 5409 (class 0 OID 25925)
 -- Dependencies: 246
 -- Data for Name: payments; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2758,7 +2765,7 @@ COPY public.payments (paymentsid, patientsattendancesid, drugs, drugslist, labs,
 
 
 --
--- TOC entry 5426 (class 0 OID 67501)
+-- TOC entry 5427 (class 0 OID 67501)
 -- Dependencies: 264
 -- Data for Name: schemediagnoses; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -3037,7 +3044,7 @@ COPY public.schemediagnoses (schemediagnosesid, schemesid, snomed, diagnosesid, 
 
 
 --
--- TOC entry 5402 (class 0 OID 25801)
+-- TOC entry 5403 (class 0 OID 25801)
 -- Dependencies: 240
 -- Data for Name: schemedrugs; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -3598,7 +3605,7 @@ COPY public.schemedrugs (schemedrugsid, schemesid, drugsid, price, dateset, user
 
 
 --
--- TOC entry 5403 (class 0 OID 25824)
+-- TOC entry 5404 (class 0 OID 25824)
 -- Dependencies: 241
 -- Data for Name: schemeinvestigations; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -3798,7 +3805,7 @@ COPY public.schemeinvestigations (investigationsid, schemeinvestigationsid, sche
 
 
 --
--- TOC entry 5389 (class 0 OID 25658)
+-- TOC entry 5390 (class 0 OID 25658)
 -- Dependencies: 227
 -- Data for Name: schemes; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -3810,7 +3817,7 @@ COPY public.schemes (schemesid, schemename, coverage, maxpayable, recovery, isac
 
 
 --
--- TOC entry 5404 (class 0 OID 25847)
+-- TOC entry 5405 (class 0 OID 25847)
 -- Dependencies: 242
 -- Data for Name: schemeservices; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -4140,7 +4147,7 @@ COPY public.schemeservices (schemeservicesid, schemesid, servicesid, price, date
 
 
 --
--- TOC entry 5416 (class 0 OID 26096)
+-- TOC entry 5417 (class 0 OID 26096)
 -- Dependencies: 254
 -- Data for Name: servicepayments; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -4150,7 +4157,7 @@ COPY public.servicepayments (servicerequestid, patientsattendancesid, amount, pa
 
 
 --
--- TOC entry 5419 (class 0 OID 26152)
+-- TOC entry 5420 (class 0 OID 26152)
 -- Dependencies: 257
 -- Data for Name: servicerenderings; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -4160,7 +4167,7 @@ COPY public.servicerenderings (servicepaymentid, patientsattendancesid, dateserv
 
 
 --
--- TOC entry 5413 (class 0 OID 26045)
+-- TOC entry 5414 (class 0 OID 26045)
 -- Dependencies: 251
 -- Data for Name: servicerequests; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -4170,7 +4177,7 @@ COPY public.servicerequests (servicerequestid, patientsattendancesid, schemeserv
 
 
 --
--- TOC entry 5390 (class 0 OID 25670)
+-- TOC entry 5391 (class 0 OID 25670)
 -- Dependencies: 228
 -- Data for Name: services; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -4398,7 +4405,7 @@ COPY public.services (servicesid, service, servicegroup, isdeleted) FROM stdin;
 
 
 --
--- TOC entry 5409 (class 0 OID 25951)
+-- TOC entry 5410 (class 0 OID 25951)
 -- Dependencies: 247
 -- Data for Name: vitals; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -4408,7 +4415,7 @@ COPY public.vitals (vitalsid, patientsattendancesid, dateseen, temperature, weig
 
 
 --
--- TOC entry 5410 (class 0 OID 25975)
+-- TOC entry 5411 (class 0 OID 25975)
 -- Dependencies: 248
 -- Data for Name: wardadmissions; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -4418,7 +4425,7 @@ COPY public.wardadmissions (wardadmissionsid, patientsattendancesid, wardsid, us
 
 
 --
--- TOC entry 5391 (class 0 OID 25678)
+-- TOC entry 5392 (class 0 OID 25678)
 -- Dependencies: 229
 -- Data for Name: wards; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -4428,7 +4435,7 @@ COPY public.wards (wardsid, ward, wardtags, capacity) FROM stdin;
 
 
 --
--- TOC entry 5434 (class 0 OID 0)
+-- TOC entry 5435 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: aspnetroleclaims_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -4437,7 +4444,7 @@ SELECT pg_catalog.setval('public.aspnetroleclaims_id_seq', 1, false);
 
 
 --
--- TOC entry 5435 (class 0 OID 0)
+-- TOC entry 5436 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: aspnetuserclaims_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -4446,16 +4453,16 @@ SELECT pg_catalog.setval('public.aspnetuserclaims_id_seq', 6, true);
 
 
 --
--- TOC entry 5436 (class 0 OID 0)
--- Dependencies: 268
+-- TOC entry 5437 (class 0 OID 0)
+-- Dependencies: 266
 -- Name: hospital_id_sequence; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.hospital_id_sequence', 1, false);
+SELECT pg_catalog.setval('public.hospital_id_sequence', 9, true);
 
 
 --
--- TOC entry 5074 (class 2606 OID 25598)
+-- TOC entry 5073 (class 2606 OID 25598)
 -- Name: aspnetusers ak_aspnetusers_username; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4482,7 +4489,7 @@ ALTER TABLE ONLY public.medicines_list
 
 
 --
--- TOC entry 5067 (class 2606 OID 25574)
+-- TOC entry 5066 (class 2606 OID 25574)
 -- Name: __EFMigrationsHistory pk___efmigrationshistory; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4500,7 +4507,7 @@ ALTER TABLE ONLY public.aspnetroleclaims
 
 
 --
--- TOC entry 5070 (class 2606 OID 25580)
+-- TOC entry 5069 (class 2606 OID 25580)
 -- Name: aspnetroles pk_aspnetroles; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4536,7 +4543,7 @@ ALTER TABLE ONLY public.aspnetuserroles
 
 
 --
--- TOC entry 5076 (class 2606 OID 25596)
+-- TOC entry 5075 (class 2606 OID 25596)
 -- Name: aspnetusers pk_aspnetusers; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4554,7 +4561,7 @@ ALTER TABLE ONLY public.aspnetusertokens
 
 
 --
--- TOC entry 5079 (class 2606 OID 25605)
+-- TOC entry 5078 (class 2606 OID 25605)
 -- Name: diagnoses pk_diagnoses; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4590,7 +4597,7 @@ ALTER TABLE ONLY public.drugpayments
 
 
 --
--- TOC entry 5081 (class 2606 OID 25615)
+-- TOC entry 5080 (class 2606 OID 25615)
 -- Name: drugs pk_drugs; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4698,7 +4705,7 @@ ALTER TABLE ONLY public.patientoutcomes
 
 
 --
--- TOC entry 5083 (class 2606 OID 25637)
+-- TOC entry 5082 (class 2606 OID 25637)
 -- Name: patients pk_patients; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4850,7 +4857,7 @@ CREATE INDEX "IX_aspnetroleclaims_roleid" ON public.aspnetroleclaims USING btree
 
 
 --
--- TOC entry 5068 (class 1259 OID 26184)
+-- TOC entry 5067 (class 1259 OID 26184)
 -- Name: IX_aspnetroles_normalizedname; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -4882,7 +4889,7 @@ CREATE INDEX "IX_aspnetuserroles_roleid" ON public.aspnetuserroles USING btree (
 
 
 --
--- TOC entry 5071 (class 1259 OID 26188)
+-- TOC entry 5070 (class 1259 OID 26188)
 -- Name: IX_aspnetusers_normalizedemail; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -4890,7 +4897,7 @@ CREATE INDEX "IX_aspnetusers_normalizedemail" ON public.aspnetusers USING btree 
 
 
 --
--- TOC entry 5072 (class 1259 OID 26189)
+-- TOC entry 5071 (class 1259 OID 26189)
 -- Name: IX_aspnetusers_normalizedusername; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -4898,7 +4905,7 @@ CREATE UNIQUE INDEX "IX_aspnetusers_normalizedusername" ON public.aspnetusers US
 
 
 --
--- TOC entry 5077 (class 1259 OID 67526)
+-- TOC entry 5076 (class 1259 OID 67526)
 -- Name: IX_diagnoses_diagnosisname_category_subcategory; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -4971,10 +4978,10 @@ CREATE INDEX "IX_investigationsresults_labparametersid" ON public.investigations
 
 --
 -- TOC entry 5116 (class 1259 OID 26199)
--- Name: IX_patientattendances_patientschemesid; Type: INDEX; Schema: public; Owner: postgres
+-- Name: IX_patientattendances_patientsid; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX "IX_patientattendances_patientschemesid" ON public.patientattendances USING btree (patientschemesid);
+CREATE INDEX "IX_patientattendances_patientsid" ON public.patientattendances USING btree (patientsid);
 
 
 --
@@ -4999,6 +5006,14 @@ CREATE INDEX "IX_patientdiagnoses_diagnosesid" ON public.patientdiagnoses USING 
 --
 
 CREATE INDEX "IX_patientdiagnoses_patientattendancesid" ON public.patientdiagnoses USING btree (patientattendancesid);
+
+
+--
+-- TOC entry 5083 (class 1259 OID 75896)
+-- Name: IX_patientschemes_patientsid; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "IX_patientschemes_patientsid" ON public.patientschemes USING btree (patientsid);
 
 
 --
@@ -5138,7 +5153,7 @@ CREATE UNIQUE INDEX "IX_wards_ward" ON public.wards USING btree (ward);
 
 
 --
--- TOC entry 5189 (class 2606 OID 25695)
+-- TOC entry 5190 (class 2606 OID 25695)
 -- Name: aspnetroleclaims fk_aspnetroleclaims_aspnetroles_roleid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5147,7 +5162,7 @@ ALTER TABLE ONLY public.aspnetroleclaims
 
 
 --
--- TOC entry 5190 (class 2606 OID 25708)
+-- TOC entry 5191 (class 2606 OID 25708)
 -- Name: aspnetuserclaims fk_aspnetuserclaims_aspnetusers_userid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5156,7 +5171,7 @@ ALTER TABLE ONLY public.aspnetuserclaims
 
 
 --
--- TOC entry 5191 (class 2606 OID 25721)
+-- TOC entry 5192 (class 2606 OID 25721)
 -- Name: aspnetuserlogins fk_aspnetuserlogins_aspnetusers_userid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5165,7 +5180,7 @@ ALTER TABLE ONLY public.aspnetuserlogins
 
 
 --
--- TOC entry 5192 (class 2606 OID 25733)
+-- TOC entry 5193 (class 2606 OID 25733)
 -- Name: aspnetuserroles fk_aspnetuserroles_aspnetroles_roleid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5174,7 +5189,7 @@ ALTER TABLE ONLY public.aspnetuserroles
 
 
 --
--- TOC entry 5193 (class 2606 OID 25738)
+-- TOC entry 5194 (class 2606 OID 25738)
 -- Name: aspnetuserroles fk_aspnetuserroles_aspnetusers_userid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5183,7 +5198,7 @@ ALTER TABLE ONLY public.aspnetuserroles
 
 
 --
--- TOC entry 5194 (class 2606 OID 25753)
+-- TOC entry 5195 (class 2606 OID 25753)
 -- Name: aspnetusertokens fk_aspnetusertokens_aspnetusers_userid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5192,7 +5207,7 @@ ALTER TABLE ONLY public.aspnetusertokens
 
 
 --
--- TOC entry 5219 (class 2606 OID 26075)
+-- TOC entry 5220 (class 2606 OID 26075)
 -- Name: dispensingcalculations fk_dispensingcalculations_drugsrequests_drugsrequestsid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5201,7 +5216,7 @@ ALTER TABLE ONLY public.dispensingcalculations
 
 
 --
--- TOC entry 5226 (class 2606 OID 26178)
+-- TOC entry 5227 (class 2606 OID 26178)
 -- Name: dispensings fk_dispensings_drugpayments_drugpaymentsid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5210,7 +5225,7 @@ ALTER TABLE ONLY public.dispensings
 
 
 --
--- TOC entry 5222 (class 2606 OID 26125)
+-- TOC entry 5223 (class 2606 OID 26125)
 -- Name: drugpayments fk_drugpayments_dispensingcalculations_dispensingcaculationsid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5219,7 +5234,7 @@ ALTER TABLE ONLY public.drugpayments
 
 
 --
--- TOC entry 5212 (class 2606 OID 26010)
+-- TOC entry 5213 (class 2606 OID 26010)
 -- Name: drugsrequests fk_drugsrequests_drugs_drugsid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5228,7 +5243,7 @@ ALTER TABLE ONLY public.drugsrequests
 
 
 --
--- TOC entry 5213 (class 2606 OID 26015)
+-- TOC entry 5214 (class 2606 OID 26015)
 -- Name: drugsrequests fk_drugsrequests_patientattendances_patientsattendancesid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5237,7 +5252,7 @@ ALTER TABLE ONLY public.drugsrequests
 
 
 --
--- TOC entry 5214 (class 2606 OID 26020)
+-- TOC entry 5215 (class 2606 OID 26020)
 -- Name: drugsrequests fk_drugsrequests_schemedrugs_schemedrugsid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5246,7 +5261,7 @@ ALTER TABLE ONLY public.drugsrequests
 
 
 --
--- TOC entry 5195 (class 2606 OID 25767)
+-- TOC entry 5196 (class 2606 OID 25767)
 -- Name: drugsstocks fk_drugsstocks_drugs_drugsid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5255,7 +5270,7 @@ ALTER TABLE ONLY public.drugsstocks
 
 
 --
--- TOC entry 5196 (class 2606 OID 67627)
+-- TOC entry 5197 (class 2606 OID 67627)
 -- Name: investigationparameters fk_investigationparameters_investigations_investigationsid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5264,7 +5279,7 @@ ALTER TABLE ONLY public.investigationparameters
 
 
 --
--- TOC entry 5220 (class 2606 OID 67398)
+-- TOC entry 5221 (class 2606 OID 67398)
 -- Name: investigationspayments fk_investigationspayments_investigationsrequests_investigation~; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5273,7 +5288,7 @@ ALTER TABLE ONLY public.investigationspayments
 
 
 --
--- TOC entry 5215 (class 2606 OID 67403)
+-- TOC entry 5216 (class 2606 OID 67403)
 -- Name: investigationsrequests fk_investigationsrequests_patientattendances_patientattendance~; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5282,7 +5297,7 @@ ALTER TABLE ONLY public.investigationsrequests
 
 
 --
--- TOC entry 5216 (class 2606 OID 67456)
+-- TOC entry 5217 (class 2606 OID 67456)
 -- Name: investigationsrequests fk_investigationsrequests_schemeinvestigations_schemelabsid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5291,7 +5306,7 @@ ALTER TABLE ONLY public.investigationsrequests
 
 
 --
--- TOC entry 5223 (class 2606 OID 67413)
+-- TOC entry 5224 (class 2606 OID 67413)
 -- Name: investigationsresults fk_investigationsresults_investigationparameters_labparameters~; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5300,7 +5315,7 @@ ALTER TABLE ONLY public.investigationsresults
 
 
 --
--- TOC entry 5224 (class 2606 OID 67418)
+-- TOC entry 5225 (class 2606 OID 67418)
 -- Name: investigationsresults fk_investigationsresults_investigationspayments_investigations~; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5309,16 +5324,16 @@ ALTER TABLE ONLY public.investigationsresults
 
 
 --
--- TOC entry 5197 (class 2606 OID 25796)
--- Name: patientattendances fk_patientattendances_patientschemes_patientschemesid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- TOC entry 5198 (class 2606 OID 75897)
+-- Name: patientattendances fk_patientattendances_patients_patientsid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.patientattendances
-    ADD CONSTRAINT fk_patientattendances_patientschemes_patientschemesid FOREIGN KEY (patientschemesid) REFERENCES public.patientschemes(patientschemesid) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_patientattendances_patients_patientsid FOREIGN KEY (patientsid) REFERENCES public.patients(patientsid) ON DELETE CASCADE;
 
 
 --
--- TOC entry 5204 (class 2606 OID 25884)
+-- TOC entry 5205 (class 2606 OID 25884)
 -- Name: patientconsultations fk_patientconsultations_patientattendances_patientattendancesid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5327,7 +5342,7 @@ ALTER TABLE ONLY public.patientconsultations
 
 
 --
--- TOC entry 5205 (class 2606 OID 67529)
+-- TOC entry 5206 (class 2606 OID 67529)
 -- Name: patientdiagnoses fk_patientdiagnoses_diagnoses_diagnosesid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5336,7 +5351,7 @@ ALTER TABLE ONLY public.patientdiagnoses
 
 
 --
--- TOC entry 5206 (class 2606 OID 25907)
+-- TOC entry 5207 (class 2606 OID 25907)
 -- Name: patientdiagnoses fk_patientdiagnoses_patientattendances_patientattendancesid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5345,7 +5360,7 @@ ALTER TABLE ONLY public.patientdiagnoses
 
 
 --
--- TOC entry 5207 (class 2606 OID 25920)
+-- TOC entry 5208 (class 2606 OID 25920)
 -- Name: patientoutcomes fk_patientoutcomes_patientattendances_patientsattendancesid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5354,7 +5369,16 @@ ALTER TABLE ONLY public.patientoutcomes
 
 
 --
--- TOC entry 5208 (class 2606 OID 25946)
+-- TOC entry 5189 (class 2606 OID 75902)
+-- Name: patientschemes fk_patientschemes_patients_patientsid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.patientschemes
+    ADD CONSTRAINT fk_patientschemes_patients_patientsid FOREIGN KEY (patientsid) REFERENCES public.patients(patientsid) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5209 (class 2606 OID 25946)
 -- Name: payments fk_payments_patientattendances_patientattendancesid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5363,7 +5387,7 @@ ALTER TABLE ONLY public.payments
 
 
 --
--- TOC entry 5227 (class 2606 OID 67542)
+-- TOC entry 5228 (class 2606 OID 67542)
 -- Name: schemediagnoses fk_schemediagnoses_diagnoses_diagnosesid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5372,7 +5396,7 @@ ALTER TABLE ONLY public.schemediagnoses
 
 
 --
--- TOC entry 5228 (class 2606 OID 67570)
+-- TOC entry 5229 (class 2606 OID 67570)
 -- Name: schemediagnoses fk_schemediagnoses_schemes_schemesid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5381,7 +5405,7 @@ ALTER TABLE ONLY public.schemediagnoses
 
 
 --
--- TOC entry 5198 (class 2606 OID 25814)
+-- TOC entry 5199 (class 2606 OID 25814)
 -- Name: schemedrugs fk_schemedrugs_drugs_drugsid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5390,7 +5414,7 @@ ALTER TABLE ONLY public.schemedrugs
 
 
 --
--- TOC entry 5199 (class 2606 OID 25819)
+-- TOC entry 5200 (class 2606 OID 25819)
 -- Name: schemedrugs fk_schemedrugs_schemes_schemesid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5399,7 +5423,7 @@ ALTER TABLE ONLY public.schemedrugs
 
 
 --
--- TOC entry 5200 (class 2606 OID 67461)
+-- TOC entry 5201 (class 2606 OID 67461)
 -- Name: schemeinvestigations fk_schemeinvestigations_investigations_investigationsid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5408,7 +5432,7 @@ ALTER TABLE ONLY public.schemeinvestigations
 
 
 --
--- TOC entry 5201 (class 2606 OID 67435)
+-- TOC entry 5202 (class 2606 OID 67435)
 -- Name: schemeinvestigations fk_schemeinvestigations_schemes_schemesid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5417,7 +5441,7 @@ ALTER TABLE ONLY public.schemeinvestigations
 
 
 --
--- TOC entry 5202 (class 2606 OID 25860)
+-- TOC entry 5203 (class 2606 OID 25860)
 -- Name: schemeservices fk_schemeservices_schemes_schemesid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5426,7 +5450,7 @@ ALTER TABLE ONLY public.schemeservices
 
 
 --
--- TOC entry 5203 (class 2606 OID 25865)
+-- TOC entry 5204 (class 2606 OID 25865)
 -- Name: schemeservices fk_schemeservices_services_servicesid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5435,7 +5459,7 @@ ALTER TABLE ONLY public.schemeservices
 
 
 --
--- TOC entry 5221 (class 2606 OID 26108)
+-- TOC entry 5222 (class 2606 OID 26108)
 -- Name: servicepayments fk_servicepayments_servicerequests_servicerequestid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5444,7 +5468,7 @@ ALTER TABLE ONLY public.servicepayments
 
 
 --
--- TOC entry 5225 (class 2606 OID 26164)
+-- TOC entry 5226 (class 2606 OID 26164)
 -- Name: servicerenderings fk_servicerenderings_servicepayments_servicepaymentid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5453,7 +5477,7 @@ ALTER TABLE ONLY public.servicerenderings
 
 
 --
--- TOC entry 5217 (class 2606 OID 26056)
+-- TOC entry 5218 (class 2606 OID 26056)
 -- Name: servicerequests fk_servicerequests_patientattendances_patientattendancesid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5462,7 +5486,7 @@ ALTER TABLE ONLY public.servicerequests
 
 
 --
--- TOC entry 5218 (class 2606 OID 26061)
+-- TOC entry 5219 (class 2606 OID 26061)
 -- Name: servicerequests fk_servicerequests_schemeservices_schemeservicesid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5471,7 +5495,7 @@ ALTER TABLE ONLY public.servicerequests
 
 
 --
--- TOC entry 5209 (class 2606 OID 25970)
+-- TOC entry 5210 (class 2606 OID 25970)
 -- Name: vitals fk_vitals_patientattendances_patientattendancesid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5480,7 +5504,7 @@ ALTER TABLE ONLY public.vitals
 
 
 --
--- TOC entry 5210 (class 2606 OID 25985)
+-- TOC entry 5211 (class 2606 OID 25985)
 -- Name: wardadmissions fk_wardadmissions_patientattendances_patientattendancesid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5489,7 +5513,7 @@ ALTER TABLE ONLY public.wardadmissions
 
 
 --
--- TOC entry 5211 (class 2606 OID 25990)
+-- TOC entry 5212 (class 2606 OID 25990)
 -- Name: wardadmissions fk_wardadmissions_wards_wardsid; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -5498,8 +5522,8 @@ ALTER TABLE ONLY public.wardadmissions
 
 
 --
--- TOC entry 5427 (class 0 OID 67552)
--- Dependencies: 265 5430
+-- TOC entry 5428 (class 0 OID 67552)
+-- Dependencies: 265 5431
 -- Name: vwm_investigations; Type: MATERIALIZED VIEW DATA; Schema: public; Owner: postgres
 --
 
@@ -5507,8 +5531,8 @@ REFRESH MATERIALIZED VIEW public.vwm_investigations;
 
 
 --
--- TOC entry 5423 (class 0 OID 67262)
--- Dependencies: 261 5430
+-- TOC entry 5424 (class 0 OID 67262)
+-- Dependencies: 261 5431
 -- Name: vwm_schemes; Type: MATERIALIZED VIEW DATA; Schema: public; Owner: postgres
 --
 
@@ -5516,19 +5540,19 @@ REFRESH MATERIALIZED VIEW public.vwm_schemes;
 
 
 --
--- TOC entry 5424 (class 0 OID 67321)
--- Dependencies: 262 5430
+-- TOC entry 5425 (class 0 OID 67321)
+-- Dependencies: 262 5431
 -- Name: vwm_services; Type: MATERIALIZED VIEW DATA; Schema: public; Owner: postgres
 --
 
 REFRESH MATERIALIZED VIEW public.vwm_services;
 
 
--- Completed on 2026-04-25 21:52:57
+-- Completed on 2026-04-26 08:21:37
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict qg7QjLHuQgUg2hIalpeTzb8UlH0e4ad8IqgjZxlH28fY2ystR04Jg5QNVSWYbUs
+\unrestrict Eh9DNFk4SJpgDnmHkel1FaIOpAnX2BsGkbc1EpGZoMIMhOZbN8ed86ZJXty1eBY
 

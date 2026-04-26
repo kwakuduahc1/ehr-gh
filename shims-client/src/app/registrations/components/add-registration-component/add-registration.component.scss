@@ -1,1 +1,13 @@
+.add-registration-wrapper {
+    margin: .8rem;
+}
 
+.add-registration-fieldset {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: start;
+    gap: 0 1rem;
+    border: none;
+    padding: 0;
+    margin: 0 0 1rem;
+}

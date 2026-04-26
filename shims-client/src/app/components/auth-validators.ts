@@ -1,4 +1,4 @@
-import { FieldTree, MaxLengthValidationError, MaxValidationError, MinLengthValidationError, MinValidationError, PathKind, SchemaPath } from "@angular/forms/signals";
+import { FieldTree, MaxLengthValidationError, MaxValidationError, MinLengthValidationError, MinValidationError, PathKind, PatternValidationError, SchemaPath } from "@angular/forms/signals";
 
 export const validatePasswordHasUppercase = ({ value }: { value: () => string }) => {
     return value() && !/[A-Z]/.test(value()) ? { kind: 'passwordUppercase' } : null;
@@ -23,7 +23,7 @@ export class ValidatorMessages {
     }
 
     maxLenMsg(f: MaxLengthValidationError | any) {
-        return (`min chars: ${(f as MaxLengthValidationError).maxLength}`);
+        return (`max chars: ${(f as MaxLengthValidationError).maxLength}`);
     }
 
     maxMsg(f: MaxValidationError | any) {
@@ -32,5 +32,9 @@ export class ValidatorMessages {
 
     minMsg(f: MinValidationError | any) {
         return (`min: ${(f as MinValidationError).min}`);
+    }
+
+    patternMsg(f: PatternValidationError | any) {
+        return (`pattern: ${(f as PatternValidationError)?.pattern}`);
     }
 }

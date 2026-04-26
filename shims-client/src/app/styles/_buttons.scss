@@ -59,7 +59,7 @@
     }
 
     &:active:not(:disabled):not(.disabled) {
-        background-color: if($active-bg, $active-bg, $hover-bg);
+        background-color: if(sass($active-bg): $active-bg; else: $hover-bg);
         transform: scale(0.98);
     }
 

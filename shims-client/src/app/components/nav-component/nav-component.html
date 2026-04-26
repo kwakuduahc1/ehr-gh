@@ -33,6 +33,16 @@
                                 </button>
                         </li>
 
+                        <!-- Records Dropdown -->
+                        <li class="nav-item dropdown" role="none">
+                                <button type="button" class="nav-link dropdown-toggle" [matMenuTriggerFor]="recordsMenu"
+                                        title="Records submenu" role="menuitem">
+                                        <mat-icon class="nav-icon">folder_shared</mat-icon>
+                                        <span>Records</span>
+                                        <mat-icon class="dropdown-icon">expand_more</mat-icon>
+                                </button>
+                        </li>
+
                         <!-- Account Dropdown -->
                         <li class="nav-item dropdown" role="none">
                                 <button type="button" class="nav-link dropdown-toggle" [matMenuTriggerFor]="accountMenu"
@@ -70,6 +80,18 @@
         <a mat-menu-item routerLink="/settings" (click)="onNavLinkClick()">
                 <mat-icon class="nav-icon">settings</mat-icon>
                 <span>Settings</span>
+        </a>
+</mat-menu>
+
+<!-- Records Menu -->
+<mat-menu #recordsMenu="matMenu" panelClass="nav-menu-panel">
+        <a mat-menu-item routerLink="/registrations" (click)="onNavLinkClick()">
+                <mat-icon class="nav-icon">how_to_reg</mat-icon>
+                <span>Registrations</span>
+        </a>
+        <a mat-menu-item routerLink="/attendances" (click)="onNavLinkClick()">
+                <mat-icon class="nav-icon">event_available</mat-icon>
+                <span>Attendances</span>
         </a>
 </mat-menu>
 

@@ -63,6 +63,15 @@ $text-primary-light: $white;
 $text-secondary-light: rgba($white, 0.7);
 $text-disabled-light: rgba($white, 0.5);
 
+$text-primary-dark: $black;
+$text-secondary-dark: rgba($black, 0.75);
+$text-disabled-dark: rgba($black, 0.5);
+$text-hint-dark: rgba($black, 0.5);
+
+$text-tertiary: rgba($black, 0.2);
+$text-info: $info-color;
+$text-warning: $warning-color;
+
 // Typography - Font Families
 $font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;

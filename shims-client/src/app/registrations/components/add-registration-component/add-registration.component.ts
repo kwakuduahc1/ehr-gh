@@ -3,14 +3,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelect, MatOption } from '@angular/material/select';
-import { form, required, schema, minLength, maxLength, FormRoot, FormField } from '@angular/forms/signals';
+import { form, required, schema, minLength, maxLength, FormRoot, FormField, applyWhen, applyEach } from '@angular/forms/signals';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ValidatorMessages } from '../../../components/auth-validators';
 import { ActivityProvider } from '../../../providers/ActivityProvider';
-import { AddPatientDto } from '../../../models/registrations/IRegistrations';
-import { ListPatientsDto } from '../../../models/registrations/IRegistrations';
-import { SchemesHttpService } from '../../../schemes/schemes-http.service';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { AddPatientDto, EditPatientDto, InsuranceInformation } from '../../../models/registrations/IRegistrations';
+import { SchemesDTO } from '../../../models/ISchemes';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ValidatorMessages } from '../../../components/auth-validators';
 
 @Component({
     selector: 'app-add-registration',
@@ -28,37 +27,48 @@ import { toSignal } from '@angular/core/rxjs-interop';
     ]
 })
 export class AddRegistrationComponent {
-    // act = inject(ActivityProvider);
-    // diag = inject(MatDialogRef<AddRegistrationComponent>);
-    // data = inject<{ patient?: ListPatientsDto }>(MAT_DIALOG_DATA);
-    // schemes = toSignal(inject(SchemesHttpService).getSchemes(), { initialValue: [] });
-    // val = new ValidatorMessages();
+    act = inject(ActivityProvider);
+    diag = inject(MatDialogRef<AddRegistrationComponent>);
+    data = inject<{ patient?: EditPatientDto, schemes: SchemesDTO[] }>(MAT_DIALOG_DATA);
+    private snack = inject(MatSnackBar);
+    protected val = new ValidatorMessages();
 
-    // form = form<AddPatientDto>(signal<AddPatientDto>({
-    //     surname: this.data?.patient?.fullName?.split(' ')[0] ?? '',
-    //     otherNames: this.data?.patient?.fullName?.split(' ').slice(1).join(' ') ?? '',
-    //     dateOfBirth: '',
-    //     ghanaCard: this.data?.patient?.hospitalID ?? '',
-    //     sex: this.data?.patient?.gender ?? '',
-    //     schemesID: this.data?.patient?.schemesID ?? '',
-    //     cardID: this.data?.patient?.cardID ?? '',
-    //     expiryDate: this.data?.patient?.expiryDate ?? '',
-    //     phoneNumber: ''
-    // }), AddPatientSchema);
+    ptSchemes = signal<InsuranceInformation[]>(this.data?.patient?.schemes ?? []);
+    fmMdl = signal<AddPatientDto>({
+        surname: this.data?.patient?.surname ?? '',
+        otherNames: this.data?.patient?.otherNames ?? '',
+        dateOfBirth: this.data?.patient?.dateOfBirth ?? null,
+        ghanaCard: this.data?.patient?.ghanaCard ?? '',
+        sex: this.data?.patient?.sex ?? '',
+        schemes: this.ptSchemes(),
+        phoneNumber: this.data?.patient?.phoneNumber ?? ''
+    })
+    form = form<AddPatientDto>(this.fmMdl, AddPatientSchema);
 
-    // submit() {
-    //     this.diag.close({
-    //         patient: {
-    //             ...this.form().value(),
-    //             patientID: this.data?.patient?.patientID
-    //         },
-    //         edit: !!this.data?.patient
-    //     });
-    // }
+    addScheme(scheme: InsuranceInformation) {
+        if (this.ptSchemes().some(s => s.schemesID !== scheme.schemesID)) {
+            this.ptSchemes.update(x => [scheme, ...x]);
+        }
+        else
+            this.snack.open('Scheme already added');
+    }
 
-    // close() {
-    //     this.diag.close(null);
-    // }
+    removeScheme(id: string) {
+        if (this.ptSchemes().length === 1) {
+            this.snack.open('Patient must have at least one scheme');
+            return;
+        }
+        else this.ptSchemes.update(x => x.filter(s => s.schemesID !== id));
+    }
+
+
+    submit() {
+        this.diag.close(this.form().value());
+    }
+
+    close() {
+        this.diag.close(null);
+    }
 }
 
 const AddPatientSchema = schema<AddPatientDto>((path) => {
@@ -72,8 +82,35 @@ const AddPatientSchema = schema<AddPatientDto>((path) => {
 
     required(path.dateOfBirth);
     required(path.sex);
-    required(path.schemesID);
-    required(path.phoneNumber);
-    minLength(path.phoneNumber, 10);
-    maxLength(path.phoneNumber, 10);
+    applyWhen(path.phoneNumber,
+        ({ valueOf }) => !valueOf(path.phoneNumber || '')?.length,
+        (phone) => {
+            minLength((phone), 10);
+            maxLength(phone, 10);
+        });
+    applyWhen(path.ghanaCard,
+        ({ valueOf }) => valueOf(path?.ghanaCard || '')?.length > 0,
+        (ghanaCard) => {
+            minLength(ghanaCard, 17);
+            maxLength(ghanaCard, 17);
+        });
+
+    applyEach(path.schemes, (scheme) => {
+        required(scheme.schemesID);
+
+        // 019dc2b7-77a7-7fb2-b246-e7892984c2ff = "Fee paying"
+        applyWhen(scheme.expiryDate,
+            ({ valueOf }) => valueOf(scheme.schemesID) !== '019dc2b7-77a7-7fb2-b246-e7892984c2ff',
+            (sid) => {
+                required(sid);
+            });
+
+        applyWhen(scheme.cardID,
+            ({ valueOf }) => valueOf(scheme.schemesID) !== '019dc2b7-77a7-7fb2-b246-e7892984c2ff',
+            (cardID) => {
+                required(cardID);
+                minLength(cardID, 5);
+                maxLength(cardID, 20);
+            });
+    });
 });

@@ -28,7 +28,10 @@ export class RegistrationsListComponent {
         let result: { patient: EditPatientDto, edit: boolean };
         this.diag.open<AddRegistrationComponent, {}, { patient: EditPatientDto, edit: boolean }>(
             AddRegistrationComponent,
-            { data: { patient } }
+            {
+                data: { patient },
+                width: '800px'
+            }
         )
             .afterClosed()
             .pipe(
@@ -46,27 +49,23 @@ export class RegistrationsListComponent {
             .subscribe({
                 next: d => {
                     this.snack.open(isEdit ? 'Patient updated' : 'Patient registered');
-                    this.patients.update(list =>
-                        isEdit
-                            ? list.map(p => p.patientID === result.patient.patientID
-                                ? { ...p, gender: result.patient.sex }
-                                : p)
-                            : [
-                                {
-                                    age: 0,
-                                    attendanceDate: new Date(),
-                                    cardID: result.patient.cardID,
-                                    expiryDate: result.patient.expiryDate,
-                                    fullName: `${result.patient.surname} ${result.patient.otherNames}`,
-                                    gender: result.patient.gender,
-                                    hospitalID: d!.hosid,
-                                    patientID: d!.pid,
-                                    patientSchemesID: result.patient.patientID,
-                                    schemesID: result.patient.schemesID,
-                                    scheme: '',
-                                    visitType: result.patient.visitType,
-                                }, ...list]
-                    );
+                    // this.patients.update(list =>
+                    //     isEdit
+                    //         ? list.map(p => p.patientID === result.patient.patientID
+                    //             ? { ...p, gender: result.patient.sex }
+                    //             : p)
+                    //         : [
+                    //             {
+                    //                 age: 0,
+                    //                 attendanceDate: new Date(),
+                    //                 fullName: `${result.patient.surname} ${result.patient.otherNames}`,
+                    //                 gender: result.patient.sex,
+                    //                 hospitalID: d!.hosid,
+                    //                 patientID: d!.pid,
+                    //                 patientSchemesID: result.patient.patientID,
+                    //                 visitType: result.patient.visitType,
+                    //             }, ...list]
+                    // );
                 },
                 error: () => {
                     this.addRegistration(patient);

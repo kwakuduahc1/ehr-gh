@@ -8,6 +8,7 @@ import { IUsers, LoginVm } from '../../models/IUsers';
 import { ActivityProvider } from '../../providers/ActivityProvider';
 import { MatDialogRef } from '@angular/material/dialog';
 import { validatePasswordHasLowercase, validatePasswordHasNumber, validatePasswordHasUppercase } from '../auth-validators';
+import { ErrorMessagesComponent } from '../error-messages-component/error-messages-component';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +16,7 @@ import { validatePasswordHasLowercase, validatePasswordHasNumber, validatePasswo
   styleUrl: './login.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    ErrorMessagesComponent,
     FormField,
     MatFormFieldModule,
     MatIcon,

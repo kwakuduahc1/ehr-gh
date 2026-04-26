@@ -5,10 +5,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { form, required, schema, minLength, maxLength, validate, FormRoot, FormField, min, max, applyWhen } from '@angular/forms/signals';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ValidatorMessages } from '../../../components/auth-validators';
 import { ActivityProvider } from '../../../providers/ActivityProvider';
 import { MatSelect, MatOption } from "@angular/material/select";
 import { AddSchemeDto, UpdateSchemeDto } from '../../../models/ISchemes';
+import { ErrorMessagesComponent } from '../../../components/error-messages-component/error-messages-component';
 
 
 @Component({
@@ -17,6 +17,7 @@ import { AddSchemeDto, UpdateSchemeDto } from '../../../models/ISchemes';
     styleUrls: ['./add-scheme.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
+        ErrorMessagesComponent,
         CommonModule,
         MatFormFieldModule,
         MatInputModule,
@@ -37,9 +38,6 @@ export class AddSchemeComponent {
         maxPayable: this.data?.scheme?.maxPayable || 0,
         recovery: this.data?.scheme?.recovery || 0
     }), AddSchemeSchema);
-    val = new ValidatorMessages();
-
-
 
     addScheme() {
         this.diag.close(

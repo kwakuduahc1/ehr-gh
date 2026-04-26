@@ -21,7 +21,7 @@ namespace ShimsServer.Models.Records
         [StringLength(30, MinimumLength = 5)]
         public string? CardID { get; set; }
 
-        public DateTime ExpiryDate { get; set; }
+        public DateTime? ExpiryDate { get; set; }
 
         public DateTime LastUpdateDate { get; set; } = DateTime.UtcNow;
 

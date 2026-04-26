@@ -13,8 +13,8 @@ import { RegisterVm } from '../../models/IUsers';
 import { ActivityProvider } from '../../providers/ActivityProvider';
 import { StatusProvider } from '../../providers/StatusProvider';
 import { ConfirmationComponent } from '../confirmation/confirmation.component';
-import { form, required, schema, minLength, maxLength, validate, email, FormRoot, FormField, ValidationError, MinLengthValidationError, WithFieldTree } from '@angular/forms/signals';
-import { validatePasswordHasLowercase, validatePasswordHasNumber, validatePasswordHasUppercase, ValidatorMessages } from '../auth-validators';
+import { form, required, schema, minLength, maxLength, validate, email, FormRoot, FormField } from '@angular/forms/signals';
+import { validatePasswordHasLowercase, validatePasswordHasNumber, validatePasswordHasUppercase } from '../auth-validators';
 
 @Component({
   selector: 'app-register',
@@ -46,8 +46,6 @@ export class RegisterComponent {
     email: '',
     phoneNumber: ''
   });
-
-  validators = new ValidatorMessages();
 
   form = form<RegisterVm>(this.regMod, RegisterSchema);
 

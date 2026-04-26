@@ -1,16 +1,16 @@
-<!-- <div class="add-registration-wrapper">
+<div class="add-registration-wrapper">
     <div class="add-registration-container">
-        <h1>{{data?.patient ? 'Edit' : 'Register'}} Patient</h1>
+        <h2 class="text-secondary text-center">{{data.patient ? 'Edit' : 'Register'}} Patient</h2>
         <form class="add-registration-form" [formRoot]="form">
             <fieldset class="add-registration-fieldset">
                 <mat-form-field appearance="outline">
                     <mat-label>Surname</mat-label>
                     <input type="text" title="Surname" matInput [formField]="form.surname" autocomplete="family-name">
-                    @if (form.surname().errors(); as err) {
+                    @if (form.surname().errors()[0]; as err) {
                     <mat-error>
-                        @if (err.at(0)?.kind === 'required') {<span>Surname is required</span>}
-                        @if (err.at(0)?.kind === 'minLength') {<span>{{val.minLenMsg(err.at(0))}} characters</span>}
-                        @if (err.at(0)?.kind === 'maxLength') {<span>{{val.maxLenMsg(err.at(0))}} characters</span>}
+                        @if (err?.kind === 'required') {<span>*</span>}
+                        @if (err?.kind === 'minLength') {<span>{{val.minLenMsg(err)}}</span>}
+                        @if (err?.kind === 'maxLength') {<span>{{val.maxLenMsg(err)}}</span>}
                     </mat-error>
                     }
                 </mat-form-field>
@@ -19,11 +19,11 @@
                     <mat-label>Other Names</mat-label>
                     <input type="text" title="Other Names" matInput [formField]="form.otherNames"
                         autocomplete="given-name">
-                    @if (form.otherNames().errors(); as err) {
+                    @if (form.otherNames().errors()[0]; as err) {
                     <mat-error>
-                        @if (err.at(0)?.kind === 'required') {<span>Other names are required</span>}
-                        @if (err.at(0)?.kind === 'minLength') {<span>{{val.minLenMsg(err.at(0))}} characters</span>}
-                        @if (err.at(0)?.kind === 'maxLength') {<span>{{val.maxLenMsg(err.at(0))}} characters</span>}
+                        @if (err?.kind === 'required') {<span>*</span>}
+                        @if (err?.kind === 'minLength') {<span>{{val.minLenMsg(err)}}</span>}
+                        @if (err?.kind === 'maxLength') {<span>{{val.maxLenMsg(err)}}</span>}
                     </mat-error>
                     }
                 </mat-form-field>
@@ -31,13 +31,15 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Date of Birth</mat-label>
                     <input type="date" title="Date of Birth" matInput [formField]="form.dateOfBirth">
-                    @if (form.dateOfBirth().errors(); as err) {
+                    @if (form.dateOfBirth().errors()[0]; as err) {
                     <mat-error>
-                        @if (err.at(0)?.kind === 'required') {<span>Date of birth is required</span>}
+                        @if (err?.kind === 'required') {<span>*</span>}
                     </mat-error>
                     }
                 </mat-form-field>
+            </fieldset>
 
+            <fieldset class="add-registration-fieldset">
                 <mat-form-field appearance="outline">
                     <mat-label>Ghana Card</mat-label>
                     <input type="text" title="Ghana Card" matInput [formField]="form.ghanaCard" autocomplete="off">
@@ -50,45 +52,21 @@
                         <mat-option [value]="s">{{s}}</mat-option>
                         }
                     </mat-select>
-                    @if (form.sex().errors(); as err) {
+                    @if (form.sex().errors()[0]; as err) {
                     <mat-error>
-                        @if (err.at(0)?.kind === 'required') {<span>Sex is required</span>}
+                        @if (err?.kind === 'required') {<span>*</span>}
                     </mat-error>
                     }
-                </mat-form-field>
-
-                <mat-form-field appearance="outline">
-                    <mat-label>Scheme</mat-label>
-                    <mat-select title="Scheme" [formField]="form.schemesID">
-                        @for (s of schemes(); track s.schemesID) {
-                        <mat-option [value]="s.schemesID">{{s.schemeName}}</mat-option>
-                        }
-                    </mat-select>
-                    @if (form.schemesID().errors(); as err) {
-                    <mat-error>
-                        @if (err.at(0)?.kind === 'required') {<span>Scheme is required</span>}
-                    </mat-error>
-                    }
-                </mat-form-field>
-
-                <mat-form-field appearance="outline">
-                    <mat-label>Card ID</mat-label>
-                    <input type="text" title="Card ID" matInput [formField]="form.cardID" autocomplete="off">
-                </mat-form-field>
-
-                <mat-form-field appearance="outline">
-                    <mat-label>Expiry Date</mat-label>
-                    <input type="date" title="Expiry Date" matInput [formField]="form.expiryDate">
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
                     <mat-label>Phone Number</mat-label>
                     <input type="tel" title="Phone Number" matInput [formField]="form.phoneNumber" autocomplete="tel">
-                    @if (form.phoneNumber().errors(); as err) {
+                    @if (form.phoneNumber().errors()[0]; as err) {
                     <mat-error>
-                        @if (err.at(0)?.kind === 'required') {<span>Phone number is required</span>}
-                        @if (err.at(0)?.kind === 'minLength') {<span>Must be 10 digits</span>}
-                        @if (err.at(0)?.kind === 'maxLength') {<span>Must be 10 digits</span>}
+                        @if (err?.kind === 'required') {<span>*</span>}
+                        @if (err?.kind === 'minLength') {<span>{{val.minLenMsg(err)}}</span>}
+                        @if (err?.kind === 'maxLength') {<span>{{val.maxLenMsg(err)}}</span>}
                     </mat-error>
                     }
                 </mat-form-field>
@@ -97,9 +75,9 @@
             <div class="form-actions">
                 <button type="button" mat-button (click)="close()">Cancel</button>
                 <button type="button" mat-flat-button color="primary" (click)="submit()">
-                    {{data?.patient ? 'Save' : 'Register'}}
+                    {{data.patient ? 'Save' : 'Register'}}
                 </button>
             </div>
         </form>
     </div>
-</div> -->
+</div>

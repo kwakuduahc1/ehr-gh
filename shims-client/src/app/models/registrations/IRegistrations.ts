@@ -1,13 +1,17 @@
 export interface AddPatientDto {
     surname: string;
     otherNames: string;
-    dateOfBirth: string;
-    ghanaCard: string | null;
+    dateOfBirth: string | null;
+    phoneNumber: string;
     sex: string;
-    schemes: string[];
+    ghanaCard: string;
+    schemes: InsuranceInformation[];
+}
+
+export interface InsuranceInformation {
+    schemesID: string;
     cardID: string;
     expiryDate: string;
-    phoneNumber: string | null;
 }
 
 export interface EditPatientDto extends AddPatientDto {
@@ -22,7 +26,7 @@ export interface ListPatientsDto {
     fullName: string;
     scheme: string;
     hospitalID: string;
-    cardID: string | null;
+    cardID: string;
     expiryDate: string;
     visitType: string;
     attendanceDate: Date;

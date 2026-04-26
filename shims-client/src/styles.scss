@@ -5,6 +5,7 @@
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 @use 'app/styles/variables' as *;
+@use 'app/styles/index.scss';
 
 html {
   height: 100%;

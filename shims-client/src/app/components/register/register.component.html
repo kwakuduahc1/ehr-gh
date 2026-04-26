@@ -7,14 +7,14 @@
                     <mat-label>Email</mat-label>
                     <input type="email" title="Email" matInput [formField]="form.email" autocomplete="email">
                     @if (form.email().errors(); as err) {
-                    <mat-error>
+                    <!-- <mat-error>
                         @if (err.at(0)?.kind === 'required') {<span>Email is required</span>}
                         @if (err.at(0)?.kind === 'email') {<span>Invalid email format</span>}
                         @if (err.at(0)?.kind === 'minLength') {<span>{{ validators.minLenMsg(err.at(0))}}
                             characters</span>}
                         @if (err.at(0)?.kind === 'maxLength') {<span>{{ validators.maxLenMsg(err.at(0))}}
                             characters</span>}
-                    </mat-error>
+                    </mat-error> -->
                     }
                 </mat-form-field>
 
@@ -22,13 +22,13 @@
                     <mat-label>Full Name</mat-label>
                     <input title="Full Name" matInput [formField]="form.fullName" autocomplete="name">
                     @if (form.fullName().errors(); as err) {
-                    <mat-error>
+                    <!-- <mat-error>
                         @if (err.at(0)?.kind === 'required') {<span>Full name is required</span>}
                         @if (err.at(0)?.kind === 'minLength') {<span>{{ validators.minLenMsg(err.at(0))}}
                             characters</span>}
                         @if (err.at(0)?.kind === 'maxLength') {<span>{{ validators.maxLenMsg(err.at(0))}}
                             characters</span>}
-                    </mat-error>
+                    </mat-error> -->
                     }
                 </mat-form-field>
 
@@ -36,13 +36,13 @@
                     <mat-label>Phone Number</mat-label>
                     <input type="tel" title="Phone number" matInput [formField]="form.phoneNumber" autocomplete="tel">
                     @if (form.phoneNumber().errors(); as err) {
-                    <mat-error>
+                    <!-- <mat-error>
                         @if (err.at(0)?.kind === 'required') {<span>Phone number is required</span>}
                         @if (err.at(0)?.kind === 'minLength') {<span>{{ validators.minLenMsg(err.at(0))}}
                             characters</span>}
                         @if (err.at(0)?.kind === 'maxLength') {<span>{{ validators.maxLenMsg(err.at(0))}}
                             characters</span>}
-                    </mat-error>
+                    </mat-error> -->
                     }
                 </mat-form-field>
 
@@ -51,7 +51,7 @@
                     <input title="Password" matInput [formField]="form.password" type="password"
                         autocomplete="new-password">
                     @if (form.password().errors(); as err) {
-                    <mat-error>
+                    <!-- <mat-error>
                         @if (err.at(0)?.kind === 'required') {<span>Password is required</span>}
                         @if (err.at(0)?.kind === 'minLength') {<span>{{ validators.minLenMsg(err.at(0))}}
                             characters</span>}
@@ -60,7 +60,7 @@
                         @if (err.at(0)?.kind === 'passwordUppercase') {<span>Must contain uppercase letter</span>}
                         @if (err.at(0)?.kind === 'passwordLowercase') {<span>Must contain lowercase letter</span>}
                         @if (err.at(0)?.kind === 'passwordNumber') {<span>Must contain a number</span>}
-                    </mat-error>
+                    </mat-error> -->
                     }
                 </mat-form-field>
 
@@ -69,14 +69,14 @@
                     <input title="Confirm Password" matInput [formField]="form.confirmPassword" type="password"
                         autocomplete="new-password">
                     @if (form.confirmPassword().errors(); as err) {
-                    <mat-error>
+                    <!-- <mat-error>
                         @if (err.at(0)?.kind === 'required') {<span>Confirm password is required</span>}
                         @if (err.at(0)?.kind === 'minLength') {<span>{{ validators.minLenMsg(err.at(0))}}
                             characters</span>}
                         @if (err.at(0)?.kind === 'maxLength') {<span>{{ validators.maxLenMsg(err.at(0))}}
                             characters</span>}
                         @if (err.at(0)?.kind === 'passwordMismatch') {<span>Passwords do not match</span>}
-                    </mat-error>
+                    </mat-error> -->
                     }
                 </mat-form-field>
 
@@ -92,13 +92,13 @@
                         <mat-option value="General user">General user</mat-option>
                     </mat-select>
                     @if (form.userRole().errors(); as err) {
-                    <mat-error>
+                    <!-- <mat-error>
                         @if (err.at(0)?.kind === 'required') {<span>Role is required</span>}
                         @if (err.at(0)?.kind === 'minLength') {<span>{{ validators.minLenMsg(err.at(0))}}
                             characters</span>}
                         @if (err.at(0)?.kind === 'maxLength') {<span>{{ validators.maxLenMsg(err.at(0))}}
                             characters</span>}
-                    </mat-error>
+                    </mat-error> -->
                     }
                 </mat-form-field>
             </fieldset>

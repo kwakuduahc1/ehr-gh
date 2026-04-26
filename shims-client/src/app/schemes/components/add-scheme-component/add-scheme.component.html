@@ -7,13 +7,7 @@
                     <mat-label>Scheme Name</mat-label>
                     <input type="text" title="Scheme Name" matInput [formField]="form.schemeName" autocomplete="on">
                     @if (form.schemeName().errors(); as err) {
-                    <mat-error>
-                        @if (err.at(0)?.kind === 'required') {<span>*</span>}
-                        @if (err.at(0)?.kind === 'minLength') {<span>{{val.minLenMsg(err?.at(0))}}
-                            characters</span>}
-                        @if (err.at(0)?.kind === 'maxLength') {<span>{{val.maxLenMsg(err?.at(0))}}
-                            characters</span>}
-                    </mat-error>
+                    <app-error-messages [errors]="err" />
                     }
                 </mat-form-field>
                 <mat-form-field appearance="outline">
@@ -23,13 +17,7 @@
                         <mat-option [value]="c">{{c}}</mat-option>
                         }
                         @if (form.coverage().errors(); as err) {
-                        <mat-error>
-                            @if (err.at(0)?.kind === 'required') {<span>*</span>}
-                            @if (err.at(0)?.kind === 'minLength') {<span>{{val.minLenMsg(err?.at(0))}}
-                                characters</span>}
-                            @if (err.at(0)?.kind === 'maxLength') {<span>{{val.maxLenMsg(err?.at(0))}}
-                                characters</span>}
-                        </mat-error>
+                        <app-error-messages [errors]="err" />
                         }
                     </mat-select>
                 </mat-form-field>
@@ -38,11 +26,7 @@
                     <mat-label>Max Payable</mat-label>
                     <input type="number" title="Max Payable" matInput [formField]="form.maxPayable" autocomplete="on">
                     @if (form.maxPayable().errors(); as err) {
-                    <mat-error>
-                        @if (err.at(0)?.kind === 'required') {<span>*</span>}
-                        @if (err.at(0)?.kind === 'min') {<span>{{val.minMsg(err?.at(0))}}</span>}
-                        @if (err.at(0)?.kind === 'max') {<span>{{val.maxMsg(err?.at(0))}}</span>}
-                    </mat-error>
+                    <app-error-messages [errors]="err" />
                     }
                 </mat-form-field>
 
@@ -50,11 +34,7 @@
                     <mat-label>Recovery</mat-label>
                     <input type="number" title="Recovery" matInput [formField]="form.recovery" autocomplete="on">
                     @if (form.recovery().errors(); as err) {
-                    <mat-error>
-                        @if (err.at(0)?.kind === 'required') {<span>*</span>}
-                        @if (err.at(0)?.kind === 'min') {<span>{{val.minMsg(err?.at(0))}}</span>}
-                        @if (err.at(0)?.kind === 'max') {<span>{{val.maxMsg(err?.at(0))}}</span>}
-                    </mat-error>
+                    <app-error-messages [errors]="err" />
                     }
                 </mat-form-field>
             </fieldset>
@@ -62,7 +42,7 @@
             <div class="add-scheme-actions">
                 <button mat-raised-button color="primary" type="button" class="submit-btn"
                     [disabled]="form().invalid() || act.act().isProcessing" (click)="addScheme()">
-                    {{ data?.scheme ? 'Edit' : 'Add' }} Scheme
+                    {{ data.scheme ? 'Edit' : 'Add' }} Scheme
                 </button>
                 <button type="button" mat-button class="cancel-btn" [disabled]="act.act().isProcessing"
                     (click)="close()">

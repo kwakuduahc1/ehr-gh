@@ -1,0 +1,8 @@
+<mat-error>
+    @if (errors().at(0)?.kind === 'required') {<span>*</span>}
+    @if (errors().at(0)?.kind === 'minLength') {<span>{{minLenMsg(errors().at(0))}}</span>}
+    @if (errors().at(0)?.kind === 'maxLength') {<span>{{maxLenMsg(errors().at(0))}}</span>}
+    @if (errors().at(0)?.kind === 'min') {<span>{{minMsg(errors().at(0))}}</span>}
+    @if (errors().at(0)?.kind === 'max') {<span>{{maxMsg(errors().at(0))}}</span>}
+    @if (errors().at(0)?.kind === 'pattern') {<span>{{patternMsg(errors().at(0))}}</span>}
+</mat-error>

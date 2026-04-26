@@ -384,3 +384,60 @@ em,
 .font-italic {
     font-style: italic;
 }
+
+// Text color classes
+.text-primary {
+    color: $text-primary;
+}
+
+.text-secondary {
+    color: $text-secondary;
+}
+
+.text-disabled {
+    color: $text-disabled;
+}
+
+.text-hint {
+    color: $text-hint;
+}
+
+.text-primary-light {
+    color: $text-primary-light;
+}
+
+.text-secondary-light {
+    color: $text-secondary-light;
+}
+
+.text-disabled-light {
+    color: $text-disabled-light;
+}
+
+.text-primary-dark {
+    color: $text-primary-dark;
+}
+
+.text-secondary-dark {
+    color: $text-secondary-dark;
+}
+
+.text-disabled-dark {
+    color: $text-disabled-dark;
+}
+
+.text-hint-dark {
+    color: $text-hint-dark;
+}
+
+.text-tertiary {
+    color: $text-tertiary;
+}
+
+.text-info {
+    color: $text-info;
+}
+
+.text-warning {
+    color: $text-warning;
+}
