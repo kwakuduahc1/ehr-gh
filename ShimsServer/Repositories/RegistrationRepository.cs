@@ -18,6 +18,8 @@ namespace ShimsServer.Repositories
         Task<ListPatientsDto?> GetPatientByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
         Task<IEnumerable<ListPatientsDto>> SearchPatientsAsync(string search, CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<PatientDetailsDto>> GetPatientDetailsByIdAsync(Guid id, CancellationToken cancellationToken = default);
     }
 
     public class RegistrationRepository(IConnection connection) : IRegistrationRepository
@@ -160,6 +162,17 @@ namespace ShimsServer.Repositories
             using var con = await connection.ConnectionAsync(cancellationToken);
             return await con.QueryAsync<ListPatientsDto>(sql, new { search = $"%{search}%" });
         }
+
+        public async Task<IEnumerable<PatientDetailsDto>> GetPatientDetailsByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            const string sql =
+                """
+                    SELECT PatientsID, hospitalid, surname, othernames, sex, dateofbirth, age, phonenumber, ghanacard, visittype, patientattendancesid, dateseen, patientschemesid, cardid, expirydate
+                    FROM get_patient_attendance_details(@id);
+                """;
+            using var con = await connection.ConnectionAsync(cancellationToken);
+            return await con.QueryAsync<PatientDetailsDto>(sql, new { id });
+        }
     }
 
     public record InsuranceInformation(
@@ -215,4 +228,28 @@ namespace ShimsServer.Repositories
         DateTime AttendanceDate,
         Guid PatientSchemesID
         );
+
+    /*
+     * A parameterless default constructor or one matching signature (System.Guid patientsid, System.String hospitalid, System.String surname, System.String othernames, System.String phonenumber, System.String ghanacard, System.String visittype, System.Guid patientattendancesid, System.Guid patientschemesid, System.String cardid, System.DateOnly expirydate)
+     * */
+
+    public record PatientDetailsDto(
+        Guid PatientsID,
+        string HospitalID,
+        string Surname,
+        string OtherNames,
+        string Sex,
+        DateOnly DateOfBirth,
+        short Age,
+        string PhoneNumber,
+        string GhanaCard,
+        string VisitType,
+        Guid PatientAttendancesID,
+        DateOnly DateSeen,
+        Guid PatientSchemesID,
+        string? CardID,
+        DateOnly? ExpiryDate
+        );
+
+
 }

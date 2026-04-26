@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
+import { ListPatientsDto } from '../../../models/registrations/IRegistrations';
 
 @Component({
   selector: 'app-patient-detail-component',
@@ -7,5 +8,5 @@ import { Component } from '@angular/core';
   styleUrl: './patient-detail-component.scss',
 })
 export class PatientDetailComponent {
-
+  patient = input<ListPatientsDto>();
 }

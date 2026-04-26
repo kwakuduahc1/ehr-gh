@@ -9,6 +9,49 @@ namespace ShimsServer.Controllers.Records
     [Produces("application/json")]
     public class RegistrationsController(IRegistrationRepository repository, ILogger<RegistrationsController> logger) : ControllerBase
     {
+        [HttpGet("details/{id:guid:required}")]
+        public async Task<ActionResult<IEnumerable<PatientDetailsDto>>> GetPatientDetails(Guid id)
+        {
+            var res = await repository.GetPatientDetailsByIdAsync(id, HttpContext.RequestAborted);
+            return res == null ? NotFound() : Ok(
+                res
+                .GroupBy(p => new
+                {
+                    p.Surname,
+                    p.HospitalID,
+                    p.OtherNames,
+                    p.PhoneNumber,
+                    p.GhanaCard,
+                    p.VisitType,
+                    p.PatientAttendancesID,
+                    p.DateSeen,
+                    p.PatientsID,
+                    p.Age,
+                    p.Sex,
+                    p.DateOfBirth
+                }, (k, v) => new
+                {
+                    k.PatientsID,
+                    k.Surname,
+                    k.HospitalID,
+                    k.OtherNames,
+                    k.PhoneNumber,
+                    k.GhanaCard,
+                    k.VisitType,
+                    k.PatientAttendancesID,
+                    k.DateSeen,
+                    k.Sex,
+                    k.Age,
+                    k.DateOfBirth,
+                    Schemes = v.Select(s => new
+                    {
+                        s.PatientSchemesID,
+                        s.CardID,
+                        s.ExpiryDate
+                    })
+                }).FirstOrDefault());
+        }
+
         /// <summary>
         /// Register a new patient with scheme and initial attendance
         /// </summary>
@@ -21,7 +64,7 @@ namespace ShimsServer.Controllers.Records
             var (pid, attendanceId, userName) = (Guid.CreateVersion7(), Guid.CreateVersion7(), User.Identity?.Name ?? "system");
             try
             {
-               var hid = await repository.AddPatientAsync(dto, (pid, attendanceId, psids.ToArray(), userName), HttpContext.RequestAborted);
+                var hid = await repository.AddPatientAsync(dto, (pid, attendanceId, psids.ToArray(), userName), HttpContext.RequestAborted);
                 return Ok(new { pid, hid });
             }
             catch (PostgresException ex)
@@ -89,9 +132,9 @@ namespace ShimsServer.Controllers.Records
                 return BadRequest(new { message = "Patient ID mismatch" });
             try
             {
-            // Check if patient exists
-            if (!await repository.PatientExists(id, HttpContext.RequestAborted))
-                return NotFound(new { message = "Patient not found" });
+                // Check if patient exists
+                if (!await repository.PatientExists(id, HttpContext.RequestAborted))
+                    return NotFound(new { message = "Patient not found" });
                 var userName = User.Identity?.Name ?? "system";
                 var rowsAffected = await repository.EditPatientAsync(dto, userName, HttpContext.RequestAborted);
 
@@ -122,9 +165,9 @@ namespace ShimsServer.Controllers.Records
         {
             try
             {
-            // Check if patient exists
-            if (!await repository.PatientExists(id, HttpContext.RequestAborted))
-                return NotFound(new { message = "Patient not found" });
+                // Check if patient exists
+                if (!await repository.PatientExists(id, HttpContext.RequestAborted))
+                    return NotFound(new { message = "Patient not found" });
 
                 await repository.DeletePatientAsync(id, HttpContext.RequestAborted);
                 return Ok(new { message = "Patient deleted successfully" });

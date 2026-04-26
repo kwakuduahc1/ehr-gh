@@ -17,17 +17,19 @@ export interface EditPatientDto extends AddPatientDto {
     patientID: string;
 }
 
-export interface ListPatientsDto {
-    patientID: string;
-    schemesID: string;
-    age: number;
-    gender: string;
-    fullName: string;
-    scheme: string;
-    hospitalID: string;
-    cardID: string;
-    expiryDate: string;
-    visitType: string;
-    attendanceDate: Date;
+export interface PatientPaymentSchemeDto extends InsuranceInformation {
     patientSchemesID: string;
+}
+
+export interface ListPatientsDto {
+    patientsID: string;
+    surname: string;
+    otherNames: string;
+    hospitalID: string;
+    phoneNumber: string;
+    ghanaCard: string;
+    visitType: string;
+    patientAttendancesID: string;
+    dateSeen: string;
+    schemes: PatientPaymentSchemeDto[];
 }
