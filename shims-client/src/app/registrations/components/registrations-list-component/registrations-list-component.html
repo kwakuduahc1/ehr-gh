@@ -14,21 +14,17 @@
         <th>Actions</th>
     </thead>
     <tbody>
-        @for (p of list(); track p.patientID) {
+        @for (p of list(); track p.patientsID) {
         <tr>
-            <td>{{p.fullName}}</td>
+            <td>{{p.fullname}}</td>
             <td>{{p.hospitalID}}</td>
-            <td>{{p.cardID}}</td>
-            <td>{{p.scheme}}</td>
-            <td>{{p.age}}</td>
-            <td>{{p.gender}}</td>
-            <td>{{p.expiryDate | date}}</td>
+            <td>{{p.ghanaCard}}</td>
             <td>
-                <button (click)="addRegistration(p)" mat-button type="button" title="Edit {{p.fullName}}">
+                <button (click)="addRegistration(p)" mat-button type="button" title="Edit {{p.fullname}}">
                     <mat-icon>edit</mat-icon> Edit
                 </button>
-                <button (click)="deleteRegistration(p.patientID)" mat-button color="warn" type="button"
-                    title="Delete {{p.fullName}}">
+                <button (click)="deleteRegistration(p.patientsID)" mat-button color="warn" type="button"
+                    title="Delete {{p.fullname}}">
                     <mat-icon>delete</mat-icon> Delete
                 </button>
             </td>

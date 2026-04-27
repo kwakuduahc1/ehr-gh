@@ -11,15 +11,14 @@ namespace ShimsServer.Repositories
 
         Task DeletePatientAsync(Guid id, CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<ListPatientsDto>> GetPatientsAsync(CancellationToken cancellationToken = default);
+        Task<IEnumerable<PatientDetailsDto>> GetPatientsAsync(CancellationToken cancellationToken = default);
 
         Task<bool> PatientExists(Guid id, CancellationToken cancellationToken = default);
 
-        Task<ListPatientsDto?> GetPatientByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<PatientDetailsDto?> GetPatientByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<IEnumerable<PatientDetailsDto>> SearchPatientsAsync(string search, CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<ListPatientsDto>> SearchPatientsAsync(string search, CancellationToken cancellationToken = default);
-
-        Task<IEnumerable<PatientDetailsDto>> GetPatientDetailsByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<PatientDetailsDto?> GetPatientDetailsByIdAsync(Guid id, CancellationToken cancellationToken = default);
     }
 
     public class RegistrationRepository(IConnection connection) : IRegistrationRepository
@@ -115,27 +114,97 @@ namespace ShimsServer.Repositories
             return n;
         }
 
-        public async Task<ListPatientsDto?> GetPatientByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<PatientDetailsDto?> GetPatientByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             const string sql =
                 """
-                    SELECT PatientsID, schemesid, age, gender, fullname, scheme, hospitalid, cardid, expirydate, attendancedate
+                    SELECT PatientsID, schemesid, age, sex, fullname, hospitalid, cardid, expirydate, dateseen, patientschemesid, visittype, phonenumber, ghanacard, dateofbirth, schemename, coverage
                     FROM vw_patients
                     WHERE PatientsID = @id;
                 """;
             using var con = await connection.ConnectionAsync(cancellationToken);
-            return await con.QueryFirstOrDefaultAsync<ListPatientsDto>(sql, new { id });
+            var res = await con.QueryAsync<PatientDetails>(sql, new { id });
+            return res
+                .GroupBy(p => new
+                {
+                    p.FullName,
+                    p.HospitalID,
+                    p.PhoneNumber,
+                    p.GhanaCard,
+                    p.VisitType,
+                    p.PatientAttendancesID,
+                    p.DateSeen,
+                    p.PatientsID,
+                    p.Age,
+                    p.Sex,
+                    p.DateOfBirth
+                }, (k, v) => new PatientDetailsDto(
+                    k.PatientsID,
+                    k.HospitalID,
+                    k.FullName,
+                    k.Sex,
+                    k.DateOfBirth,
+                    k.Age,
+                    k.PhoneNumber,
+                    k.GhanaCard,
+                    k.VisitType,
+                    k.PatientAttendancesID,
+                    k.DateSeen,
+                    v.Select(s => new InsuranceDetails(
+                        s.SchemesID,
+                        s.CardID,
+                        s.ExpiryDate,
+                        s.PatientSchemesID,
+                        s.SchemeName,
+                        s.Coverage
+                    ))
+                )).FirstOrDefault();
         }
 
-        public async Task<IEnumerable<ListPatientsDto>> GetPatientsAsync(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<PatientDetailsDto>> GetPatientsAsync(CancellationToken cancellationToken = default)
         {
             const string sql =
                 """
-                    SELECT PatientsID, schemesid, age, gender, fullname, scheme, hospitalid, cardid, expirydate, attendancedate, patientschemesid
+                    SELECT PatientsID, schemesid, age, sex, fullname, hospitalid, cardid, expirydate, dateseen, patientschemesid, visittype, phonenumber, ghanacard, dateofbirth, schemename, coverage
                     FROM vw_patients;
                 """;
             using var con = await connection.ConnectionAsync(cancellationToken);
-            return await con.QueryAsync<ListPatientsDto>(sql);
+            var res = await con.QueryAsync<PatientDetails>(sql);
+            return res
+                .GroupBy(p => new
+                {
+                    p.FullName,
+                    p.HospitalID,
+                    p.PhoneNumber,
+                    p.GhanaCard,
+                    p.VisitType,
+                    p.PatientAttendancesID,
+                    p.DateSeen,
+                    p.PatientsID,
+                    p.Age,
+                    p.Sex,
+                    p.DateOfBirth
+                }, (k, v) => new PatientDetailsDto(
+                    k.PatientsID,
+                    k.HospitalID,
+                    k.FullName,
+                    k.Sex,
+                    k.DateOfBirth,
+                    k.Age,
+                    k.PhoneNumber,
+                    k.GhanaCard,
+                    k.VisitType,
+                    k.PatientAttendancesID,
+                    k.DateSeen,
+                    v.Select(s => new InsuranceDetails(
+                        s.SchemesID,
+                        s.CardID,
+                        s.ExpiryDate,
+                        s.PatientSchemesID,
+                        s.SchemeName,
+                        s.Coverage
+                    ))
+                ));
         }
 
         public async Task<bool> PatientExists(Guid id, CancellationToken cancellationToken = default)
@@ -148,30 +217,101 @@ namespace ShimsServer.Repositories
             return await con.ExecuteScalarAsync<bool>(sql, new { id });
         }
 
-        public async Task<IEnumerable<ListPatientsDto>> SearchPatientsAsync(string search, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<PatientDetailsDto>> SearchPatientsAsync(string search, CancellationToken cancellationToken = default)
         {
             const string sql =
                 """
-                    SELECT PatientsID, schemesid, age, gender, fullname, scheme, hospitalid, cardid, expirydate, attendancedate, patientschemesid
+                    SELECT PatientsID, schemesid, age, sex, fullname, hospitalid, cardid, expirydate, dateseen, patientschemesid, visittype, phonenumber, ghanacard, dateofbirth, schemename, coverage
                     FROM vw_patients
                     WHERE fullname ILIKE @search
                         OR cardid ILIKE @search
                         OR hospitalid ILIKE @search
-                    ORDER BY attendancedate DESC;
+                    ORDER BY dateseen DESC;
                 """;
             using var con = await connection.ConnectionAsync(cancellationToken);
-            return await con.QueryAsync<ListPatientsDto>(sql, new { search = $"%{search}%" });
+            var res = await con.QueryAsync<PatientDetails>(sql, new { search = $"%{search}%" });
+            return res
+                .GroupBy(p => new
+                {
+                    p.FullName,
+                    p.HospitalID,
+                    p.PhoneNumber,
+                    p.GhanaCard,
+                    p.VisitType,
+                    p.PatientAttendancesID,
+                    p.DateSeen,
+                    p.PatientsID,
+                    p.Age,
+                    p.Sex,
+                    p.DateOfBirth
+                }, (k, v) => new PatientDetailsDto(
+                    k.PatientsID,
+                    k.HospitalID,
+                    k.FullName,
+                    k.Sex,
+                    k.DateOfBirth,
+                    k.Age,
+                    k.PhoneNumber,
+                    k.GhanaCard,
+                    k.VisitType,
+                    k.PatientAttendancesID,
+                    k.DateSeen,
+                    v.Select(s => new InsuranceDetails(
+                        s.SchemesID,
+                        s.CardID,
+                        s.ExpiryDate,
+                        s.PatientSchemesID,
+                        s.SchemeName,
+                        s.Coverage
+                    ))
+                ));
         }
 
-        public async Task<IEnumerable<PatientDetailsDto>> GetPatientDetailsByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<PatientDetailsDto?> GetPatientDetailsByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             const string sql =
                 """
-                    SELECT PatientsID, hospitalid, surname, othernames, sex, dateofbirth, age, phonenumber, ghanacard, visittype, patientattendancesid, dateseen, patientschemesid, cardid, expirydate
-                    FROM get_patient_attendance_details(@id);
+                    SELECT PatientsID, hospitalid, fullname, sex, dateofbirth, age, phonenumber, ghanacard, visittype, patientattendancesid, dateseen, patientschemesid, cardid, expirydate, schemesid, schemename, coverage
+                    FROM vw_patients
+                    WHERE PatientsID = @id;
                 """;
             using var con = await connection.ConnectionAsync(cancellationToken);
-            return await con.QueryAsync<PatientDetailsDto>(sql, new { id });
+            var res = await con.QueryAsync<PatientDetails>(sql, new { id });
+            return res
+                .GroupBy(p => new
+                {
+                    p.FullName,
+                    p.HospitalID,
+                    p.PhoneNumber,
+                    p.GhanaCard,
+                    p.VisitType,
+                    p.PatientAttendancesID,
+                    p.DateSeen,
+                    p.PatientsID,
+                    p.Age,
+                    p.Sex,
+                    p.DateOfBirth
+                }, (k, v) => new PatientDetailsDto(
+                    k.PatientsID,
+                    k.HospitalID,
+                    k.FullName,
+                    k.Sex,
+                    k.DateOfBirth,
+                    k.Age,
+                    k.PhoneNumber,
+                    k.GhanaCard,
+                    k.VisitType,
+                    k.PatientAttendancesID,
+                    k.DateSeen,
+                    v.Select(s => new InsuranceDetails(
+                        s.SchemesID,
+                        s.CardID,
+                        s.ExpiryDate,
+                        s.PatientSchemesID,
+                        s.SchemeName,
+                        s.Coverage
+                    ))
+                )).FirstOrDefault();
         }
     }
 
@@ -180,6 +320,15 @@ namespace ShimsServer.Repositories
         [StringLength(30, MinimumLength = 5)] string? CardID,
         DateTime? ExpiryDate
         );
+
+    public record InsuranceDetails(
+         Guid SchemesID,
+         [StringLength(30, MinimumLength = 5)] string? CardID,
+         DateOnly? ExpiryDate,
+         Guid PatientSchemesID,
+         string SchemeName,
+         string Coverage
+         );
 
     public record AddPatientDto(
         [StringLength(30, MinimumLength = 3)] string Surname,
@@ -212,32 +361,32 @@ namespace ShimsServer.Repositories
     [Required, DataType(DataType.PhoneNumber)] string PhoneNumber);
 
     /**
- * (System.Guid patientsid, System.Guid schemesid, System.Int16 age, System.String gender, System.String fullname, System.String scheme, System.String hospitalid, System.String cardid, System.DateTime expirydate, System.DateTime attendancedate, System.Guid patientschemesid)
+ * (System.Guid patientsid, System.Guid schemesid, System.Int16 age, System.String sex, System.String fullname, System.String scheme, System.String hospitalid, System.String cardid, System.DateTime expirydate, System.DateTime dateseen, System.Guid patientschemesid)
  */
     public record ListPatientsDto(
         Guid PatientsID,
         Guid SchemesID,
         short Age,
-        string Gender,
+        string Sex,
         string FullName,
         string Scheme,
         string HospitalID,
         string CardID,
-        DateTime? ExpiryDate,
-        //string VisitType,
-        DateTime AttendanceDate,
-        Guid PatientSchemesID
+        DateOnly? ExpiryDate,
+        DateOnly DateSeen,
+        Guid PatientSchemesID,
+        string PhoneNumber,
+        string VisitType
         );
 
     /*
-     * A parameterless default constructor or one matching signature (System.Guid patientsid, System.String hospitalid, System.String surname, System.String othernames, System.String phonenumber, System.String ghanacard, System.String visittype, System.Guid patientattendancesid, System.Guid patientschemesid, System.String cardid, System.DateOnly expirydate)
+     * (System.Guid patientsid, System.String hospitalid, System.String fullname, System.String sex, System.DateOnly dateofbirth, System.Int16 age, System.String phonenumber, System.String ghanacard, System.String visittype, System.Guid patientattendancesid, System.DateOnly dateseen, System.Guid patientschemesid, System.String cardid, System.DateOnly expirydate)
      * */
 
-    public record PatientDetailsDto(
+    record PatientDetails(
         Guid PatientsID,
         string HospitalID,
-        string Surname,
-        string OtherNames,
+        string FullName,
         string Sex,
         DateOnly DateOfBirth,
         short Age,
@@ -248,8 +397,24 @@ namespace ShimsServer.Repositories
         DateOnly DateSeen,
         Guid PatientSchemesID,
         string? CardID,
-        DateOnly? ExpiryDate
+        DateOnly? ExpiryDate,
+        Guid SchemesID,
+        string SchemeName,
+        string Coverage
         );
 
-
+    public record PatientDetailsDto(
+    Guid PatientsID,
+    string HospitalID,
+    string FullName,
+    string Sex,
+    DateOnly DateOfBirth,
+    short Age,
+    string PhoneNumber,
+    string GhanaCard,
+    string VisitType,
+    Guid PatientAttendancesID,
+    DateOnly DateSeen,
+    IEnumerable<InsuranceDetails> Schemes
+    );
 }

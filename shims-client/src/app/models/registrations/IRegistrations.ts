@@ -23,8 +23,7 @@ export interface PatientPaymentSchemeDto extends InsuranceInformation {
 
 export interface ListPatientsDto {
     patientsID: string;
-    surname: string;
-    otherNames: string;
+    fullname: string;
     hospitalID: string;
     phoneNumber: string;
     ghanaCard: string;

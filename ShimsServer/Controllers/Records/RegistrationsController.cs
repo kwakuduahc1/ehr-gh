@@ -4,58 +4,42 @@ using ShimsServer.Repositories;
 
 namespace ShimsServer.Controllers.Records
 {
+    /// <summary>
+    /// Manages patient registration, retrieval, search, update, and deletion operations.
+    /// Handles patient medical records and their associated insurance scheme information.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
+    [Tags("Registrations")]
     public class RegistrationsController(IRegistrationRepository repository, ILogger<RegistrationsController> logger) : ControllerBase
     {
+        /// <summary>
+        /// Retrieves detailed patient information including attendance history and insurance schemes.
+        /// </summary>
+        /// <param name="id">The unique identifier of the patient</param>
+        /// <param name="cancellationToken">Cancellation token for the async operation</param>
+        /// <returns>Patient details with attendance and scheme information</returns>
+        /// <response code="200">Successfully retrieved patient details</response>
+        /// <response code="404">Patient not found</response>
         [HttpGet("details/{id:guid:required}")]
-        public async Task<ActionResult<IEnumerable<PatientDetailsDto>>> GetPatientDetails(Guid id)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PatientDetailsDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<PatientDetailsDto?>> GetPatientDetails(Guid id)
         {
-            var res = await repository.GetPatientDetailsByIdAsync(id, HttpContext.RequestAborted);
-            return res == null ? NotFound() : Ok(
-                res
-                .GroupBy(p => new
-                {
-                    p.Surname,
-                    p.HospitalID,
-                    p.OtherNames,
-                    p.PhoneNumber,
-                    p.GhanaCard,
-                    p.VisitType,
-                    p.PatientAttendancesID,
-                    p.DateSeen,
-                    p.PatientsID,
-                    p.Age,
-                    p.Sex,
-                    p.DateOfBirth
-                }, (k, v) => new
-                {
-                    k.PatientsID,
-                    k.Surname,
-                    k.HospitalID,
-                    k.OtherNames,
-                    k.PhoneNumber,
-                    k.GhanaCard,
-                    k.VisitType,
-                    k.PatientAttendancesID,
-                    k.DateSeen,
-                    k.Sex,
-                    k.Age,
-                    k.DateOfBirth,
-                    Schemes = v.Select(s => new
-                    {
-                        s.PatientSchemesID,
-                        s.CardID,
-                        s.ExpiryDate
-                    })
-                }).FirstOrDefault());
+            var patientDetails = await repository.GetPatientDetailsByIdAsync(id, HttpContext.RequestAborted);
+            return patientDetails == null ? NotFound() : Ok(patientDetails);
         }
 
         /// <summary>
-        /// Register a new patient with scheme and initial attendance
+        /// Registers a new patient with their scheme and initial attendance record.
         /// </summary>
+        /// <param name="dto">Patient registration data containing personal and demographic information</param>
+        /// <returns>The newly created patient ID and hospital ID</returns>
+        /// <response code="200">Patient successfully registered</response>
+        /// <response code="400">Invalid patient data or database error</response>
         [HttpPost]
+        [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> RegisterPatient([FromBody] AddPatientDto dto)
@@ -80,36 +64,46 @@ namespace ShimsServer.Controllers.Records
         }
 
         /// <summary>
-        /// Get all patients with their latest attendance
+        /// Retrieves all patients with their latest attendance and insurance scheme information.
+        /// Results are cached for 30 seconds.
         /// </summary>
+        /// <returns>A collection of patient details</returns>
+        /// <response code="200">Successfully retrieved all patients</response>
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<PatientDetailsDto>))]
         [ResponseCache(Duration = 30, Location = ResponseCacheLocation.Any)]
-        public async Task<ActionResult<IEnumerable<ListPatientsDto>>> GetPatients()
+        public async Task<IEnumerable<PatientDetailsDto>> GetPatients()
         {
-            var patients = await repository.GetPatientsAsync(HttpContext.RequestAborted);
-            return Ok(patients);
+            return await repository.GetPatientsAsync(HttpContext.RequestAborted);
         }
 
         /// <summary>
-        /// Get a specific patient by ID
+        /// Retrieves a specific patient by their unique identifier.
         /// </summary>
+        /// <param name="id">The unique identifier of the patient</param>
+        /// <returns>Patient details if found</returns>
+        /// <response code="200">Successfully retrieved patient information</response>
+        /// <response code="404">Patient not found</response>
         [HttpGet("{id:guid}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PatientDetailsDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ListPatientsDto>> GetPatientById(Guid id)
+        public async Task<ActionResult<PatientDetailsDto>> GetPatientById(Guid id)
         {
             var patient = await repository.GetPatientByIdAsync(id, HttpContext.RequestAborted);
             return patient == null ? NotFound() : Ok(patient);
         }
 
         /// <summary>
-        /// Search for patients by name, ID, or card ID
+        /// Searches for patients by full name, hospital ID, or insurance card ID.
         /// </summary>
+        /// <param name="search">Search term to match against patient name, hospital ID, or card ID</param>
+        /// <returns>Collection of matching patients</returns>
+        /// <response code="200">Successfully retrieved search results</response>
+        /// <response code="400">Search term is empty or invalid</response>
         [HttpGet("search")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<PatientDetailsDto>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<ListPatientsDto>>> SearchPatients([FromQuery] string search)
+        public async Task<ActionResult<IEnumerable<PatientDetailsDto>>> SearchPatients([FromQuery] string search)
         {
             if (string.IsNullOrWhiteSpace(search))
                 return BadRequest(new { message = "Search term cannot be empty" });
@@ -119,9 +113,16 @@ namespace ShimsServer.Controllers.Records
         }
 
         /// <summary>
-        /// Update patient information
+        /// Updates an existing patient's personal and demographic information.
         /// </summary>
+        /// <param name="id">The unique identifier of the patient to update</param>
+        /// <param name="dto">Updated patient data</param>
+        /// <returns>Confirmation message if successful</returns>
+        /// <response code="200">Patient successfully updated</response>
+        /// <response code="400">Patient ID mismatch or database error</response>
+        /// <response code="404">Patient not found</response>
         [HttpPut("{id:guid}")]
+        [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -156,8 +157,13 @@ namespace ShimsServer.Controllers.Records
         }
 
         /// <summary>
-        /// Delete (soft delete) a patient
+        /// Performs a soft delete of a patient record, marking it as inactive.
+        /// The record is not permanently removed from the database.
         /// </summary>
+        /// <param name="id">The unique identifier of the patient to delete</param>
+        /// <returns>Confirmation message if successful</returns>
+        /// <response code="200">Patient successfully deleted</response>
+        /// <response code="404">Patient not found</response>
         [HttpDelete("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

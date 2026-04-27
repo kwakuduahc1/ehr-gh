@@ -31,7 +31,8 @@ export class RegistrationsListComponent {
             AddRegistrationComponent,
             {
                 data: { patient },
-                width: '800px'
+                width: '800px',
+                disableClose: true
             }
         )
             .afterClosed()
@@ -83,7 +84,7 @@ export class RegistrationsListComponent {
             )
             .subscribe({
                 next: () => {
-                    this.list.update(x => x.filter(p => p.patientID !== id));
+                    this.list.update(x => x.filter(p => p.patientsID !== id));
                     this.snack.open('Registration deleted');
                 }
             });
