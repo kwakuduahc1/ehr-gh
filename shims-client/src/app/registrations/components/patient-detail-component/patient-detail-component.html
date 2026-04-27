@@ -1,1 +1,30 @@
-<p>patient-detail-component works!</p>
+<h2 mat-dialog-title>Insurance Details &mdash; {{data.fullName}}</h2>
+<mat-dialog-content>
+    @if (!data.schemes?.length) {
+    <p>No insurance schemes on record.</p>
+    } @else {
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Scheme</th>
+                <th>Coverage</th>
+                <th>Card ID</th>
+                <th>Expiry Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (s of data.schemes; track s.patientSchemesID) {
+            <tr>
+                <td>{{s.schemeName}}</td>
+                <td>{{s.coverage}}</td>
+                <td>{{s.cardID}}</td>
+                <td>{{s.expiryDate}}</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button (click)="close()">Close</button>
+</mat-dialog-actions>

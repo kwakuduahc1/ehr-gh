@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Asp.Versioning;
 using Serilog;
 using ShimsServer.Context;
 using ShimsServer.Repositories;
 using System.Net;
 using System.Text;
+using Asp.Versioning.ApiExplorer;
 
 namespace ShimsServer
 {
@@ -156,6 +158,17 @@ namespace ShimsServer
             });
 
             builder.Services.AddControllers();
+            builder.Services.AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.ReportApiVersions = true;
+                options.AssumeDefaultVersionWhenUnspecified = true;
+            })
+            .AddApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
+            });
             builder.Services.AddSignalR(x => x.KeepAliveInterval = TimeSpan.FromSeconds(10));
             builder.Services.AddResponseCaching();
             builder.Services.AddRateLimiter();
@@ -174,17 +187,23 @@ namespace ShimsServer
                 builder.Services.AddOpenApi("shims-server");
                 builder.Services.AddSwaggerGen(options =>
                 {
-                    options.SwaggerDoc("v1", new OpenApiInfo
+                    var apiVersionDescriptionProvider = builder.Services.BuildServiceProvider()
+                        .GetRequiredService<IApiVersionDescriptionProvider>();
+
+                    foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
                     {
-                        Version = "v1",
-                        Title = "BStudio EHR API",
-                        Description = "API for managing EHR",
-                        Contact = new OpenApiContact
+                        options.SwaggerDoc(description.GroupName, new OpenApiInfo
                         {
-                            Name = "BStudio",
-                            Email = "bstudio@bstudio.com"
-                        }
-                    });
+                            Version = description.ApiVersion.ToString(),
+                            Title = "BStudio EHR API",
+                            Description = "API for managing EHR",
+                            Contact = new OpenApiContact
+                            {
+                                Name = "BStudio",
+                                Email = "bstudio@bstudio.com"
+                            }
+                        });
+                    }
 
                     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                     {

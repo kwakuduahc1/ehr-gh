@@ -1,6 +1,5 @@
 import { Component, inject, model, ChangeDetectionStrategy, input } from '@angular/core';
-import { DatePipe } from '@angular/common';
-import { ListPatientsDto, EditPatientDto, AddPatientDto } from '../../../models/registrations/IRegistrations';
+import { PatientDetailsDto, EditPatientDto, AddPatientDto } from '../../../models/registrations/IRegistrations';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -9,6 +8,7 @@ import { filter, iif, switchMap, tap } from 'rxjs';
 import { RegistrationsHttpService } from '../../registrations-http.service';
 import { ConfirmationComponent } from '../../../components/confirmation/confirmation.component';
 import { AddRegistrationComponent } from '../add-registration-component/add-registration.component';
+import { PatientDetailComponent } from '../patient-detail-component/patient-detail-component';
 import { SchemesDTO } from '../../../models/ISchemes';
 
 @Component({
@@ -16,16 +16,16 @@ import { SchemesDTO } from '../../../models/ISchemes';
     templateUrl: './registrations-list-component.html',
     styleUrl: './registrations-list-component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [MatButton, MatIcon, DatePipe]
+    imports: [MatButton, MatIcon]
 })
 export class RegistrationsListComponent {
-    list = model.required<ListPatientsDto[]>();
+    list = model.required<PatientDetailsDto[]>();
     schemes = input.required<SchemesDTO[]>();
     private snack = inject(MatSnackBar);
     private diag = inject(MatDialog);
     private http = inject(RegistrationsHttpService);
 
-    addRegistration(patient?: EditPatientDto | ListPatientsDto) {
+    addRegistration(patient?: EditPatientDto | PatientDetailsDto) {
         let result: { patient: EditPatientDto, edit: boolean };
         this.diag.open<AddRegistrationComponent, {}, { patient: EditPatientDto, edit: boolean }>(
             AddRegistrationComponent,
@@ -71,6 +71,13 @@ export class RegistrationsListComponent {
                     this.addRegistration(result.patient);
                 }
             });
+    }
+
+    viewInsurance(patient: PatientDetailsDto) {
+        this.diag.open<PatientDetailComponent, PatientDetailsDto>(PatientDetailComponent, {
+            data: patient,
+            width: '600px'
+        });
     }
 
     deleteRegistration(id: string) {

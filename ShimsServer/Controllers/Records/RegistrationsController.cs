@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using ShimsServer.Repositories;
+using Asp.Versioning;
 
 namespace ShimsServer.Controllers.Records
 {
@@ -8,8 +9,13 @@ namespace ShimsServer.Controllers.Records
     /// Manages patient registration, retrieval, search, update, and deletion operations.
     /// Handles patient medical records and their associated insurance scheme information.
     /// </summary>
+    /// <remarks>
+    /// API Version: 1.0
+    /// </remarks>
     [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [Route("api/[controller]")]
+    [ApiVersion("1.0")]
     [Produces("application/json")]
     [Tags("Registrations")]
     public class RegistrationsController(IRegistrationRepository repository, ILogger<RegistrationsController> logger) : ControllerBase
@@ -119,7 +125,7 @@ namespace ShimsServer.Controllers.Records
         /// <param name="dto">Updated patient data</param>
         /// <returns>Confirmation message if successful</returns>
         /// <response code="200">Patient successfully updated</response>
-        /// <response code="400">Patient ID mismatch or database error</response>
+        /// <response code="400">Database error</response>
         /// <response code="404">Patient not found</response>
         [HttpPut("{id:guid}")]
         [Consumes("application/json")]
@@ -128,16 +134,16 @@ namespace ShimsServer.Controllers.Records
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<string>> UpdatePatient(Guid id, [FromBody] EditPatientDto dto)
         {
-            // Verify the ID in the route matches the DTO
-            if (id != dto.PatientsID)
-                return BadRequest(new { message = "Patient ID mismatch" });
             try
             {
                 // Check if patient exists
                 if (!await repository.PatientExists(id, HttpContext.RequestAborted))
                     return NotFound(new { message = "Patient not found" });
+
                 var userName = User.Identity?.Name ?? "system";
-                var rowsAffected = await repository.EditPatientAsync(dto, userName, HttpContext.RequestAborted);
+                // Route ID is authoritative
+                var updatedDto = dto with { PatientsID = id };
+                var rowsAffected = await repository.EditPatientAsync(updatedDto, userName, HttpContext.RequestAborted);
 
                 if (rowsAffected == 0)
                     return NotFound(new { message = "Patient not found" });

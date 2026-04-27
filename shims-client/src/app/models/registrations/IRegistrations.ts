@@ -7,28 +7,31 @@ export interface AddPatientDto {
     ghanaCard: string;
 }
 
-export interface InsuranceInformation {
+export interface InsuranceDetails {
     schemesID: string;
-    cardID?: string;
-    expiryDate?: string;
+    cardID?: string | null;
+    expiryDate?: string | null;
+    patientSchemesID: string;
+    schemeName?: string | null;
+    coverage?: string | null;
 }
 
 export interface EditPatientDto extends AddPatientDto {
-    patientID: string;
-}
-
-export interface PatientPaymentSchemeDto extends InsuranceInformation {
-    patientSchemesID: string;
-}
-
-export interface ListPatientsDto {
     patientsID: string;
-    fullname: string;
+    hospitalID?: string | null;
+}
+
+export interface PatientDetailsDto {
+    patientsID: string;
+    fullName: string;
     hospitalID: string;
     phoneNumber: string;
     ghanaCard: string;
     visitType: string;
     patientAttendancesID: string;
     dateSeen: string;
-    schemes: PatientPaymentSchemeDto[];
+    sex: string;
+    dateOfBirth: string;
+    age: number;
+    schemes: InsuranceDetails[];
 }

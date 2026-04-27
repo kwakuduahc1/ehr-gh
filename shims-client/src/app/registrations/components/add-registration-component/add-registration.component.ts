@@ -52,7 +52,7 @@ export class AddRegistrationComponent {
         //     }]);
         // }
         this.diag.close(
-            { patient: this.form().value(), edit: !!this.data?.patient?.patientID });
+            { patient: this.form().value(), edit: !!this.data?.patient?.patientsID });
     }
 
     close() {

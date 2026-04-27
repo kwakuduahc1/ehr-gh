@@ -118,7 +118,7 @@ namespace ShimsServer.Repositories
         {
             const string sql =
                 """
-                    SELECT PatientsID, schemesid, age, sex, fullname, hospitalid, cardid, expirydate, dateseen, patientschemesid, visittype, phonenumber, ghanacard, dateofbirth, schemename, coverage
+                    SELECT PatientsID, hospitalid, fullname, sex, dateofbirth, age, phonenumber, ghanacard, visittype, patientattendancesid, dateseen, patientschemesid, cardid, expirydate, schemesid, schemename, coverage
                     FROM vw_patients
                     WHERE PatientsID = @id;
                 """;
@@ -165,7 +165,7 @@ namespace ShimsServer.Repositories
         {
             const string sql =
                 """
-                    SELECT PatientsID, schemesid, age, sex, fullname, hospitalid, cardid, expirydate, dateseen, patientschemesid, visittype, phonenumber, ghanacard, dateofbirth, schemename, coverage
+                    SELECT PatientsID, hospitalid, fullname, sex, dateofbirth, age, phonenumber, ghanacard, visittype, patientattendancesid, dateseen, patientschemesid, cardid, expirydate, schemesid, schemename, coverage
                     FROM vw_patients;
                 """;
             using var con = await connection.ConnectionAsync(cancellationToken);
@@ -221,7 +221,7 @@ namespace ShimsServer.Repositories
         {
             const string sql =
                 """
-                    SELECT PatientsID, schemesid, age, sex, fullname, hospitalid, cardid, expirydate, dateseen, patientschemesid, visittype, phonenumber, ghanacard, dateofbirth, schemename, coverage
+                    SELECT PatientsID, hospitalid, fullname, sex, dateofbirth, age, phonenumber, ghanacard, visittype, patientattendancesid, dateseen, patientschemesid, cardid, expirydate, schemesid, schemename, coverage
                     FROM vw_patients
                     WHERE fullname ILIKE @search
                         OR cardid ILIKE @search

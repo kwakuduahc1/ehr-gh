@@ -4,27 +4,30 @@
 </button>
 <table class="table">
     <thead>
-        <th>Full Name</th>
         <th>Hospital ID</th>
-        <th>Card ID</th>
-        <th>Scheme</th>
+        <th>Full Name</th>
         <th>Age</th>
         <th>Sex</th>
-        <th>Expiry Date</th>
+        <th>Ghana Card</th>
         <th>Actions</th>
     </thead>
     <tbody>
         @for (p of list(); track p.patientsID) {
         <tr>
-            <td>{{p.fullname}}</td>
             <td>{{p.hospitalID}}</td>
+            <td>{{p.fullName}}</td>
+            <td>{{p.age}}</td>
+            <td>{{p.sex}}</td>
             <td>{{p.ghanaCard}}</td>
             <td>
-                <button (click)="addRegistration(p)" mat-button type="button" title="Edit {{p.fullname}}">
+                <button (click)="viewInsurance(p)" mat-button type="button" title="View insurance for {{p.fullName}}">
+                    <mat-icon>health_and_safety</mat-icon> Insurance
+                </button>
+                <button (click)="addRegistration(p)" mat-button type="button" title="Edit {{p.fullName}}">
                     <mat-icon>edit</mat-icon> Edit
                 </button>
                 <button (click)="deleteRegistration(p.patientsID)" mat-button color="warn" type="button"
-                    title="Delete {{p.fullname}}">
+                    title="Delete {{p.fullName}}">
                     <mat-icon>delete</mat-icon> Delete
                 </button>
             </td>
