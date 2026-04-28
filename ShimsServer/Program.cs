@@ -11,6 +11,7 @@ using ShimsServer.Repositories;
 using System.Net;
 using System.Text;
 using Asp.Versioning.ApiExplorer;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace ShimsServer
 {
@@ -64,6 +65,7 @@ namespace ShimsServer
             builder.Services.AddScoped<ISchemeServiceRepository, SchemeServiceRepository>();
             builder.Services.AddScoped<ISchemeInvestigationRepository, SchemeInvestigationRepository>();
             builder.Services.AddScoped<ISchemeServicePricingRepository, SchemeServicePricingRepository>();
+            builder.Services.AddScoped<IPatientSchemesRepository, PatientSchemesRepository>();
 
             builder.Services.AddStackExchangeRedisCache(o =>
             {
@@ -187,24 +189,6 @@ namespace ShimsServer
                 builder.Services.AddOpenApi("shims-server");
                 builder.Services.AddSwaggerGen(options =>
                 {
-                    var apiVersionDescriptionProvider = builder.Services.BuildServiceProvider()
-                        .GetRequiredService<IApiVersionDescriptionProvider>();
-
-                    foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
-                    {
-                        options.SwaggerDoc(description.GroupName, new OpenApiInfo
-                        {
-                            Version = description.ApiVersion.ToString(),
-                            Title = "BStudio EHR API",
-                            Description = "API for managing EHR",
-                            Contact = new OpenApiContact
-                            {
-                                Name = "BStudio",
-                                Email = "bstudio@bstudio.com"
-                            }
-                        });
-                    }
-
                     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                     {
                         Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
@@ -215,6 +199,26 @@ namespace ShimsServer
                         BearerFormat = "JWT"
                     });
                 });
+
+                // Configure Swagger documents using the options pattern to avoid BuildServiceProvider
+                builder.Services.AddOptions<SwaggerGenOptions>()
+                    .Configure<IApiVersionDescriptionProvider>((options, provider) =>
+                    {
+                        foreach (var description in provider.ApiVersionDescriptions)
+                        {
+                            options.SwaggerDoc(description.GroupName, new OpenApiInfo
+                            {
+                                Version = description.ApiVersion.ToString(),
+                                Title = "BStudio EHR API",
+                                Description = "API for managing EHR",
+                                Contact = new OpenApiContact
+                                {
+                                    Name = "BStudio",
+                                    Email = "bstudio@bstudio.com"
+                                }
+                            });
+                        }
+                    });
             }
 
             var app = builder.Build();

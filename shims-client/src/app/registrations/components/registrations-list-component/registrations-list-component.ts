@@ -8,8 +8,8 @@ import { filter, iif, switchMap, tap } from 'rxjs';
 import { RegistrationsHttpService } from '../../registrations-http.service';
 import { ConfirmationComponent } from '../../../components/confirmation/confirmation.component';
 import { AddRegistrationComponent } from '../add-registration-component/add-registration.component';
-import { PatientDetailComponent } from '../patient-detail-component/patient-detail-component';
 import { SchemesDTO } from '../../../models/ISchemes';
+import { InsuranceDetailComponent } from '../insurance-detail-component/insurance-detail-component';
 
 @Component({
     selector: 'app-registrations-list',
@@ -74,10 +74,17 @@ export class RegistrationsListComponent {
     }
 
     viewInsurance(patient: PatientDetailsDto) {
-        this.diag.open<PatientDetailComponent, PatientDetailsDto>(PatientDetailComponent, {
-            data: patient,
+        this.diag.open<InsuranceDetailComponent, { patient: PatientDetailsDto, schemes: SchemesDTO[] }>(InsuranceDetailComponent, {
+            data: { patient, schemes: this.schemes() },
             width: '600px'
-        });
+        })
+            .afterClosed()
+            .pipe()
+            .subscribe({
+                next: (x) => {
+                    console.log(x);
+                }
+            });
     }
 
     deleteRegistration(id: string) {

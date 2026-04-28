@@ -1,0 +1,76 @@
+<h2 mat-dialog-title>Insurance Details &mdash; {{data.patient.fullName}}</h2>
+<mat-dialog-content>
+    <form [formRoot]="form">
+        <fieldset>
+            <legend>Add new insurance scheme</legend>
+            <div class="fields-row">
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Scheme</mat-label>
+                        <mat-select [formField]="form.schemesID">
+                            @for (s of schemes.insurances(); track s.schemesID) {
+                            <mat-option [value]="s.schemesID">{{s.schemeName}}</mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Card ID</mat-label>
+                        <input title="Identity of the insurance provider" matInput type="text"
+                            [formField]="form.cardID">
+                        @if (form.cardID().errors()[0]; as err) {
+                        <mat-error>
+                            @if (err?.kind === 'required') {<span>*</span>}
+                            @if (err?.kind === 'minLength') {<span>{{val.minLenMsg(err)}}</span>}
+                            @if (err?.kind === 'maxLength') {<span>{{val.maxLenMsg(err)}}</span>}
+                        </mat-error>
+                        }
+                    </mat-form-field>
+                </div>
+                <div>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Expiry Date</mat-label>
+                        <input title="Expiry date of the insurance card" matInput [matDatepicker]="picker"
+                            [formField]="form.expiryDate">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div class="actions">
+                    <button type="submit" (click)="addScheme()" [disabled]="form().invalid()" mat-flat-button
+                        color="primary">
+                        <mat-icon>add</mat-icon> Add Scheme
+                    </button>
+                </div>
+            </div>
+        </fieldset>
+    </form>
+    @if (data.patient.schemes.length < 1) { <p>No insurance schemes on record.</p>
+        } @else {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Scheme</th>
+                    <th>Coverage</th>
+                    <th>Card ID</th>
+                    <th>Expiry Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (s of data.patient.schemes; track $index) {
+                <tr>
+                    <td>{{s.schemeName}}</td>
+                    <td>{{s.coverage}}</td>
+                    <td>{{s.cardID}}</td>
+                    <td>{{s.expiryDate |date}}</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+        }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button type="button" title="Close" mat-button (click)="close()">
+        <mat-icon>close</mat-icon> Close</button>
+</mat-dialog-actions>

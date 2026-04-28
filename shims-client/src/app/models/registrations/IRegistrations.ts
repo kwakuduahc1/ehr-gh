@@ -16,6 +16,17 @@ export interface InsuranceDetails {
     coverage?: string | null;
 }
 
+export interface AddPatientSchemeDto {
+    patientID?: string;
+    schemesID: string;
+    cardID: string;
+    expiryDate: Date | string;
+}
+
+export interface EditPatientSchemeDto extends AddPatientSchemeDto {
+    patientSchemesID: string | null;
+}
+
 export interface EditPatientDto extends AddPatientDto {
     patientsID: string;
     hospitalID?: string | null;

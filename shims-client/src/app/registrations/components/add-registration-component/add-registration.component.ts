@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,7 +7,6 @@ import { form, required, schema, minLength, maxLength, FormRoot, FormField, appl
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent } from '@angular/material/dialog';
 import { ActivityProvider } from '../../../providers/ActivityProvider';
 import { AddPatientDto, EditPatientDto } from '../../../models/registrations/IRegistrations';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ValidatorMessages } from '../../../components/auth-validators';
 
 @Component({
@@ -29,7 +28,6 @@ export class AddRegistrationComponent {
     act = inject(ActivityProvider);
     diag = inject(MatDialogRef<AddRegistrationComponent>);
     data = inject<{ patient?: EditPatientDto }>(MAT_DIALOG_DATA);
-    private snack = inject(MatSnackBar);
     protected val = new ValidatorMessages();
 
     fmMdl = signal<AddPatientDto>({
@@ -44,13 +42,6 @@ export class AddRegistrationComponent {
     form = form<AddPatientDto>(this.fmMdl, AddPatientSchema);
 
     submit() {
-        // console.log(!this.form.schemes().value().some(s => s.schemesID === this.schemes.feePaying().schemesID));
-        // if (!this.form.schemes().value().some(s => s.schemesID === this.schemes.feePaying().schemesID)) {
-        //     console.log('fee paying');
-        //     this.form.schemes().value.set([{
-        //         schemesID: this.schemes.feePaying().schemesID
-        //     }]);
-        // }
         this.diag.close(
             { patient: this.form().value(), edit: !!this.data?.patient?.patientsID });
     }

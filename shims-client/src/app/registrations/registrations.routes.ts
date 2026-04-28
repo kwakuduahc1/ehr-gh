@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { RegistrationsListComponent } from './components/registrations-list-component/registrations-list-component';
 import { inject } from '@angular/core';
 import { RegistrationsHttpService } from './registrations-http.service';
-import { PatientDetailComponent } from './components/patient-detail-component/patient-detail-component';
+import { InsuranceDetailComponent } from './components/insurance-detail-component/insurance-detail-component';
 
 export const RegistrationsRoute: Routes = [
     {
@@ -14,7 +14,7 @@ export const RegistrationsRoute: Routes = [
     },
     {
         path: 'detail/:id',
-        component: PatientDetailComponent,
+        component: InsuranceDetailComponent,
         resolve: {
         }
     }
