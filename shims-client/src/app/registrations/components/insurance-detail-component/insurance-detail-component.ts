@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ValidatorMessages } from '../../../components/auth-validators';
 import { SchemesService } from '../../../providers/schemes-service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-insurance-detail-component',
@@ -34,25 +35,34 @@ import { SchemesService } from '../../../providers/schemes-service';
   ]
 })
 export class InsuranceDetailComponent {
-  data = inject<{ patient: PatientDetailsDto }>(MAT_DIALOG_DATA);
+  data = inject<{ patient: PatientDetailsDto, form?: EditPatientSchemeDto }>(MAT_DIALOG_DATA);
   schemes = inject(SchemesService);
   private diag = inject(MatDialogRef<InsuranceDetailComponent>);
+  private snack = inject(MatSnackBar);
   val = new ValidatorMessages();
   private fmMdl = signal<EditPatientSchemeDto>({
-    schemesID: '',
-    cardID: '',
-    expiryDate: '',
-    patientSchemesID: null
+    schemesID: this.data.form?.schemesID || '',
+    cardID: this.data.form?.cardID || '',
+    expiryDate: this.data.form?.expiryDate || '',
+    patientSchemesID: this.data.form?.patientSchemesID || null
   });
 
-  form = form(this.fmMdl, PatientSchemeSchema);
+  form = form(this.fmMdl, PatientSchemeSchema, {
+    submission: {
+      action: async () => this.addScheme()
+    }
+  });
 
   close() {
     this.diag.close();
   }
 
   addScheme() {
-    return this.diag.close({
+    if (this.data.patient.schemes.some(s => s.patientSchemesID === this.fmMdl().patientSchemesID)) {
+      this.snack.open('This scheme is already added for the patient');
+      return;
+    }
+    else this.diag.close({
       patientsID: this.data.patient.patientsID,
       ...this.form().value()
     });

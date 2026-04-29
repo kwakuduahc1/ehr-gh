@@ -1,7 +1,5 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
-using ShimsServer.Models.Drugs;
 using ShimsServer.Models.Records;
 using ShimsServer.Repositories;
 

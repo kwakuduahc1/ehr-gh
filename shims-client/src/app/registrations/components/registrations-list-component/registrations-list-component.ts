@@ -1,5 +1,5 @@
 import { Component, inject, model, ChangeDetectionStrategy, input } from '@angular/core';
-import { PatientDetailsDto, EditPatientDto, AddPatientDto } from '../../../models/registrations/IRegistrations';
+import { PatientDetailsDto, EditPatientDto, AddPatientDto, EditPatientSchemeDto, InsuranceDetails } from '../../../models/registrations/IRegistrations';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -10,6 +10,7 @@ import { ConfirmationComponent } from '../../../components/confirmation/confirma
 import { AddRegistrationComponent } from '../add-registration-component/add-registration.component';
 import { SchemesDTO } from '../../../models/ISchemes';
 import { InsuranceDetailComponent } from '../insurance-detail-component/insurance-detail-component';
+import { PatientSchemesHttpService } from '../../patient-schemes-http.service';
 
 @Component({
     selector: 'app-registrations-list',
@@ -24,6 +25,7 @@ export class RegistrationsListComponent {
     private snack = inject(MatSnackBar);
     private diag = inject(MatDialog);
     private http = inject(RegistrationsHttpService);
+    private psHttp = inject(PatientSchemesHttpService);
 
     addRegistration(patient?: EditPatientDto | PatientDetailsDto) {
         let result: { patient: EditPatientDto, edit: boolean };
@@ -74,17 +76,55 @@ export class RegistrationsListComponent {
     }
 
     viewInsurance(patient: PatientDetailsDto) {
-        this.diag.open<InsuranceDetailComponent, { patient: PatientDetailsDto, schemes: SchemesDTO[] }>(InsuranceDetailComponent, {
-            data: { patient, schemes: this.schemes() },
+        let info = { isEdit: false, scheme: {} as EditPatientSchemeDto };
+        this.diag.open<InsuranceDetailComponent, {}, EditPatientSchemeDto>(InsuranceDetailComponent, {
+            data: { patient },
             width: '600px'
         })
             .afterClosed()
-            .pipe()
+            .pipe(
+                filter(x => !!x),
+                switchMap(x => iif(() => !!x?.patientSchemesID,
+                    this.psHttp.edit(x!)
+                        .pipe(tap(() => info = { isEdit: true, scheme: x! })),
+                    this.psHttp.add(x!)
+                ))
+            )
             .subscribe({
                 next: (x) => {
-                    console.log(x);
+                    this.snack.open(info.isEdit ? 'Scheme updated' : 'Scheme added');
+                    if (info.isEdit) {
+                        this.list.update(lst => lst.map(p => p.patientsID === patient.patientsID
+                            ? {
+                                ...p,
+                                schemes: p.schemes
+                                    .map(s => s.patientSchemesID === x ?
+                                        {
+                                            ...s,
+                                            schemesID: info.scheme.schemesID,
+                                            cardID: info.scheme.cardID,
+                                            expiryDate: info.scheme.expiryDate.toLocaleString(),
+                                            schemeName: this.schemes().find(sch => sch.schemesID === info.scheme.schemesID)?.schemeName || s.schemeName,
+                                        } : s)
+                            }
+                            : p));
+                    }
+                    else
+                        this.list.update(lst => lst.map(p => p.patientsID === patient.patientsID
+                            ? {
+                                ...p,
+                                schemes: [{
+                                    patientSchemesID: x as string,
+                                    schemesID: info.scheme.schemesID,
+                                    cardID: info.scheme.cardID,
+                                    expiryDate: info.scheme.expiryDate.toLocaleString(),
+                                    schemeName: this.schemes().find(sch => sch.schemesID === info.scheme.schemesID)?.schemeName || '',
+                                    coverage: this.schemes().find(sch => sch.schemesID === info.scheme.schemesID)?.coverage || ''
+                                }, ...p.schemes]
+                            }
+                            : p));
                 }
-            });
+            })
     }
 
     deleteRegistration(id: string) {
