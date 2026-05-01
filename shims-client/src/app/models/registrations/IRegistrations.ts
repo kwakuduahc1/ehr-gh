@@ -46,3 +46,10 @@ export interface PatientDetailsDto {
     age: number;
     schemes: InsuranceDetails[];
 }
+
+export interface VwSessions {
+    patientAttendancesID: string;
+    visitType: string;
+    dateSeen: string;
+    isActive: boolean;
+}

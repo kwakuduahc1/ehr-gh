@@ -1,0 +1,35 @@
+<h2 mat-dialog-title>Sessions &mdash; {{data.patient.fullName}}</h2>
+<mat-dialog-content>
+    @if (sessions().length === 0) {
+    <p>No sessions on record.</p>
+    } @else {
+    <div class="sessions-grid">
+        @for (s of sessions(); track s.patientAttendancesID) {
+        <div class="card-sm session-card" [class.session-card--inactive]="!s.isActive">
+            <div class="session-card__header">
+                <span class="session-card__type">{{s.visitType}}</span>
+                <span class="session-card__badge" [class.session-card__badge--active]="s.isActive">
+                    {{s.isActive ? 'Active' : 'Ended'}}
+                </span>
+            </div>
+            <div class="session-card__date">
+                <mat-icon aria-hidden="true">calendar_today</mat-icon>
+                <span>{{s.dateSeen | date}}</span>
+            </div>
+            @if (s.isActive) {
+            <div class="session-card__actions">
+                <button type="button" mat-button class="color-error" (click)="endSession(s)">
+                    <mat-icon>stop_circle</mat-icon> End Session
+                </button>
+            </div>
+            }
+        </div>
+        }
+    </div>
+    }
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button type="button" mat-button mat-dialog-close>
+        <mat-icon>close</mat-icon> Close
+    </button>
+</mat-dialog-actions>

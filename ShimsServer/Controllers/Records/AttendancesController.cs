@@ -13,13 +13,13 @@ namespace ShimsServer.Controllers.Records
 
     public class AttendancesController(IAttendanceRepository dataSource, ILogger<AttendancesController> logger) : ControllerBase
     {
+        [HttpGet("{id:guid}")]
+        [ProducesResponseType(typeof(IEnumerable<VwSessions>), StatusCodes.Status200OK)]
+        public async Task<IEnumerable<VwSessions>> GetPatientSessions(Guid id) => await dataSource.GetPatientSessions(id, HttpContext.RequestAborted);
+
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<ListPatientsDto>>> GetActiveSessions(Guid id)
-        {
-            var sessions = await dataSource.ActiveSessions(id, HttpContext.RequestAborted);
-            return Ok(sessions);
-        }
+        [ProducesResponseType(typeof(IEnumerable<ListPatientsDto>), StatusCodes.Status200OK)]
+        public async Task<IEnumerable<ListPatientsDto>> GetActiveSessions(Guid id) => await dataSource.ActiveSessions(id, HttpContext.RequestAborted);
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]

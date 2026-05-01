@@ -1,0 +1,62 @@
+.sessions-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-block: 0.5rem;
+}
+
+.session-card {
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    &--inactive {
+        opacity: 0.6;
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+    }
+
+    &__type {
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    &__badge {
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 0.15rem 0.5rem;
+        border-radius: 999px;
+        background-color: var(--mat-sys-surface-variant, #e0e0e0);
+        color: var(--mat-sys-on-surface-variant, #444);
+
+        &--active {
+            background-color: #e6f4ea;
+            color: #1e7e34;
+        }
+    }
+
+    &__date {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.85rem;
+        color: var(--mat-sys-outline, #666);
+
+        mat-icon {
+            font-size: 1rem;
+            width: 1rem;
+            height: 1rem;
+        }
+    }
+
+    &__actions {
+        margin-top: auto;
+        padding-top: 0.25rem;
+    }
+}

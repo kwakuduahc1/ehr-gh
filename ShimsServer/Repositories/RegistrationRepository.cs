@@ -226,7 +226,9 @@ namespace ShimsServer.Repositories
                     WHERE fullname ILIKE @search
                         OR cardid ILIKE @search
                         OR hospitalid ILIKE @search
-                    ORDER BY dateseen DESC;
+                        OR ghanacard ILIKE @search
+                    ORDER BY dateseen DESC
+                    LIMIT 20;
                 """;
             using var con = await connection.ConnectionAsync(cancellationToken);
             var res = await con.QueryAsync<PatientDetails>(sql, new { search = $"%{search}%" });
@@ -360,9 +362,6 @@ namespace ShimsServer.Repositories
 
     [Required, DataType(DataType.PhoneNumber)] string PhoneNumber);
 
-    /**
- * (System.Guid patientsid, System.Guid schemesid, System.Int16 age, System.String sex, System.String fullname, System.String scheme, System.String hospitalid, System.String cardid, System.DateTime expirydate, System.DateTime dateseen, System.Guid patientschemesid)
- */
     public record ListPatientsDto(
         Guid PatientsID,
         Guid SchemesID,
@@ -378,10 +377,6 @@ namespace ShimsServer.Repositories
         string PhoneNumber,
         string VisitType
         );
-
-    /*
-     * (System.Guid patientsid, System.String hospitalid, System.String fullname, System.String sex, System.DateOnly dateofbirth, System.Int16 age, System.String phonenumber, System.String ghanacard, System.String visittype, System.Guid patientattendancesid, System.DateOnly dateseen, System.Guid patientschemesid, System.String cardid, System.DateOnly expirydate)
-     * */
 
     record PatientDetails(
         Guid PatientsID,
@@ -417,4 +412,6 @@ namespace ShimsServer.Repositories
     DateOnly DateSeen,
     IEnumerable<InsuranceDetails> Schemes
     );
+
+    public record VwSessions(Guid PatientAttendancesID, string VisitType, DateOnly DateSeen, bool IsActive);
 }

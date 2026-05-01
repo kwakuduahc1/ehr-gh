@@ -78,10 +78,8 @@ namespace ShimsServer.Controllers.Records
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<PatientDetailsDto>))]
         [ResponseCache(Duration = 30, Location = ResponseCacheLocation.Any)]
-        public async Task<IEnumerable<PatientDetailsDto>> GetPatients()
-        {
-            return await repository.GetPatientsAsync(HttpContext.RequestAborted);
-        }
+        public async Task<IEnumerable<PatientDetailsDto>> GetPatients() =>
+            await repository.GetPatientsAsync(HttpContext.RequestAborted);
 
         /// <summary>
         /// Retrieves a specific patient by their unique identifier.
@@ -106,16 +104,15 @@ namespace ShimsServer.Controllers.Records
         /// <returns>Collection of matching patients</returns>
         /// <response code="200">Successfully retrieved search results</response>
         /// <response code="400">Search term is empty or invalid</response>
-        [HttpGet("search")]
+        [HttpGet("{search:required}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<PatientDetailsDto>))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<PatientDetailsDto>>> SearchPatients([FromQuery] string search)
+        public async Task<IEnumerable<PatientDetailsDto>> SearchPatients(string search)
         {
             if (string.IsNullOrWhiteSpace(search))
-                return BadRequest(new { message = "Search term cannot be empty" });
+                return [];
 
             var patients = await repository.SearchPatientsAsync(search.Trim(), HttpContext.RequestAborted);
-            return Ok(patients);
+            return patients;
         }
 
         /// <summary>
