@@ -1,7 +1,7 @@
 import { Component, inject, ChangeDetectionStrategy, signal } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { EditPatientSchemeDto, PatientDetailsDto } from '../../../models/registrations/IRegistrations';
+import { EditPatientSchemeDto, InsuranceDetails, PatientDetailsDto } from '../../../models/registrations/IRegistrations';
 import { MatIcon } from "@angular/material/icon";
 import { SchemesDTO } from '../../../models/ISchemes';
 import { DatePipe } from '@angular/common';
@@ -14,6 +14,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { ValidatorMessages } from '../../../components/auth-validators';
 import { SchemesService } from '../../../providers/schemes-service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { PatientSchemesHttpService } from '../../patient-schemes-http.service';
+import { filter, switchMap } from 'rxjs';
+import { ConfirmationComponent } from '../../../components/confirmation/confirmation.component';
 
 @Component({
   selector: 'app-insurance-detail-component',
@@ -35,16 +38,20 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   ]
 })
 export class InsuranceDetailComponent {
-  data = inject<{ patient: PatientDetailsDto, form?: EditPatientSchemeDto }>(MAT_DIALOG_DATA);
+  data = inject<{ patient: PatientDetailsDto }>(MAT_DIALOG_DATA);
+  patientSchemes = signal(this.data.patient.schemes);
+  private diag = inject(MatDialog);
+  isEdit = signal(false);
   schemes = inject(SchemesService);
-  private diag = inject(MatDialogRef<InsuranceDetailComponent>);
+  private diagRef = inject(MatDialogRef<InsuranceDetailComponent>);
   private snack = inject(MatSnackBar);
+  private http = inject(PatientSchemesHttpService);
   val = new ValidatorMessages();
   private fmMdl = signal<EditPatientSchemeDto>({
-    schemesID: this.data.form?.schemesID || '',
-    cardID: this.data.form?.cardID || '',
-    expiryDate: this.data.form?.expiryDate || '',
-    patientSchemesID: this.data.form?.patientSchemesID || null
+    schemesID: '',
+    cardID: '',
+    expiryDate: '',
+    patientSchemesID: null
   });
 
   form = form(this.fmMdl, PatientSchemeSchema, {
@@ -54,21 +61,102 @@ export class InsuranceDetailComponent {
   });
 
   close() {
-    this.diag.close();
+    this.diagRef.close(this.patientSchemes());
   }
 
   addScheme() {
-    if (this.data.patient.schemes.some(s => s.patientSchemesID === this.fmMdl().patientSchemesID)) {
-      this.snack.open('This scheme is already added for the patient');
-      return;
+    if (this.isEdit()) {
+      this.http.edit({ ...this.fmMdl(), patientsID: this.data.patient.patientsID }).subscribe({
+        next: () => {
+          this.patientSchemes.update(s => s.map(x => x.patientSchemesID === this.fmMdl().patientSchemesID
+            ? {
+              patientSchemesID: this.fmMdl().patientSchemesID!,
+              coverage: this.schemes.schemes().filter(x => x.schemesID === this.fmMdl().schemesID)[0].coverage,
+              schemeName: this.schemes.schemes().filter(x => x.schemesID === this.fmMdl().schemesID)[0].schemeName,
+              schemesID: this.fmMdl().schemesID,
+              cardID: this.fmMdl().cardID,
+              expiryDate: this.fmMdl().expiryDate.toString()
+            }
+            : x));
+          this.snack.open('Scheme updated');
+          this.form().reset();
+          this.fmMdl.set({
+            cardID: '',
+            expiryDate: '',
+            patientSchemesID: '',
+            schemesID: '',
+            patientsID: ''
+          })
+          this.isEdit.update(() => false);
+        }
+      });
     }
-    else this.diag.close({
-      patientsID: this.data.patient.patientsID,
-      ...this.form().value()
-    });
+    else if (this.patientSchemes().some(s => s.schemesID === this.fmMdl().schemesID)) {
+      this.snack.open('This scheme is already added for the patient');
+    }
+    else {
+      this.http.add({ ...this.form().value(), patientsID: this.data.patient.patientsID })
+        .subscribe({
+          next: id => {
+            this.patientSchemes.update(s => [{
+              patientSchemesID: id,
+              coverage: this.schemes.schemes().filter(x => x.schemesID === this.fmMdl().schemesID)[0].coverage,
+              schemeName: this.schemes.schemes().filter(x => x.schemesID === this.fmMdl().schemesID)[0].schemeName,
+              schemesID: this.fmMdl().schemesID,
+              cardID: this.fmMdl().cardID,
+              expiryDate: this.fmMdl().expiryDate.toString()
+            }, ...s]);
+            this.snack.open('Scheme added');
+            this.form().reset();
+            this.fmMdl.set({
+              cardID: '',
+              expiryDate: '',
+              patientSchemesID: '',
+              schemesID: '',
+              patientsID: ''
+            })
+          }
+        });
+    }
+  }
+
+  editScheme(scheme: InsuranceDetails) {
+    if (scheme.schemeName === this.schemes.feePaying().schemeName) {
+      this.snack.open('Fee Paying scheme cannot be edited');
+    }
+    else {
+      this.isEdit.update(() => true);
+      this.fmMdl.set({
+        schemesID: scheme.schemesID,
+        cardID: scheme.cardID!,
+        expiryDate: scheme.expiryDate!,
+        patientSchemesID: scheme.patientSchemesID
+      });
+    };
+  }
+
+  removeScheme(scheme: InsuranceDetails) {
+    if (scheme.schemeName === this.schemes.feePaying().schemeName) {
+      this.snack.open('Fee Paying scheme cannot be deleted');
+    }
+    else {
+      this.diag.open<ConfirmationComponent, {}, boolean>(ConfirmationComponent, {
+        data: 'Are you sure you want to delete this scheme?'
+      })
+        .afterClosed()
+        .pipe(
+          filter(x => !!x),
+          switchMap(() => this.http.delete(scheme.patientSchemesID))
+        )
+        .subscribe({
+          next: () => {
+            this.patientSchemes.update(s => s.filter(x => x.patientSchemesID !== scheme.patientSchemesID));
+            this.snack.open('Scheme deleted');
+          }
+        });
+    }
   }
 }
-
 
 const PatientSchemeSchema = schema<EditPatientSchemeDto>(path => {
   required(path.schemesID);

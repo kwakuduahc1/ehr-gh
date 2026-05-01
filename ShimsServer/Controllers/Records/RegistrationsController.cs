@@ -13,9 +13,9 @@ namespace ShimsServer.Controllers.Records
     /// API Version: 1.0
     /// </remarks>
     [ApiController]
+    [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [Route("api/[controller]")]
-    [ApiVersion("1.0")]
     [Produces("application/json")]
     [Tags("Registrations")]
     public class RegistrationsController(IRegistrationRepository repository, ILogger<RegistrationsController> logger) : ControllerBase
@@ -173,7 +173,7 @@ namespace ShimsServer.Controllers.Records
         [HttpDelete("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<string>> DeletePatient(Guid id)
+        public async Task<IActionResult> DeletePatient(Guid id)
         {
             try
             {

@@ -14,7 +14,7 @@ export class PatientSchemesHttpService {
     }
 
     edit(scheme: EditPatientSchemeDto): Observable<void> {
-        return this.http.put<void>(`${this.baseUrl}`, scheme);
+        return this.http.put<void>(`${this.baseUrl}/${scheme.patientSchemesID}`, scheme);
     }
 
     delete(id: string): Observable<string> {

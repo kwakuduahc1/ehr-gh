@@ -3,7 +3,6 @@ using Npgsql;
 using ShimsServer.Models.DTOs;
 using ShimsServer.Models.Schemes;
 using ShimsServer.Repositories;
-using System.ComponentModel.DataAnnotations;
 
 namespace ShimsServer.Controllers
 {

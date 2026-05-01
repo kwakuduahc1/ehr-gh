@@ -76,53 +76,19 @@ export class RegistrationsListComponent {
     }
 
     viewInsurance(patient: PatientDetailsDto) {
-        let info = { isEdit: false, scheme: {} as EditPatientSchemeDto };
-        this.diag.open<InsuranceDetailComponent, {}, EditPatientSchemeDto>(InsuranceDetailComponent, {
+        this.diag.open<InsuranceDetailComponent, {}, InsuranceDetails[]>(InsuranceDetailComponent, {
             data: { patient },
-            width: '600px'
+            width: '800px'
         })
             .afterClosed()
-            .pipe(
-                filter(x => !!x),
-                switchMap(x => iif(() => !!x?.patientSchemesID,
-                    this.psHttp.edit(x!)
-                        .pipe(tap(() => info = { isEdit: true, scheme: x! })),
-                    this.psHttp.add(x!)
-                ))
-            )
-            .subscribe({
-                next: (x) => {
-                    this.snack.open(info.isEdit ? 'Scheme updated' : 'Scheme added');
-                    if (info.isEdit) {
-                        this.list.update(lst => lst.map(p => p.patientsID === patient.patientsID
-                            ? {
-                                ...p,
-                                schemes: p.schemes
-                                    .map(s => s.patientSchemesID === x ?
-                                        {
-                                            ...s,
-                                            schemesID: info.scheme.schemesID,
-                                            cardID: info.scheme.cardID,
-                                            expiryDate: info.scheme.expiryDate.toLocaleString(),
-                                            schemeName: this.schemes().find(sch => sch.schemesID === info.scheme.schemesID)?.schemeName || s.schemeName,
-                                        } : s)
-                            }
-                            : p));
-                    }
-                    else
-                        this.list.update(lst => lst.map(p => p.patientsID === patient.patientsID
-                            ? {
-                                ...p,
-                                schemes: [{
-                                    patientSchemesID: x as string,
-                                    schemesID: info.scheme.schemesID,
-                                    cardID: info.scheme.cardID,
-                                    expiryDate: info.scheme.expiryDate.toLocaleString(),
-                                    schemeName: this.schemes().find(sch => sch.schemesID === info.scheme.schemesID)?.schemeName || '',
-                                    coverage: this.schemes().find(sch => sch.schemesID === info.scheme.schemesID)?.coverage || ''
-                                }, ...p.schemes]
-                            }
-                            : p));
+            .subscribe(res => {
+                if (res) {
+                    this.list.update(x =>
+                        x.map(p => p.patientsID === patient.patientsID
+                            ? { ...p, schemes: res }
+                            : p
+                        )
+                    )
                 }
             })
     }

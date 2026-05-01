@@ -1,14 +1,17 @@
-using Microsoft.AspNetCore.Mvc;
-using ShimsServer.Models.Schemes;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using ShimsServer.Models.Schemes;
 using ShimsServer.Repositories;
 
 namespace ShimsServer.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
     [Produces("application/json")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [Route("api/[controller]")]
     //[Authorize(Policy = "SysAdmin")]
     public class SchemeDrugsController(ISchemeDrugsRepository repository, ILogger<SchemeDrugsController> logger, CancellationToken token) : ControllerBase
     {

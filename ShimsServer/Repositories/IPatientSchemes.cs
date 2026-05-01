@@ -13,7 +13,7 @@ namespace ShimsServer.Repositories
 
         Task<int> DeletePatientScheme(Guid id, CancellationToken cancellationToken = default);
 
-        Task<bool> PatientSchemeExists(Guid id, CancellationToken cancellationToken = default);
+        Task<bool> PatientHasScheme(Guid id, CancellationToken cancellationToken = default);
     }
 
     public class PatientSchemesRepository(IConnection connection) : IPatientSchemesRepository
@@ -26,14 +26,14 @@ namespace ShimsServer.Repositories
                     SELECT EXISTS(
                     SELECT true
                     FROM patientschemes
-                    WHERE patientsid = @id AND patientschemesid = @psid AND isactive = true
+                    WHERE patientsid = @id AND patientschemesid = @psid --  isactive = true
                     );
                  """;
             using var con = await connection.ConnectionAsync(token);
             return await con.ExecuteScalarAsync<bool>(sql, new { id, psid });
         }
 
-        public async Task<bool> PatientSchemeExists(Guid id, CancellationToken cancellationToken = default)
+        public async Task<bool> PatientHasScheme(Guid id, CancellationToken cancellationToken = default)
         {
             const string sql = 
                 """
@@ -51,7 +51,7 @@ namespace ShimsServer.Repositories
         {
             const string sql = """
                     INSERT INTO patientschemes (patientschemesid, patientsid, schemesid, cardid, isactive, expirydate, username, lastupdatedate)
-                    VALUES (@PatientSchemesID, @PatientsID, @SchemesID, @CardID, @IsActive, @ExpiryDate, @UserName, now());
+                    VALUES (@PatientSchemesID, @PatientsID, @SchemesID, @CardID, true, @ExpiryDate, @UserName, now());
                     """;
             using var con = await connection.ConnectionAsync(cancellationToken);
             return await con.ExecuteAsync(sql, new
@@ -60,7 +60,6 @@ namespace ShimsServer.Repositories
                 scheme.PatientsID,
                 scheme.SchemesID,
                 scheme.CardID,
-                scheme.IsActive,
                 scheme.ExpiryDate,
                 UserName = user.username
             });

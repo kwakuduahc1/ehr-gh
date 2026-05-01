@@ -34,7 +34,7 @@ namespace ShimsServer.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error adding patient insurance scheme");
+                logger.LogError(ex.Message, "Error adding patient insurance scheme");
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while adding the patient insurance scheme." });
             }
         }
@@ -51,7 +51,7 @@ namespace ShimsServer.Controllers
         {
             try
             {
-                if (!await repository.PatientHasScheme(scheme.PatientsID, scheme.PatientSchemesID, HttpContext.RequestAborted))
+                if (!await repository.PatientHasScheme(scheme.PatientsID, id, HttpContext.RequestAborted))
                     return BadRequest(new { Message = "Patient insurance scheme not found" });
                 var result = await repository.EditPatientScheme(scheme, User.Identity!.Name!, HttpContext.RequestAborted);
 
@@ -59,12 +59,12 @@ namespace ShimsServer.Controllers
             }
             catch (PostgresException pex)
             {
-                logger.LogError(pex, "Error updating patient insurance scheme");
+                logger.LogError(pex.Message, "Error updating patient insurance scheme");
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while updating the patient insurance scheme." });
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error updating patient insurance scheme");
+                logger.LogError(ex.Message, "Error updating patient insurance scheme");
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while updating the patient insurance scheme." });
             }
         }
@@ -80,7 +80,7 @@ namespace ShimsServer.Controllers
         {
             try
             {
-                if (!await repository.PatientSchemeExists(id, HttpContext.RequestAborted))
+                if (!await repository.PatientHasScheme(id, HttpContext.RequestAborted))
                     return BadRequest(new { Message = "Patient insurance scheme not found" });
                 var n = await repository.DeletePatientScheme(id, HttpContext.RequestAborted);
                 return n == 1 ?
@@ -89,12 +89,12 @@ namespace ShimsServer.Controllers
             }
             catch (PostgresException pex)
             {
-                logger.LogError(pex, "Error deleting patient insurance scheme");
+                logger.LogError(pex.Message, "Error deleting patient insurance scheme");
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while deleting the patient insurance scheme." });
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error deleting patient insurance scheme");
+                logger.LogError(ex.Message, "Error deleting patient insurance scheme");
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while deleting the patient insurance scheme." });
             }
         }

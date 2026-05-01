@@ -17,7 +17,7 @@ export interface InsuranceDetails {
 }
 
 export interface AddPatientSchemeDto {
-    patientID?: string;
+    patientsID?: string;
     schemesID: string;
     cardID: string;
     expiryDate: Date | string;

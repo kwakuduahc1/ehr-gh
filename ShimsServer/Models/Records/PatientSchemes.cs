@@ -38,11 +38,8 @@ namespace ShimsServer.Models.Records
     [Required]
     Guid SchemesID,
 
-    [Required, StringLength(30, MinimumLength = 10, ErrorMessage = "{0} must have length of {2} to {1} characters")]
+    [Required, StringLength(30, MinimumLength = 5, ErrorMessage = "{0} must have length of {2} to {1} characters")]
     string CardID,
-
-    [DefaultValue(true)]
-    bool IsActive,
 
     [Required]
     DateTime ExpiryDate
@@ -61,7 +58,7 @@ namespace ShimsServer.Models.Records
         [DefaultValue(true)]
     bool Status,
 
-        [Required, StringLength(30, MinimumLength = 10)]
+        [Required, StringLength(30, MinimumLength = 5)]
     string CardID,
 
         [Required]

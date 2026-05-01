@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>Insurance Details &mdash; {{data.patient.fullName}}</h2>
+<h2 mat-dialog-title class="text-secondary text-center">Insurance Details &mdash; {{data.patient.fullName}}</h2>
 <mat-dialog-content>
     <form [formRoot]="form">
         <fieldset>
@@ -39,7 +39,7 @@
                 </div>
                 <div class="actions">
                     <button type="submit" [disabled]="form().invalid()" mat-flat-button color="primary">
-                        <mat-icon>add</mat-icon> Add Scheme
+                        <mat-icon>{{isEdit() ? 'edit' : 'add'}}</mat-icon> {{isEdit() ? 'Edit' : 'Add'}} Scheme
                     </button>
                 </div>
             </div>
@@ -47,22 +47,34 @@
     </form>
     @if (data.patient.schemes.length < 1) { <p>No insurance schemes on record.</p>
         } @else {
-        <table class="table">
+        <table class="table table-striped table-hover table-bordered table-sm">
             <thead>
                 <tr>
                     <th>Scheme</th>
                     <th>Coverage</th>
                     <th>Card ID</th>
                     <th>Expiry Date</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
                 </tr>
             </thead>
             <tbody>
-                @for (s of data.patient.schemes; track $index) {
+                @for (s of patientSchemes(); track $index) {
                 <tr>
                     <td>{{s.schemeName}}</td>
                     <td>{{s.coverage}}</td>
                     <td>{{s.cardID}}</td>
                     <td>{{s.expiryDate |date}}</td>
+                    <td>
+                        <button type="button" mat-button class="color-secondary" (click)="editScheme(s)">
+                            <mat-icon>edit</mat-icon> Edit
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button" mat-button class="color-error" (click)="removeScheme(s)">
+                            <mat-icon>delete</mat-icon> Delete
+                        </button>
+                    </td>
                 </tr>
                 }
             </tbody>

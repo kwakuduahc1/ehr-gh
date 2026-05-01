@@ -19,7 +19,7 @@ namespace ShimsServer.Controllers
         /// </summary>
         [HttpGet("scheme/{id:guid}")]
         [ProducesResponseType(typeof(IEnumerable<SchemeServiceDTO>), StatusCodes.Status200OK)]
-        [ResponseCache(Duration = 8640 * 20, Location = ResponseCacheLocation.Client, VaryByQueryKeys = ["id"])]
+        //[ResponseCache(Duration = 8640 * 20, Location = ResponseCacheLocation.Client, VaryByQueryKeys = ["id"])]
         public async Task<IEnumerable<SchemeServiceDTO>> GetServicesByScheme(Guid id)
         {
             return await repository.GetServicesBySchemeAsync(id, HttpContext.RequestAborted);

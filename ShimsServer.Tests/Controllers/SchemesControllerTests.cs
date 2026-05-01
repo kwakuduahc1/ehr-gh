@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Npgsql;
@@ -2301,9 +2295,9 @@ namespace ShimsServer.Tests.Controllers
             var cancellationToken = CancellationToken.None;
             var expectedSchemes = new List<SchemesDTO>
             {
-                new SchemesDTO(Guid.NewGuid(), "Full Coverage Scheme", "Full", 1000.00m, 50.00m),
-                new SchemesDTO(Guid.NewGuid(), "Relative Coverage Scheme", "Relative", 2000.00m, 75.00m),
-                new SchemesDTO(Guid.NewGuid(), "Fixed Coverage Scheme", "Fixed", 3000.00m, 100.00m)
+                new(Guid.NewGuid(), "Full Coverage Scheme", "Full", 1000.00m, 50.00m),
+                new(Guid.NewGuid(), "Relative Coverage Scheme", "Relative", 2000.00m, 75.00m),
+                new(Guid.NewGuid(), "Fixed Coverage Scheme", "Fixed", 3000.00m, 100.00m)
             };
 
             mockRepository
@@ -2341,9 +2335,9 @@ namespace ShimsServer.Tests.Controllers
             var cancellationToken = CancellationToken.None;
             var expectedSchemes = new List<SchemesDTO>
             {
-                new SchemesDTO(Guid.NewGuid(), "Min MaxPayable", "Full", 0.01m, 0m),
-                new SchemesDTO(Guid.NewGuid(), "Max MaxPayable", "Relative", decimal.MaxValue, decimal.MaxValue),
-                new SchemesDTO(Guid.NewGuid(), "Large Values", "Fixed", 999999999.99m, 999999999.99m)
+                new(Guid.NewGuid(), "Min MaxPayable", "Full", 0.01m, 0m),
+                new(Guid.NewGuid(), "Max MaxPayable", "Relative", decimal.MaxValue, decimal.MaxValue),
+                new(Guid.NewGuid(), "Large Values", "Fixed", 999999999.99m, 999999999.99m)
             };
 
             mockRepository
@@ -2381,11 +2375,11 @@ namespace ShimsServer.Tests.Controllers
             var cancellationToken = CancellationToken.None;
             var expectedSchemes = new List<SchemesDTO>
             {
-                new SchemesDTO(Guid.NewGuid(), "Scheme@2024", "Full", 1000.00m, 50.00m),
-                new SchemesDTO(Guid.NewGuid(), "Scheme-With-Dashes", "Relative", 2000.00m, 75.00m),
-                new SchemesDTO(Guid.NewGuid(), "Scheme_With_Underscores", "Fixed", 3000.00m, 100.00m),
-                new SchemesDTO(Guid.NewGuid(), "Scheme (With Parentheses)", "Full", 4000.00m, 125.00m),
-                new SchemesDTO(Guid.NewGuid(), "Scheme's Name", "Relative", 5000.00m, 150.00m)
+                new(Guid.NewGuid(), "Scheme@2024", "Full", 1000.00m, 50.00m),
+                new(Guid.NewGuid(), "Scheme-With-Dashes", "Relative", 2000.00m, 75.00m),
+                new(Guid.NewGuid(), "Scheme_With_Underscores", "Fixed", 3000.00m, 100.00m),
+                new(Guid.NewGuid(), "Scheme (With Parentheses)", "Full", 4000.00m, 125.00m),
+                new(Guid.NewGuid(), "Scheme's Name", "Relative", 5000.00m, 150.00m)
             };
 
             mockRepository
@@ -2421,7 +2415,7 @@ namespace ShimsServer.Tests.Controllers
             var cancellationToken = CancellationToken.None;
             var expectedSchemes = new List<SchemesDTO>
             {
-                new SchemesDTO(Guid.NewGuid(), "Test Scheme", "Full", 1000.00m, 50.00m)
+                new(Guid.NewGuid(), "Test Scheme", "Full", 1000.00m, 50.00m)
             };
 
             mockRepository
@@ -2465,7 +2459,7 @@ namespace ShimsServer.Tests.Controllers
             var cancellationToken = CancellationToken.None;
             var expectedSchemes = new List<SchemesDTO>
             {
-                new SchemesDTO(Guid.Empty, "Scheme With Empty Guid", "Full", 1000.00m, 50.00m)
+                new(Guid.Empty, "Scheme With Empty Guid", "Full", 1000.00m, 50.00m)
             };
 
             mockRepository

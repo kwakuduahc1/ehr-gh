@@ -23,13 +23,13 @@ namespace ShimsServer.Tests.Controllers
             _mockRepository = new Mock<IRegistrationRepository>();
             _mockLogger = new Mock<ILogger<RegistrationsController>>();
             _cancellationToken = CancellationToken.None;
-            _controller = new RegistrationsController(_mockRepository.Object, _mockLogger.Object, _cancellationToken);
+            _controller = new RegistrationsController(_mockRepository.Object, _mockLogger.Object);
 
             // Setup user context
-            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-            {
-                new Claim(ClaimTypes.Name, "testuser")
-            }, "mock"));
+            var user = new ClaimsPrincipal(new ClaimsIdentity(
+            [
+                new(ClaimTypes.Name, "testuser")
+            ], "mock"));
 
             _controller.ControllerContext = new ControllerContext
             {
@@ -49,18 +49,15 @@ namespace ShimsServer.Tests.Controllers
                 DateOfBirth: new DateTime(1990, 1, 1),
                 GhanaCard: "GHA-0123456789-01",
                 Sex: "Male",
-                SchemesID: Guid.NewGuid(),
-                CardID: "CARD123456789",
-                ExpiryDate: new DateTime(2026, 12, 31),
                 PhoneNumber: "0541234567"
             );
 
             _mockRepository
                 .Setup(r => r.AddPatientAsync(
                     It.IsAny<AddPatientDto>(),
-                    It.IsAny<(Guid, Guid, string)>(),
+                    It.IsAny<(Guid, Guid, Guid[], string)>(),
                     It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync("HOSP-2025-01-000001");
 
             // Act
             var result = await _controller.RegisterPatient(dto);
@@ -71,7 +68,7 @@ namespace ShimsServer.Tests.Controllers
             _mockRepository.Verify(
                 r => r.AddPatientAsync(
                     It.IsAny<AddPatientDto>(),
-                    It.IsAny<(Guid, Guid, string)>(),
+                    It.IsAny<(Guid, Guid, Guid[], string)>(),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
         }
@@ -86,30 +83,27 @@ namespace ShimsServer.Tests.Controllers
                 DateOfBirth: new DateTime(1995, 5, 15),
                 GhanaCard: "GHA-9876543210-05",
                 Sex: "Female",
-                SchemesID: Guid.NewGuid(),
-                CardID: "CARD987654321",
-                ExpiryDate: new DateTime(2027, 6, 30),
                 PhoneNumber: "0559876543"
             );
 
-            (Guid, Guid, string) capturedIds = default;
+            (Guid, Guid, Guid[], string) capturedIds = default;
 
             _mockRepository
                 .Setup(r => r.AddPatientAsync(
                     It.IsAny<AddPatientDto>(),
-                    It.IsAny<(Guid, Guid, string)>(),
+                    It.IsAny<(Guid, Guid, Guid[], string)>(),
                     It.IsAny<CancellationToken>()))
-                .Callback<AddPatientDto, (Guid, Guid, string), CancellationToken>((d, ids, ct) =>
+                .Callback<AddPatientDto, (Guid, Guid, Guid[], string), CancellationToken>((d, ids, ct) =>
                 {
                     capturedIds = ids;
                 })
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync("HOSP-2025-01-000001");
 
             // Act
             await _controller.RegisterPatient(dto);
 
             // Assert
-            Assert.Equal("testuser", capturedIds.Item3);
+            Assert.Equal("testuser", capturedIds.Item4);
         }
 
         [Fact]
@@ -122,9 +116,6 @@ namespace ShimsServer.Tests.Controllers
                 DateOfBirth: new DateTime(1990, 1, 1),
                 GhanaCard: "GHA-0123456789-01",
                 Sex: "Male",
-                SchemesID: Guid.NewGuid(),
-                CardID: "CARD123456789",
-                ExpiryDate: new DateTime(2026, 12, 31),
                 PhoneNumber: "0541234567"
             );
 
@@ -133,7 +124,7 @@ namespace ShimsServer.Tests.Controllers
             _mockRepository
                 .Setup(r => r.AddPatientAsync(
                     It.IsAny<AddPatientDto>(),
-                    It.IsAny<(Guid, Guid, string)>(),
+                    It.IsAny<(Guid, Guid, Guid[], string)>(),
                     It.IsAny<CancellationToken>()))
                 .ThrowsAsync(postgresException);
 
@@ -163,16 +154,13 @@ namespace ShimsServer.Tests.Controllers
                 DateOfBirth: new DateTime(1990, 1, 1),
                 GhanaCard: "GHA-0123456789-01",
                 Sex: "Male",
-                SchemesID: Guid.NewGuid(),
-                CardID: "CARD123456789",
-                ExpiryDate: new DateTime(2026, 12, 31),
                 PhoneNumber: "0541234567"
             );
 
             _mockRepository
                 .Setup(r => r.AddPatientAsync(
                     It.IsAny<AddPatientDto>(),
-                    It.IsAny<(Guid, Guid, string)>(),
+                    It.IsAny<(Guid, Guid, Guid[], string)>(),
                     It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new Exception("Unexpected error"));
 
@@ -192,31 +180,35 @@ namespace ShimsServer.Tests.Controllers
         public async Task GetPatients_ReturnsOkWithPatients()
         {
             // Arrange
-            var patients = new List<ListPatientsDto>
+            var patients = new List<PatientDetailsDto>
             {
-                new ListPatientsDto(
-                    PatientID: Guid.NewGuid(),
-                    SchemesID: Guid.NewGuid(),
-                    Age: 30,
-                    Gender: "Male",
-                    FullName: "John Doe",
-                    Scheme: "NHIS",
+                new(
+                    PatientsID: Guid.NewGuid(),
                     HospitalID: "HOSP-2025-01-000001",
-                    CardID: "CARD123456789",
-                    ExpiryDate: new DateTime(2026, 12, 31),
-                    AttendanceDate: DateTime.Now
+                    FullName: "John Doe",
+                    Sex: "Male",
+                    DateOfBirth: new DateOnly(1990, 1, 1),
+                    Age: 30,
+                    PhoneNumber: "0541234567",
+                    GhanaCard: "GHA-0123456789-01",
+                    VisitType: "Acute",
+                    PatientAttendancesID: Guid.NewGuid(),
+                    DateSeen: new DateOnly(2025, 1, 15),
+                    Schemes: []
                 ),
-                new ListPatientsDto(
-                    PatientID: Guid.NewGuid(),
-                    SchemesID: Guid.NewGuid(),
-                    Age: 25,
-                    Gender: "Female",
-                    FullName: "Jane Smith",
-                    Scheme: "NHIS",
+                new(
+                    PatientsID: Guid.NewGuid(),
                     HospitalID: "HOSP-2025-01-000002",
-                    CardID: "CARD987654321",
-                    ExpiryDate: new DateTime(2027, 6, 30),
-                    AttendanceDate: DateTime.Now.AddDays(-1)
+                    FullName: "Jane Smith",
+                    Sex: "Female",
+                    DateOfBirth: new DateOnly(1995, 5, 15),
+                    Age: 25,
+                    PhoneNumber: "0559876543",
+                    GhanaCard: "GHA-9876543210-05",
+                    VisitType: "Acute",
+                    PatientAttendancesID: Guid.NewGuid(),
+                    DateSeen: new DateOnly(2025, 1, 14),
+                    Schemes: []
                 )
             };
 
@@ -228,8 +220,7 @@ namespace ShimsServer.Tests.Controllers
             var result = await _controller.GetPatients();
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedPatients = Assert.IsAssignableFrom<IEnumerable<ListPatientsDto>>(okResult.Value);
+            var returnedPatients = Assert.IsAssignableFrom<IEnumerable<PatientDetailsDto>>(result);
             Assert.Equal(2, returnedPatients.Count());
         }
 
@@ -237,7 +228,7 @@ namespace ShimsServer.Tests.Controllers
         public async Task GetPatients_WhenEmpty_ReturnsOkWithEmptyList()
         {
             // Arrange
-            var emptyList = new List<ListPatientsDto>();
+            var emptyList = new List<PatientDetailsDto>();
 
             _mockRepository
                 .Setup(r => r.GetPatientsAsync(It.IsAny<CancellationToken>()))
@@ -247,8 +238,7 @@ namespace ShimsServer.Tests.Controllers
             var result = await _controller.GetPatients();
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedPatients = Assert.IsAssignableFrom<IEnumerable<ListPatientsDto>>(okResult.Value);
+            var returnedPatients = Assert.IsAssignableFrom<IEnumerable<PatientDetailsDto>>(result);
             Assert.Empty(returnedPatients);
         }
 
@@ -261,17 +251,19 @@ namespace ShimsServer.Tests.Controllers
         {
             // Arrange
             var patientId = Guid.NewGuid();
-            var patient = new ListPatientsDto(
-                PatientID: patientId,
-                SchemesID: Guid.NewGuid(),
-                Age: 30,
-                Gender: "Male",
-                FullName: "John Doe",
-                Scheme: "NHIS",
+            var patient = new PatientDetailsDto(
+                PatientsID: patientId,
                 HospitalID: "HOSP-2025-01-000001",
-                CardID: "CARD123456789",
-                ExpiryDate: new DateTime(2026, 12, 31),
-                AttendanceDate: DateTime.Now
+                FullName: "John Doe",
+                Sex: "Male",
+                DateOfBirth: new DateOnly(1990, 1, 1),
+                Age: 30,
+                PhoneNumber: "0541234567",
+                GhanaCard: "GHA-0123456789-01",
+                VisitType: "Acute",
+                PatientAttendancesID: Guid.NewGuid(),
+                DateSeen: new DateOnly(2025, 1, 15),
+                Schemes: []
             );
 
             _mockRepository
@@ -282,9 +274,9 @@ namespace ShimsServer.Tests.Controllers
             var result = await _controller.GetPatientById(patientId);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedPatient = Assert.IsType<ListPatientsDto>(okResult.Value);
-            Assert.Equal(patientId, returnedPatient.PatientID);
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
+            var returnedPatient = Assert.IsType<PatientDetailsDto>(okResult.Value);
+            Assert.Equal(patientId, returnedPatient.PatientsID);
             Assert.Equal("John Doe", returnedPatient.FullName);
         }
 
@@ -296,7 +288,7 @@ namespace ShimsServer.Tests.Controllers
 
             _mockRepository
                 .Setup(r => r.GetPatientByIdAsync(patientId, It.IsAny<CancellationToken>()))
-                .ReturnsAsync((ListPatientsDto?)null);
+                .ReturnsAsync((PatientDetailsDto?)null);
 
             // Act
             var result = await _controller.GetPatientById(patientId);
@@ -314,19 +306,21 @@ namespace ShimsServer.Tests.Controllers
         {
             // Arrange
             var searchTerm = "John";
-            var matches = new List<ListPatientsDto>
+            var matches = new List<PatientDetailsDto>
             {
-                new ListPatientsDto(
-                    PatientID: Guid.NewGuid(),
-                    SchemesID: Guid.NewGuid(),
-                    Age: 30,
-                    Gender: "Male",
-                    FullName: "John Doe",
-                    Scheme: "NHIS",
+                new(
+                    PatientsID: Guid.NewGuid(),
                     HospitalID: "HOSP-2025-01-000001",
-                    CardID: "CARD123456789",
-                    ExpiryDate: new DateTime(2026, 12, 31),
-                    AttendanceDate: DateTime.Now
+                    FullName: "John Doe",
+                    Sex: "Male",
+                    DateOfBirth: new DateOnly(1990, 1, 1),
+                    Age: 30,
+                    PhoneNumber: "0541234567",
+                    GhanaCard: "GHA-0123456789-01",
+                    VisitType: "Acute",
+                    PatientAttendancesID: Guid.NewGuid(),
+                    DateSeen: new DateOnly(2025, 1, 15),
+                    Schemes: []
                 )
             };
 
@@ -338,8 +332,8 @@ namespace ShimsServer.Tests.Controllers
             var result = await _controller.SearchPatients(searchTerm);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedPatients = Assert.IsAssignableFrom<IEnumerable<ListPatientsDto>>(okResult.Value);
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
+            var returnedPatients = Assert.IsAssignableFrom<IEnumerable<PatientDetailsDto>>(okResult.Value);
             Assert.Single(returnedPatients);
         }
 
@@ -348,7 +342,7 @@ namespace ShimsServer.Tests.Controllers
         {
             // Arrange
             var searchTerm = "NonExistent";
-            var emptyList = new List<ListPatientsDto>();
+            var emptyList = new List<PatientDetailsDto>();
 
             _mockRepository
                 .Setup(r => r.SearchPatientsAsync(searchTerm.Trim(), It.IsAny<CancellationToken>()))
@@ -358,8 +352,8 @@ namespace ShimsServer.Tests.Controllers
             var result = await _controller.SearchPatients(searchTerm);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedPatients = Assert.IsAssignableFrom<IEnumerable<ListPatientsDto>>(okResult.Value);
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
+            var returnedPatients = Assert.IsAssignableFrom<IEnumerable<PatientDetailsDto>>(okResult.Value);
             Assert.Empty(returnedPatients);
         }
 
@@ -370,7 +364,8 @@ namespace ShimsServer.Tests.Controllers
             var result = await _controller.SearchPatients("");
 
             // Assert
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            var actionResult = Assert.IsType<ActionResult<IEnumerable<PatientDetailsDto>>>(result);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(actionResult.Result);
             Assert.Equal(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
             _mockRepository.Verify(
                 r => r.SearchPatientsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
@@ -384,7 +379,7 @@ namespace ShimsServer.Tests.Controllers
             var result = await _controller.SearchPatients("   ");
 
             // Assert
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
             Assert.Equal(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
         }
 
@@ -393,7 +388,7 @@ namespace ShimsServer.Tests.Controllers
         {
             // Arrange
             var searchTerm = "  John  ";
-            var matches = new List<ListPatientsDto>();
+            var matches = new List<PatientDetailsDto>();
 
             _mockRepository
                 .Setup(r => r.SearchPatientsAsync("John", It.IsAny<CancellationToken>()))
@@ -418,7 +413,7 @@ namespace ShimsServer.Tests.Controllers
             // Arrange
             var patientId = Guid.NewGuid();
             var dto = new EditPatientDto(
-                PatientID: patientId,
+                PatientsID: patientId,
                 HospitalID: "HOSP-2025-01-000001",
                 GhanaCard: "GHA-1111111111-02",
                 Surname: "UpdatedSurname",
@@ -440,7 +435,8 @@ namespace ShimsServer.Tests.Controllers
             var result = await _controller.UpdatePatient(patientId, dto);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
+            var actionResult = Assert.IsType<ActionResult<string>>(result);
+            var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
             Assert.Equal(StatusCodes.Status200OK, okResult.StatusCode);
             _mockRepository.Verify(
                 r => r.EditPatientAsync(dto, It.IsAny<string>(), It.IsAny<CancellationToken>()),
@@ -454,7 +450,7 @@ namespace ShimsServer.Tests.Controllers
             var patientId = Guid.NewGuid();
             var differentId = Guid.NewGuid();
             var dto = new EditPatientDto(
-                PatientID: differentId,
+                PatientsID: differentId,
                 HospitalID: "HOSP-2025-01-000001",
                 GhanaCard: null,
                 Surname: "Surname",
@@ -464,15 +460,22 @@ namespace ShimsServer.Tests.Controllers
                 PhoneNumber: "0500000000"
             );
 
+            _mockRepository.Setup(r => r.PatientExists(patientId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(true);
+            _mockRepository.Setup(r => r.EditPatientAsync(
+                It.Is<EditPatientDto>(d => d.PatientsID == patientId),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
+
             // Act
             var result = await _controller.UpdatePatient(patientId, dto);
 
             // Assert
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
+            Assert.IsType<OkObjectResult>(result.Result);
             _mockRepository.Verify(
-                r => r.PatientExists(It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
-                Times.Never);
+                r => r.PatientExists(patientId, It.IsAny<CancellationToken>()),
+                Times.Once);
         }
 
         [Fact]
@@ -481,7 +484,7 @@ namespace ShimsServer.Tests.Controllers
             // Arrange
             var patientId = Guid.NewGuid();
             var dto = new EditPatientDto(
-                PatientID: patientId,
+                PatientsID: patientId,
                 HospitalID: "HOSP-2025-01-000001",
                 GhanaCard: null,
                 Surname: "Surname",
@@ -499,7 +502,7 @@ namespace ShimsServer.Tests.Controllers
             var result = await _controller.UpdatePatient(patientId, dto);
 
             // Assert
-            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result.Result);
             Assert.Equal(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
         }
 
@@ -509,7 +512,7 @@ namespace ShimsServer.Tests.Controllers
             // Arrange
             var patientId = Guid.NewGuid();
             var dto = new EditPatientDto(
-                PatientID: patientId,
+                PatientsID: patientId,
                 HospitalID: "HOSP-2025-01-000001",
                 GhanaCard: null,
                 Surname: "Surname",
@@ -533,8 +536,7 @@ namespace ShimsServer.Tests.Controllers
             var result = await _controller.UpdatePatient(patientId, dto);
 
             // Assert
-            var actionResult = Assert.IsType<ActionResult<string>>(result);
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(actionResult.Result);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
             Assert.Equal(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
         }
 
