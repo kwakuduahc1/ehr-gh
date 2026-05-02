@@ -1,9 +1,6 @@
 import { Routes } from '@angular/router';
-import { RegistrationsListComponent } from './components/registrations-list-component/registrations-list-component';
 import { inject } from '@angular/core';
 import { RegistrationsHttpService } from './registrations-http.service';
-import { InsuranceDetailComponent } from './components/insurance-detail-component/insurance-detail-component';
-import { SearchComponent } from './components/search-component/search-component';
 
 export const RegistrationsRoute: Routes = [
     {
@@ -20,8 +17,6 @@ export const RegistrationsRoute: Routes = [
     },
     {
         path: 'detail/:id',
-        loadComponent: () => import('./components/insurance-detail-component/insurance-detail-component').then(m => m.InsuranceDetailComponent),
-        resolve: {
-        }
+        loadComponent: () => import('./components/insurance-detail-component/insurance-detail-component').then(m => m.InsuranceDetailComponent)
     }
 ];

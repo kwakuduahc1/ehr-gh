@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { environment } from '../../../../environments/environment';
 import { PatientDetailsDto } from '../../../models/registrations/IRegistrations';
-import { form, FormField, FormRoot, maxLength, minLength, required } from '@angular/forms/signals';
+import { form, FormField, FormRoot } from '@angular/forms/signals';
 import { MatError, MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { ValidatorMessages } from '../../../components/auth-validators';
@@ -45,7 +45,7 @@ export class SearchComponent {
   addAttendance(p: PatientDetailsDto) {
     this.diag.open<ViewSessionsComponent, {}, { patient: PatientDetailsDto }>(ViewSessionsComponent, {
       data: { patient: p },
-      width: '800px',
+      width: '850px',
       disableClose: true
     })
       .afterClosed()

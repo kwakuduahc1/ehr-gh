@@ -66,6 +66,7 @@ namespace ShimsServer
             builder.Services.AddScoped<ISchemeInvestigationRepository, SchemeInvestigationRepository>();
             builder.Services.AddScoped<ISchemeServicePricingRepository, SchemeServicePricingRepository>();
             builder.Services.AddScoped<IPatientSchemesRepository, PatientSchemesRepository>();
+            builder.Services.AddScoped<IVitalsRepository, VitalsRepository>();
 
             builder.Services.AddStackExchangeRedisCache(o =>
             {

@@ -24,6 +24,8 @@ namespace ShimsServer.Models.Records
         [DefaultValue(true)]
         public bool IsActive { get; set; } = true;
 
+        public DateTime? DateEnded { get; set; }
+
         [MaxLength(75)]
         [Required]
         public required string UserName { get; set; }

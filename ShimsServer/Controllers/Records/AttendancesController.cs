@@ -24,14 +24,16 @@ namespace ShimsServer.Controllers.Records
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<int>> AddAttendance([FromBody] AddAttendanceDto dto)
+        public async Task<ActionResult<Guid>> AddAttendance([FromBody] AddAttendanceDto dto)
         {
             var userName = User.Identity?.Name ?? "system";
             var ptId = Guid.CreateVersion7();
             try
             {
                 var attendanceId = await dataSource.AddAttendance(dto, ptId, userName, HttpContext.RequestAborted);
-                return Ok(attendanceId);
+                if (attendanceId != 1)
+                    return BadRequest(new { message = "No attendance was added. Please check the input and try again." });
+                return Ok(ptId);
             }
             catch (PostgresException ex)
             {
@@ -42,6 +44,29 @@ namespace ShimsServer.Controllers.Records
             {
                 logger.LogError(ex, "Error adding attendance");
                 return BadRequest(new { message = "An error occurred during attendance addition" });
+            }
+        }
+
+        [HttpPut("{id:guid:required}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<int>> EndSession(Guid id)
+        {
+            try
+            {
+                if(await dataSource.EndSession(id) != 1)
+                    return BadRequest(new { message = "No session was ended. Please check the session ID and try again." });
+                return Ok();
+            }
+            catch (PostgresException ex)
+            {
+                logger.LogError(ex, "Database error ending session");
+                return BadRequest(new { message = "There was a database level error" });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error ending session");
+                return BadRequest(new { message = "An error occurred during session ending" });
             }
         }
     }

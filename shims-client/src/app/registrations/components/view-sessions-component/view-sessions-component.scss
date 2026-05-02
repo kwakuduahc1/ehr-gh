@@ -1,3 +1,5 @@
+@use '../../../styles/variables' as *;
+
 fieldset {
     border: none;
     padding: 0;
@@ -8,7 +10,7 @@ fieldset {
         letter-spacing: 0.05em;
         text-transform: uppercase;
         color: var(--mat-sys-outline);
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.25rem;
     }
 }
 
@@ -31,22 +33,23 @@ fieldset {
     .actions {
         display: flex;
         align-items: center;
-        padding-bottom: 1.25rem;
+        padding-bottom: 0.5rem;
     }
 }
 
 .sessions-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
-    padding-block: 0.5rem;
+    gap: 0.5rem;
+    padding-block: 0.25rem;
+    align-items: flex-start;
 }
 
 .session-card {
-    width: 220px;
+    flex: 0 1 calc(50% - 0.25rem);
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.25rem;
 
     &--inactive {
         opacity: 0.6;
@@ -73,8 +76,8 @@ fieldset {
         color: var(--mat-sys-on-surface-variant, #444);
 
         &--active {
-            background-color: #e6f4ea;
-            color: #1e7e34;
+            background-color: rgba($success-color, 0.15);
+            color: $success-dark;
         }
     }
 
@@ -93,7 +96,11 @@ fieldset {
     }
 
     &__actions {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 0.5rem;
         margin-top: auto;
-        padding-top: 0.25rem;
+        padding-top: 0;
     }
 }

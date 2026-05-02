@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/cor
 import { DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -12,10 +12,23 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { SessionsHttpService } from '../../sessions-http.service';
 import { AddPatientSession, PatientDetailsDto, VwSessions } from '../../../models/registrations/IRegistrations';
 import { applyEach, form, FormField, FormRoot, required, submit } from '@angular/forms/signals';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-view-sessions-component',
-  imports: [DatePipe, MatButtonModule, MatIconModule, MatDialogModule, MatFormFieldModule, MatSelectModule, MatDatepickerModule, MatNativeDateModule, MatInputModule, FormField, FormRoot],
+  imports: [
+    DatePipe,
+    MatButtonModule,
+    MatIconModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatInputModule,
+    FormField,
+    FormRoot,
+  ],
   templateUrl: './view-sessions-component.html',
   styleUrl: './view-sessions-component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,6 +37,9 @@ export class ViewSessionsComponent {
   private http = inject(SessionsHttpService);
   data = inject<{ patient: PatientDetailsDto }>(MAT_DIALOG_DATA);
   sessions = signal<VwSessions[]>([]);
+  private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
+  private diag = inject(MatDialogRef<ViewSessionsComponent>);
 
   fmMdl = signal<AddPatientSession>({
     patientsID: this.data.patient.patientsID,
@@ -45,7 +61,6 @@ export class ViewSessionsComponent {
       });
   }
 
-  private snackBar = inject(MatSnackBar);
 
   addSession(): void {
     submit(this.form, async () => {
@@ -71,5 +86,10 @@ export class ViewSessionsComponent {
         list.map(s => s.patientAttendancesID === session.patientAttendancesID ? { ...s, isActive: false } : s)
       );
     });
+  }
+
+  vitals(): void {
+    this.diag.close();
+    this.router.navigate(['vitals', this.data.patient.patientAttendancesID]);
   }
 }

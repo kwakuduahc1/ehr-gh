@@ -1,0 +1,43 @@
+<h1>Vitals</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Recorded By</th>
+            <th scope="col">Temp (°C)</th>
+            <th scope="col">Weight (kg)</th>
+            <th scope="col">Pulse (bpm)</th>
+            <th scope="col">BP (mmHg)</th>
+            <th scope="col">RR (rpm)</th>
+            <th scope="col">SpO₂ (%)</th>
+            <th scope="col">Complaints</th>
+            <th scope="col">Notes</th>
+            <th scope="col">Date Seen</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (vital of list(); track vital.vitalsID) {
+        <tr>
+            <td>{{ vital.userName }}</td>
+            <td>{{ vital.temperature }}</td>
+            <td>{{ vital.weight }}</td>
+            <td>{{ vital.pulse ?? '—' }}</td>
+            <td>
+                @if (vital.systol !== null && vital.diastol !== null) {
+                {{ vital.systol }}/{{ vital.diastol }}
+                } @else {
+                —
+                }
+            </td>
+            <td>{{ vital.respiration ?? '—' }}</td>
+            <td>{{ vital.sPO2 ?? '—' }}</td>
+            <td>{{ vital.complaints }}</td>
+            <td>{{ vital.notes ?? '—' }}</td>
+            <td>{{ vital.dateSeen }}</td>
+        </tr>
+        } @empty {
+        <tr>
+            <td colspan="10">No vitals recorded.</td>
+        </tr>
+        }
+    </tbody>
+</table>

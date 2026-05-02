@@ -20,7 +20,8 @@ namespace ShimsServer.Models.OPD
         double? SPO2,
         string Complaints,
         string? Notes,
-        string UserName);
+        string UserName
+        );
 
     /// <summary>
     /// Data transfer object for creating vital signs records

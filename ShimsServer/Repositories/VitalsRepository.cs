@@ -42,7 +42,7 @@ namespace ShimsServer.Repositories
         {
             const string sql =
                 """
-                    SELECT v.VitalsID, v.PatientsAttendancesID, v.DateSeen, v.Temperature, v.Weight, v.Pulse, v.Systol, v.Diastol, v.Respiration, v.SPO2, v.Complaints, v.Notes
+                    SELECT v.VitalsID, v.PatientsAttendancesID, v.DateSeen, v.Temperature, v.Weight, v.Pulse, v.Systol, v.Diastol, v.Respiration, v.SPO2, v.Complaints, v.Notes, v.UserName
                     FROM Vitals v
                     WHERE v.PatientsAttendancesID = @ptaid
                     ORDER BY v.DateSeen DESC

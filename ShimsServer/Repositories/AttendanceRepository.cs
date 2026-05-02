@@ -11,11 +11,25 @@ namespace ShimsServer.Repositories
 
         public Task<IEnumerable<ListPatientsDto>> ActiveSessions(Guid id, CancellationToken cancellationToken = default);
 
+        public Task<int> EndSession(Guid id);
+
         public Task<IEnumerable<VwSessions>> GetPatientSessions(Guid id, CancellationToken cancellationToken = default);
     }
 
     public class AttendanceRepository(IConnection connection) : IAttendanceRepository
     {
+
+        public async Task<int> EndSession(Guid id)
+        {
+            const string sql = """
+                  UPDATE patientattendances 
+                    SET isactive = false,
+                        DateEnded = now()
+                  WHERE patientattendancesid = @id;
+                """;
+            using var con = await connection.ConnectionAsync();
+            return await con.ExecuteAsync(sql, new { id });
+        }
         public async Task<IEnumerable<VwSessions>> GetPatientSessions(Guid id, CancellationToken cancellationToken = default)
         {
             const string sql =

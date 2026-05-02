@@ -294,6 +294,7 @@ namespace ShimsServer.Tests.Controllers
             var result = await _controller.GetPatientById(patientId);
 
             // Assert
+            Assert.Null(result.Value);
             Assert.IsType<NotFoundResult>(result.Result);
         }
 
@@ -302,7 +303,7 @@ namespace ShimsServer.Tests.Controllers
         #region SearchPatients Tests
 
         [Fact]
-        public async Task SearchPatients_WithValidSearchTerm_ReturnsOkWithMatches()
+        public async Task SearchPatients_WithValidSearchTerm_ReturnsMatches()
         {
             // Arrange
             var searchTerm = "John";
@@ -332,13 +333,12 @@ namespace ShimsServer.Tests.Controllers
             var result = await _controller.SearchPatients(searchTerm);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            var returnedPatients = Assert.IsAssignableFrom<IEnumerable<PatientDetailsDto>>(okResult.Value);
+            var returnedPatients = Assert.IsAssignableFrom<IEnumerable<PatientDetailsDto>>(result);
             Assert.Single(returnedPatients);
         }
 
         [Fact]
-        public async Task SearchPatients_WithNoMatches_ReturnsOkWithEmptyList()
+        public async Task SearchPatients_WithNoMatches_ReturnsEmptyList()
         {
             // Arrange
             var searchTerm = "NonExistent";
@@ -352,35 +352,33 @@ namespace ShimsServer.Tests.Controllers
             var result = await _controller.SearchPatients(searchTerm);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            var returnedPatients = Assert.IsAssignableFrom<IEnumerable<PatientDetailsDto>>(okResult.Value);
+            var returnedPatients = Assert.IsAssignableFrom<IEnumerable<PatientDetailsDto>>(result);
             Assert.Empty(returnedPatients);
         }
 
         [Fact]
-        public async Task SearchPatients_WithEmptySearchTerm_ReturnsBadRequest()
+        public async Task SearchPatients_WithEmptySearchTerm_ReturnsEmptyList()
         {
             // Act
             var result = await _controller.SearchPatients("");
 
             // Assert
-            var actionResult = Assert.IsType<ActionResult<IEnumerable<PatientDetailsDto>>>(result);
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(actionResult.Result);
-            Assert.Equal(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
+            var patients = Assert.IsAssignableFrom<IEnumerable<PatientDetailsDto>>(result);
+            Assert.Empty(patients);
             _mockRepository.Verify(
                 r => r.SearchPatientsAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
                 Times.Never);
         }
 
         [Fact]
-        public async Task SearchPatients_WithWhitespaceSearchTerm_ReturnsBadRequest()
+        public async Task SearchPatients_WithWhitespaceSearchTerm_ReturnsEmptyList()
         {
             // Act
             var result = await _controller.SearchPatients("   ");
 
             // Assert
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
-            Assert.Equal(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
+            var patients = Assert.IsAssignableFrom<IEnumerable<PatientDetailsDto>>(result);
+            Assert.Empty(patients);
         }
 
         [Fact]

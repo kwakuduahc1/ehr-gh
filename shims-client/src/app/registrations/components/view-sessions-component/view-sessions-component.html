@@ -40,8 +40,21 @@
             </div>
             @if (s.isActive) {
             <div class="session-card__actions">
+                <button type="button" mat-button class="color-error" (click)="vitals()">
+                    <mat-icon>health_and_safety</mat-icon> Vitals
+                </button>
                 <button type="button" mat-button class="color-error" (click)="endSession(s)">
                     <mat-icon>stop_circle</mat-icon> End Session
+                </button>
+            </div>
+            }
+            @else {
+            <div class="session-card__actions">
+                <button type="button" mat-button class="color-error">
+                    <mat-icon>report</mat-icon> Report
+                </button>
+                <button type="button" mat-button class="color-error" (click)="endSession(s)">
+                    <mat-icon>archive</mat-icon> Archive
                 </button>
             </div>
             }
