@@ -49,7 +49,11 @@ export interface PatientDetailsDto {
 
 export interface VwSessions {
     patientAttendancesID: string;
-    visitType: string;
+    visitType: 'Acute' | 'Review' | 'Chronic';
     dateSeen: string;
     isActive: boolean;
 }
+
+export interface AddPatientSession extends Pick<VwSessions, 'visitType'> {
+    patientsID: string;
+};

@@ -45,7 +45,8 @@ export class SearchComponent {
   addAttendance(p: PatientDetailsDto) {
     this.diag.open<ViewSessionsComponent, {}, { patient: PatientDetailsDto }>(ViewSessionsComponent, {
       data: { patient: p },
-      width: '800px'
+      width: '800px',
+      disableClose: true
     })
       .afterClosed()
       .subscribe();

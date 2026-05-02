@@ -31,6 +31,11 @@ export const routes: Routes = [
         path: 'registrations',
         loadChildren: () => import('../app/registrations/registrations.routes')
             .then(x => x.RegistrationsRoute)
+    },
+    {
+        path: 'vitals',
+        loadChildren: () => import('../app/vitals/vitals.routes')
+            .then(x => x.VitalsRoute)
     }
 
 ];

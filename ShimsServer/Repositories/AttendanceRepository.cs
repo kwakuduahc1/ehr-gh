@@ -23,6 +23,8 @@ namespace ShimsServer.Repositories
                     SELECT pa.patientattendancesid, pa.visittype, pa.dateseen::date, pa.isactive
                     FROM patientattendances pa
                     WHERE pa.patientsid = @id
+                    ORDER BY pa.dateseen DESC
+                    LIMIT 5;
                 """;
 
             using var con = await connection.ConnectionAsync(cancellationToken);
@@ -45,9 +47,9 @@ namespace ShimsServer.Repositories
         {
             const string sql = """
                   UPDATE patientattendances SET isactive = false
-                  WHERE patientschemesid = @ptsid;
+                  WHERE patientsid = @ptsid;
                   INSERT INTO public.patientattendances(
-                    patientattendancesid, patientschemesid, visittype, dateseen, username, isactive)
+                    patientattendancesid, patientsid, visittype, dateseen, username, isactive)
                   VALUES (@ptid, @ptsid, @vtype, now(), @user, true);
                 """;
             using var con = await connection.ConnectionAsync(cancellationToken);
@@ -55,7 +57,7 @@ namespace ShimsServer.Repositories
             var result = await con.ExecuteAsync(sql, new
             {
                 PtID,
-                ptsid = dto.PatientSchemesID,
+                ptsid = dto.PatientsID,
                 vtype = dto.VisitType,
                 user
             }, transaction: tran);
@@ -66,11 +68,11 @@ namespace ShimsServer.Repositories
 
 
     public record AddAttendanceDto(
-     Guid PatientSchemesID,
+     Guid PatientsID,
 
     [StringLength(15)]
     [DefaultValue("Acute")]
-    [AllowedValues(["Acute", "Review", "Follow-up"])]
+    [AllowedValues(["Acute", "Review", "Chronic"])]
     string VisitType
     );
 }
