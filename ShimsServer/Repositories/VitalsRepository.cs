@@ -5,7 +5,7 @@ namespace ShimsServer.Repositories
 {
     public interface IVitalsRepository
     {
-        public Task<IEnumerable<VitalsDTO>> GetVitalsForPatient(Guid patientId, CancellationToken cancellationToken);
+        public Task<VitalsummaryDto> GetVitalsForPatient(Guid patientId, CancellationToken cancellationToken);
 
         public Task AddVitals(AddVitalsDto dto, Guid vid, string userName, CancellationToken cancellationToken);
     }
@@ -38,18 +38,25 @@ namespace ShimsServer.Repositories
             await transaction.CommitAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<VitalsDTO>> GetVitalsForPatient(Guid ptaid, CancellationToken cancellationToken)
+        public async Task<VitalsummaryDto> GetVitalsForPatient(Guid id, CancellationToken cancellationToken)
         {
             const string sql =
                 """
                     SELECT v.VitalsID, v.PatientsAttendancesID, v.DateSeen, v.Temperature, v.Weight, v.Pulse, v.Systol, v.Diastol, v.Respiration, v.SPO2, v.Complaints, v.Notes, v.UserName
                     FROM Vitals v
-                    WHERE v.PatientsAttendancesID = @ptaid
+                    WHERE v.PatientsAttendancesID = @id
                     ORDER BY v.DateSeen DESC
                     LIMIT 30;
+                SELECT PatientsID, hospitalid, fullname, sex, age, visittype
+                FROM vw_patients
+                WHERE patientattendancesid = @id;
                 """;
             using var con = await connection.ConnectionAsync(cancellationToken);
-            return await con.QueryAsync<VitalsDTO>(sql, new { ptaid });
+            var result = await con.QueryMultipleAsync(sql, new { id });
+            var vitals = await result.ReadAsync<VitalsDTO>();
+            var patient = await result.ReadFirstOrDefaultAsync<LitePatientDto>();
+            await con.CloseAsync();
+            return new VitalsummaryDto(vitals, patient!);
         }
     }
 }

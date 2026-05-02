@@ -414,4 +414,9 @@ namespace ShimsServer.Repositories
     );
 
     public record VwSessions(Guid PatientAttendancesID, string VisitType, DateOnly DateSeen, bool IsActive);
+
+    // A lightweight DTO for patient information, used in scenarios where only basic details are needed
+
+    // PatientsID, hospitalid, fullname, sex, age, visittype
+    public record LitePatientDto(Guid PatientsID, string HospitalID, string FullName, string sex, short Age, string VisitType);
 }

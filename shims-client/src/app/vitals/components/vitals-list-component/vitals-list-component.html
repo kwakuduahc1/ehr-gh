@@ -1,4 +1,9 @@
-<h1>Vitals</h1>
+<div class="vitals-header">
+    <h1 class="text-center h1">Vitals</h1>
+    <button type="button" mat-flat-button color="primary">
+        <mat-icon>add</mat-icon> Add Vitals
+    </button>
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -15,7 +20,7 @@
         </tr>
     </thead>
     <tbody>
-        @for (vital of list(); track vital.vitalsID) {
+        @for (vital of vitals(); track vital.vitalsID) {
         <tr>
             <td>{{ vital.userName }}</td>
             <td>{{ vital.temperature }}</td>

@@ -14,7 +14,7 @@ export class RegistrationsHttpService {
     }
 
     getRegistration(id: string): Observable<PatientDetailsDto> {
-        return this.http.get<PatientDetailsDto>(`${this.baseUrl}/${id}`);
+        return this.http.get<PatientDetailsDto>(`${this.baseUrl}/Find/${id}`);
     }
 
     search(query: string): Observable<PatientDetailsDto[]> {

@@ -1,7 +1,11 @@
+using ShimsServer.Repositories;
 using System.ComponentModel.DataAnnotations;
 
 namespace ShimsServer.Models.OPD
 {
+    public record VitalsummaryDto(
+       IEnumerable<VitalsDTO> Vitals,
+        LitePatientDto Patient);
     // DTOs for OPD (Out-Patient Department) Vitals
 
     /// <summary>

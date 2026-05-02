@@ -89,7 +89,9 @@ export class ViewSessionsComponent {
   }
 
   vitals(): void {
-    this.diag.close();
-    this.router.navigate(['vitals', this.data.patient.patientAttendancesID]);
+
+    this.router.navigate(['vitals', this.data.patient.patientAttendancesID])
+      .then(() => this.diag.close())
+      .catch(() => this.snackBar.open('Failed to open vitals.', 'Dismiss'));
   }
 }

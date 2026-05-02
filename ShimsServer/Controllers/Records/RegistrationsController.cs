@@ -88,7 +88,7 @@ namespace ShimsServer.Controllers.Records
         /// <returns>Patient details if found</returns>
         /// <response code="200">Successfully retrieved patient information</response>
         /// <response code="404">Patient not found</response>
-        [HttpGet("{id:guid}")]
+        [HttpGet("Find/{id:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PatientDetailsDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PatientDetailsDto>> GetPatientById(Guid id)

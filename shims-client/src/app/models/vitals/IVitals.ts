@@ -1,6 +1,11 @@
+import { LitePatientDto } from "../dtos";
+
+/**
+ * Data transfer object for vital signs information
+ */
 export interface VitalsDTO {
     vitalsID: string;
-    PatientsAttendancesID: string;
+    patientsAttendancesID: string;
     dateSeen: string;
     temperature: number;
     weight: number;
@@ -14,8 +19,11 @@ export interface VitalsDTO {
     userName: string;
 }
 
+/**
+ * Data transfer object for creating vital signs records
+ */
 export interface AddVitalsDto {
-    PatientsAttendancesID: string;
+    patientsAttendancesID: string;
     temperature: number;
     weight: number;
     pulse: number | null;
@@ -25,4 +33,12 @@ export interface AddVitalsDto {
     sPO2: number | null;
     complaints: string;
     notes: string | null;
+}
+
+/**
+ * Data transfer object for vital signs summary
+ */
+export interface VitalsummaryDto {
+    vitals: VitalsDTO[];
+    patient: LitePatientDto;
 }

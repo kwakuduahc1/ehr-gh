@@ -15,8 +15,17 @@ namespace ShimsServer.Controllers.Vitals
         /// Get vitals for a specific patient
         /// </summary>
         [HttpGet("{id:guid}")]
-        [ProducesResponseType(typeof(IEnumerable<VitalsDTO>), StatusCodes.Status200OK)]
-        public async Task<IEnumerable<VitalsDTO>> GetVitalsForPatient(Guid id) => await repository.GetVitalsForPatient(id, HttpContext.RequestAborted);
+        [ProducesResponseType(typeof(VitalsummaryDto), StatusCodes.Status200OK)]
+        [ResponseCache(Duration = 500, Location = ResponseCacheLocation.Client)]
+        public async Task<ActionResult<VitalsummaryDto>> GetVitalsForPatient(Guid id)
+        {
+            if (id == Guid.Empty)
+                return BadRequest(new {Message = "No patient found"});
+            var details = await repository.GetVitalsForPatient(id, HttpContext.RequestAborted);
+            if (details == null)
+                return NotFound(new {Message = "No patient found"});
+            return Ok(details);
+        }
 
         /// <summary>
         /// Add vital signs for a patient
