@@ -10,13 +10,18 @@
         <p><strong>Age:</strong> {{ p.age }}</p>
         <p><strong>Sex:</strong> {{ p.sex }}</p>
         <p><strong>Type:</strong> {{ p.visitType }}</p>
-        <button type="button" mat-flat-button color="primary" (click)="addVitals()">
-            <mat-icon>add</mat-icon> Add Vitals
-        </button>
+        <div class="button-group">
+            <button type="button" class="btn-primary" (click)="addVitals()">
+                <mat-icon>add</mat-icon> Add Vitals
+            </button>
+            <button type="button" class="btn-secondary" routerLink="/consulting/{{p.patientsID}}">
+                <mat-icon>edit</mat-icon> Consulting
+            </button>
+        </div>
         }
     </div>
     <div class="vitals">
-        <table class="table table-striped">
+        <table class="table table-striped table-sm">
             <thead>
                 <tr>
                     <th scope="col">Date</th>
@@ -29,14 +34,14 @@
             <tbody>
                 @for (v of vitals(); track $index) {
                 <tr>
-                    <td>{{ v.dateSeen|date:'dd-MM-yyyy' }}</td>
+                    <td>{{ v.dateSeen|date:'dd-MMM-yyyy' }}</td>
                     <td>{{ v.temperature }}</td>
                     <td>{{ v.weight }}</td>
                     <td>
                         {{ v.systol }}/{{ v.diastol }}
                     </td>
                     <td>
-                        <button type="button" mat-icon-button (click)="viewVitals(v)">
+                        <button type="button" class="btn-secondary" mat-icon-button (click)="viewVitals(v)">
                             <mat-icon>visibility</mat-icon>
                         </button>
                     </td>

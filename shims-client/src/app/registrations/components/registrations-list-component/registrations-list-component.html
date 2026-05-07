@@ -2,14 +2,14 @@
 <button type="button" mat-button title="Register new patient" (click)="addRegistration()">
     <mat-icon>person_add</mat-icon> New registration
 </button>
-<table class="table">
+<table class="table table-striped table-sm">
     <thead>
         <th>Hospital ID</th>
         <th>Full Name</th>
         <th>Age</th>
         <th>Sex</th>
-        <th>Ghana Card</th>
-        <th>Attendance</th>
+        <th>Insurance</th>
+        <th>Consulting</th>
         <th>Actions</th>
     </thead>
     <tbody>
@@ -20,6 +20,11 @@
             <td>{{p.age}}</td>
             <td>{{p.sex}}</td>
             <td>
+                <button (click)="viewInsurance(p)" mat-button type="button" title="View insurance for {{p.fullName}}">
+                    <mat-icon>health_and_safety</mat-icon> Insurance
+                </button>
+            </td>
+            <td>
                 <button routerLink="/vitals/{{p.patientAttendancesID}}" mat-button type="button"
                     title="View vitals for {{p.fullName}}">
                     <mat-icon>health_and_safety</mat-icon> Vitals
@@ -29,9 +34,6 @@
                 </button>
             </td>
             <td>
-                <button (click)="viewInsurance(p)" mat-button type="button" title="View insurance for {{p.fullName}}">
-                    <mat-icon>health_and_safety</mat-icon> Insurance
-                </button>
                 <button (click)="addRegistration(p)" mat-button type="button" title="Edit {{p.fullName}}">
                     <mat-icon>edit</mat-icon> Edit
                 </button>

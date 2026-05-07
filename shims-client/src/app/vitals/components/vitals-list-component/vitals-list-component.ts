@@ -8,6 +8,7 @@ import { AddVitalsDto, VitalsDTO, VitalsummaryDto } from '../../../models/vitals
 import { AddVitalsDialogComponent } from '../add-vitals-dialog/add-vitals.component';
 import { filter, map, switchMap, tap } from 'rxjs';
 import { VitalsHttpService } from '../../vitals-http.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
     selector: 'app-vitals-list',
@@ -18,7 +19,8 @@ import { VitalsHttpService } from '../../vitals-http.service';
         CommonModule,
         MatButtonModule,
         MatIconModule,
-        MatTableModule
+        MatTableModule,
+        RouterLink
     ]
 })
 export class VitalsListComponent {
