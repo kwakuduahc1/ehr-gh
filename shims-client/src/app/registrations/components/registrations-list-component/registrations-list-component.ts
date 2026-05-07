@@ -1,5 +1,5 @@
 import { Component, inject, model, ChangeDetectionStrategy, input } from '@angular/core';
-import { PatientDetailsDto, EditPatientDto, AddPatientDto, EditPatientSchemeDto, InsuranceDetails } from '../../../models/registrations/IRegistrations';
+import { PatientDetailsDto, EditPatientDto, InsuranceDetails } from '../../../models/registrations/IRegistrations';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -11,13 +11,14 @@ import { AddRegistrationComponent } from '../add-registration-component/add-regi
 import { SchemesDTO } from '../../../models/ISchemes';
 import { InsuranceDetailComponent } from '../insurance-detail-component/insurance-detail-component';
 import { PatientSchemesHttpService } from '../../patient-schemes-http.service';
+import { RouterLink } from "@angular/router";
 
 @Component({
     selector: 'app-registrations-list',
     templateUrl: './registrations-list-component.html',
     styleUrl: './registrations-list-component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [MatButton, MatIcon]
+    imports: [MatButton, MatIcon, RouterLink]
 })
 export class RegistrationsListComponent {
     list = model.required<PatientDetailsDto[]>();
@@ -50,28 +51,38 @@ export class RegistrationsListComponent {
             .subscribe({
                 next: d => {
                     this.snack.open(result.edit ? 'Patient updated' : 'Patient registered');
-                    // this.patients.update(list =>
-                    //     result.edit
-                    //         ? list.map(p => p.patientID === result.patient.patientID
-                    //             ? { ...p, gender: result.patient.sex }
-                    //             : p)
-                    //         : [
-                    //             {
-                    //                 age: 0,
-                    //                 attendanceDate: new Date(),
-                    //                 fullName: `${result.patient.surname} ${result.patient.otherNames}`,
-                    //                 gender: result.patient.sex,
-                    //                 hospitalID: d!.hosid,
-                    //                 patientID: d!.pid,
-                    //                 patientSchemesID: result.patient.patientID,
-                    //                 visitType: result.patient.visitType,
-                    //             }, ...list]
-                    // );
+                    this.list.update(x => {
+                        if (result.edit) {
+                            return x.map(p => p.patientsID === result.patient.patientsID
+                                ? {
+                                    ...p,
+                                    ghanaCard: result.patient.ghanaCard,
+                                    phoneNumber: result.patient.phoneNumber,
+                                    dateOfBirth: result.patient.dateOfBirth,
+                                    otherNames: result.patient.otherNames,
+                                    surname: result.patient.surname
+                                } as PatientDetailsDto
+                                : p
+                            )
+                        }
+                        return [{
+                            patientsID: d!.pid,
+                            fullName: `${result.patient.surname} ${result.patient.otherNames}`,
+                            hospitalID: d!.hid,
+                            phoneNumber: result.patient.phoneNumber,
+                            ghanaCard: result.patient.ghanaCard,
+                            visitType: 'Acute',
+                            patientAttendancesID: '',
+                            dateSeen: new Date().toISOString(),
+                            sex: result.patient.sex,
+                            dateOfBirth: result.patient.dateOfBirth!,
+                            age: Math.floor((new Date().getTime() - new Date(result.patient.dateOfBirth!).getTime()) / (1000 * 3600 * 24 * 365)),
+                            schemes: []
+                        } as PatientDetailsDto, ...x]
+                    })
+
                 },
-                error: () => {
-                    console.log(result);
-                    this.addRegistration(result.patient);
-                }
+                error: () => this.addRegistration(result.patient)
             });
     }
 

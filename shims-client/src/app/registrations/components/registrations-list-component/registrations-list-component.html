@@ -9,6 +9,7 @@
         <th>Age</th>
         <th>Sex</th>
         <th>Ghana Card</th>
+        <th>Attendance</th>
         <th>Actions</th>
     </thead>
     <tbody>
@@ -18,7 +19,15 @@
             <td>{{p.fullName}}</td>
             <td>{{p.age}}</td>
             <td>{{p.sex}}</td>
-            <td>{{p.ghanaCard}}</td>
+            <td>
+                <button routerLink="/vitals/{{p.patientAttendancesID}}" mat-button type="button"
+                    title="View vitals for {{p.fullName}}">
+                    <mat-icon>health_and_safety</mat-icon> Vitals
+                </button>
+                <button routerLink="/consulting/{{p.patientsID}}" mat-button type="button" title="Edit {{p.fullName}}">
+                    <mat-icon>edit</mat-icon> Physician
+                </button>
+            </td>
             <td>
                 <button (click)="viewInsurance(p)" mat-button type="button" title="View insurance for {{p.fullName}}">
                     <mat-icon>health_and_safety</mat-icon> Insurance

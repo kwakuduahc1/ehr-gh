@@ -1,48 +1,52 @@
 <div class="vitals-header">
     <h1 class="text-center h1">Vitals</h1>
-    <button type="button" mat-flat-button color="primary">
-        <mat-icon>add</mat-icon> Add Vitals
-    </button>
 </div>
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Recorded By</th>
-            <th scope="col">Temp (°C)</th>
-            <th scope="col">Weight (kg)</th>
-            <th scope="col">Pulse (bpm)</th>
-            <th scope="col">BP (mmHg)</th>
-            <th scope="col">RR (rpm)</th>
-            <th scope="col">SpO₂ (%)</th>
-            <th scope="col">Complaints</th>
-            <th scope="col">Notes</th>
-            <th scope="col">Date Seen</th>
-        </tr>
-    </thead>
-    <tbody>
-        @for (vital of vitals(); track vital.vitalsID) {
-        <tr>
-            <td>{{ vital.userName }}</td>
-            <td>{{ vital.temperature }}</td>
-            <td>{{ vital.weight }}</td>
-            <td>{{ vital.pulse ?? '—' }}</td>
-            <td>
-                @if (vital.systol !== null && vital.diastol !== null) {
-                {{ vital.systol }}/{{ vital.diastol }}
-                } @else {
-                —
-                }
-            </td>
-            <td>{{ vital.respiration ?? '—' }}</td>
-            <td>{{ vital.sPO2 ?? '—' }}</td>
-            <td>{{ vital.complaints }}</td>
-            <td>{{ vital.notes ?? '—' }}</td>
-            <td>{{ vital.dateSeen }}</td>
-        </tr>
-        } @empty {
-        <tr>
-            <td colspan="10">No vitals recorded.</td>
-        </tr>
+
+<div class="container">
+    <div class="patient-details">
+        @if (patient(); as p) {
+        <h2>{{ p.fullName }}</h2>
+        <p><strong>Hospital ID:</strong> {{ p.hospitalID }}</p>
+        <p><strong>Age:</strong> {{ p.age }}</p>
+        <p><strong>Sex:</strong> {{ p.sex }}</p>
+        <p><strong>Type:</strong> {{ p.visitType }}</p>
+        <button type="button" mat-flat-button color="primary" (click)="addVitals()">
+            <mat-icon>add</mat-icon> Add Vitals
+        </button>
         }
-    </tbody>
-</table>
+    </div>
+    <div class="vitals">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Temp (°C)</th>
+                    <th scope="col">Weight (kg)</th>
+                    <th scope="col">BP (mmHg)</th>
+                    <th scope="col">View</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (v of vitals(); track $index) {
+                <tr>
+                    <td>{{ v.dateSeen|date:'dd-MM-yyyy' }}</td>
+                    <td>{{ v.temperature }}</td>
+                    <td>{{ v.weight }}</td>
+                    <td>
+                        {{ v.systol }}/{{ v.diastol }}
+                    </td>
+                    <td>
+                        <button type="button" mat-icon-button (click)="viewVitals(v)">
+                            <mat-icon>visibility</mat-icon>
+                        </button>
+                    </td>
+                </tr>
+                } @empty {
+                <tr>
+                    <td colspan="5">No vitals recorded.</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

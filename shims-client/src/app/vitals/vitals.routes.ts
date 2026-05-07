@@ -10,7 +10,8 @@ export const VitalsRoute: Routes = [
             .then(x => x.VitalsListComponent),
         resolve: {
             details: (id: ActivatedRouteSnapshot) =>
-                inject(VitalsHttpService).list(id.params['id'])
+                inject(VitalsHttpService).list(id.params['id']),
+            patientAttendanceID: (id: ActivatedRouteSnapshot) => id.paramMap.get('id')
         }
     }
 ];

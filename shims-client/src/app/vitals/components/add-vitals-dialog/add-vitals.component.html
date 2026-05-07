@@ -1,0 +1,112 @@
+<h2 mat-dialog-title class="h2 text-center">Add Vitals</h2>
+<mat-dialog-content>
+    <form [formRoot]="form" (submit)="close()">
+        <div class="form-row">
+            <mat-form-field appearance="outline">
+                <mat-label>Temperature (°C)</mat-label>
+                <input matInput type="number" step="0.1" [formField]="form.temperature" placeholder="e.g., 37.5" />
+                @if (form.temperature().errors()[0]; as err) {
+                <mat-error>
+                    @if (err?.kind === 'required') {<span>*</span>}
+                    @if (err?.kind === 'min') {<span>{{val.minMsg(err)}}</span>}
+                    @if (err?.kind === 'max') {<span>{{val.maxMsg(err)}}</span>}
+                </mat-error>
+                }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Weight (kg)</mat-label>
+                <input matInput type="number" step="0.1" [formField]="form.weight" placeholder="e.g., 70" />
+                @if (form.weight().errors()[0]; as err) {
+                <mat-error>
+                    @if (err?.kind === 'required') {<span>*</span>}
+                    @if (err?.kind === 'min') {<span>{{val.minMsg(err)}}</span>}
+                    @if (err?.kind === 'max') {<span>{{val.maxMsg(err)}}</span>}
+                </mat-error>
+                }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Pulse (bpm)</mat-label>
+                <input matInput type="number" [formField]="form.pulse" placeholder="60-100" />
+                @if (form.pulse().errors()[0]; as err) {
+                <mat-error>
+                    @if (err?.kind === 'required') {<span>*</span>}
+                    @if (err?.kind === 'min') {<span>{{val.minMsg(err)}}</span>}
+                    @if (err?.kind === 'max') {<span>{{val.maxMsg(err)}}</span>}
+                </mat-error>
+                }
+            </mat-form-field>
+        </div>
+
+        <div class="form-row">
+            <mat-form-field appearance="outline">
+                <mat-label>Respiration (rpm)</mat-label>
+                <input matInput type="number" [formField]="form.respiration" placeholder="12-20" />
+                @if (form.respiration().errors()[0]; as err) {
+                <mat-error>
+                    @if (err?.kind === 'required') {<span>*</span>}
+                    @if (err?.kind === 'min') {<span>{{val.minMsg(err)}}</span>}
+                    @if (err?.kind === 'max') {<span>{{val.maxMsg(err)}}</span>}
+                </mat-error>
+                }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Systolic (mmHg)</mat-label>
+                <input matInput type="number" [formField]="form.systol" placeholder="120" />
+                @if (form.systol().errors()[0]; as err) {
+                <mat-error>
+                    @if (err?.kind === 'required') {<span>*</span>}
+                    @if (err?.kind === 'min') {<span>{{val.minMsg(err)}}</span>}
+                    @if (err?.kind === 'max') {<span>{{val.maxMsg(err)}}</span>}
+                </mat-error>
+                }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Diastolic (mmHg)</mat-label>
+                <input matInput type="number" [formField]="form.diastol" placeholder="80" />
+                @if (form.diastol().errors()[0]; as err) {
+                <mat-error>
+                    @if (err?.kind === 'min') {<span>{{val.minMsg(err)}}</span>}
+                    @if (err?.kind === 'max') {<span>{{val.maxMsg(err)}}</span>}
+                </mat-error>
+                }
+            </mat-form-field>
+        </div>
+
+        <div class="form-row-2col">
+            <mat-form-field appearance="outline">
+                <mat-label>Complaints</mat-label>
+                <textarea matInput [formField]="form.complaints" placeholder="Patient complaints..."
+                    rows="3"></textarea>
+                @if (form.complaints().errors()[0]; as err) {
+                <mat-error>
+                    @if (err?.kind === 'min') {<span>{{val.minLenMsg(err)}}</span>}
+                    @if (err?.kind === 'max') {<span>{{val.maxLenMsg(err)}}</span>}
+                </mat-error>
+                }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>Notes</mat-label>
+                <textarea matInput [formField]="form.notes" placeholder="Additional notes..." rows="3"></textarea>
+                @if (form.notes().errors()[0]; as err) {
+                <mat-error>
+                    @if (err?.kind === 'min') {<span>{{val.minLenMsg(err)}}</span>}
+                    @if (err?.kind === 'max') {<span>{{val.maxLenMsg(err)}}</span>}
+                </mat-error>
+                }
+            </mat-form-field>
+        </div>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button type="button" (click)="close()" mat-button mat-dialog-close>
+        <mat-icon>close</mat-icon> Cancel
+    </button>
+    <button type="submit" (click)="addVitals()" mat-flat-button color="primary" [disabled]="form().invalid()">
+        <mat-icon>check</mat-icon> Save Vitals
+    </button>
+</mat-dialog-actions>

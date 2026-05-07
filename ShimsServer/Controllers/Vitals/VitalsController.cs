@@ -22,7 +22,7 @@ namespace ShimsServer.Controllers.Vitals
             if (id == Guid.Empty)
                 return BadRequest(new {Message = "No patient found"});
             var details = await repository.GetVitalsForPatient(id, HttpContext.RequestAborted);
-            if (details == null)
+            if (details == null || details.Patient == null)
                 return NotFound(new {Message = "No patient found"});
             return Ok(details);
         }
@@ -41,8 +41,12 @@ namespace ShimsServer.Controllers.Vitals
                 var vitalsId = Guid.CreateVersion7();
                 var userName = User.Identity?.Name ?? "system";
 
-                await repository.AddVitals(vitalsDto, vitalsId, userName, HttpContext.RequestAborted);
-
+              var num =  await repository.AddVitals(vitalsDto, vitalsId, userName, HttpContext.RequestAborted);
+                if (num < 1)
+                {
+                    logger.LogWarning("Failed to add vitals for PatientAttendancesID: {PatientAttendancesID}", vitalsDto.PatientAttendancesID);
+                    return BadRequest(new { message = "Failed to add vitals." });
+                }
                 return Ok();
             }
             catch (PostgresException pex)

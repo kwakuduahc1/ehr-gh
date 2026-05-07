@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using ShimsServer.Models.OPD;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -31,5 +32,7 @@ namespace ShimsServer.Models.Records
         public required string UserName { get; set; }
 
         public virtual Patients? Patients { get; set; }
+
+        public virtual ICollection<Vitals>? Vitals { get; set; }
     }
 }

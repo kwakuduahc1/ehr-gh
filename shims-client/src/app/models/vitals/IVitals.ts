@@ -26,13 +26,13 @@ export interface AddVitalsDto {
     patientsAttendancesID: string;
     temperature: number;
     weight: number;
-    pulse: number | null;
-    systol: number | null;
-    diastol: number | null;
-    respiration: number | null;
-    sPO2: number | null;
+    pulse: number;
+    systol: number;
+    diastol: number;
+    respiration: number;
+    sPO2: number;
     complaints: string;
-    notes: string | null;
+    notes: string;
 }
 
 /**

@@ -10,7 +10,8 @@ namespace ShimsServer.Models.OPD
         public Guid VitalsID { get; set; } = Guid.CreateVersion7(DateTimeOffset.UtcNow);
 
         [Required]
-        public Guid PatientsAttendancesID { get; set; }
+        [ForeignKey(nameof(PatientAttendance))]
+        public Guid PatientAttendancesID { get; set; }
 
         public required DateTime DateSeen { get; set; } = DateTime.UtcNow;
 
@@ -21,26 +22,24 @@ namespace ShimsServer.Models.OPD
         public required double Weight { get; set; }
 
         [Range(20, 250)]
-        public double Pulse { get; set; }
+        public double? Pulse { get; set; }
 
         [Range(20, 250)]
-        public double Systol { get; set; }
+        public double? Systol { get; set; }
 
         [Range(20, 250)]
-        public double Diastol { get; set; }
+        public double? Diastol { get; set; }
 
         [Range(12, 60)]
-        public double Respiration { get; set; }
+        public double? Respiration { get; set; }
 
         [Range(50.0, 110)]
         public double? SPO2 { get; set; }
 
-        [Required]
-        [StringLength(200, MinimumLength = 3)]
-        public required string Complaints { get; set; }
+        [StringLength(200)]
+        public string? Complaints { get; set; }
 
-        [StringLength(200, MinimumLength = 5)]
-        [Required]
+        [StringLength(200)]
         public string? Notes { get; set; }
 
         [Required, StringLength(75, MinimumLength = 10)]
