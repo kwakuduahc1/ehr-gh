@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ShimsServer.Models.Labs
+namespace ShimsServer.Models.Investigations
 {
     public record AddInvestigationRecord(
         [StringLength(150, MinimumLength = 3)] string Investigation,

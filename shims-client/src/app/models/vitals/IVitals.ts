@@ -24,6 +24,7 @@ export interface VitalsDTO {
  */
 export interface AddVitalsDto {
     patientsAttendancesID: string;
+    patientsID: string;
     temperature: number;
     weight: number;
     pulse: number;

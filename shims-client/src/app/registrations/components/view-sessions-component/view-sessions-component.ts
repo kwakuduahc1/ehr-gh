@@ -66,7 +66,6 @@ export class ViewSessionsComponent {
     submit(this.form, async () => {
       this.http.addSession(this.fmMdl()).subscribe({
         next: (id) => {
-
           this.sessions.update(list => [{
             patientAttendancesID: id,
             visitType: this.fmMdl().visitType,
@@ -90,7 +89,7 @@ export class ViewSessionsComponent {
 
   vitals(): void {
 
-    this.router.navigate(['vitals', this.data.patient.patientAttendancesID])
+    this.router.navigate(['vitals', this.data.patient.patientsID])
       .then(() => this.diag.close())
       .catch(() => this.snackBar.open('Failed to open vitals.', 'Dismiss'));
   }

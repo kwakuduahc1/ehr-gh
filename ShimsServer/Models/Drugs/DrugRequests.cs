@@ -11,10 +11,12 @@ namespace ShimsServer.Models.Drugs
         public Guid DrugsRequestsID { get; set; } = Guid.CreateVersion7();
 
         [Required]
-        public required Guid PatientsAttendancesID { get; set; }
+        [ForeignKey(nameof(PatientAttendance))]
+        public required Guid PatientAttendancesID { get; set; }
 
         [Required]
-        public required Guid SchemeDrugsID { get; set; }    
+        [ForeignKey(nameof(SchemeDrugs))]
+        public required Guid SchemeDrugsID { get; set; }
 
         [Required]
         [Range(1, 6, ErrorMessage = "Frequency must be between {0} and {1} daily")]
@@ -39,7 +41,7 @@ namespace ShimsServer.Models.Drugs
 
         public virtual SchemeDrugs? SchemeDrugs { get; set; }
 
-        public virtual PatientAttendance? PatientsAttendances { get; set; }
+        public virtual PatientAttendance? PatientAttendance { get; set; }
 
         public virtual DispensingCalculations? DispensingCalculations { get; set; }
     }

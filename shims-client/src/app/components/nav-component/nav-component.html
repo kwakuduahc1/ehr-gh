@@ -23,6 +23,12 @@
                                 </a>
                         </li>
                         @if(status.isLoggedIn()){
+                        <li class="nav-item" role="none">
+                                <a class="nav-link" routerLink="/opd" (click)="onNavLinkClick()" role="menuitem">
+                                        <mat-icon class="nav-icon">local_hospital</mat-icon>
+                                        <span>OPD</span>
+                                </a>
+                        </li>
                         <!-- Management Dropdown -->
                         <li class="nav-item dropdown" role="none">
                                 <button type="button" class="nav-link dropdown-toggle"

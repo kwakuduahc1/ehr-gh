@@ -22,7 +22,7 @@ namespace ShimsServer.Controllers.Vitals
             if (id == Guid.Empty)
                 return BadRequest(new {Message = "No patient found"});
             var details = await repository.GetVitalsForPatient(id, HttpContext.RequestAborted);
-            if (details == null || details.Patient == null)
+            if (details.Patient == null)
                 return NotFound(new {Message = "No patient found"});
             return Ok(details);
         }
@@ -36,11 +36,10 @@ namespace ShimsServer.Controllers.Vitals
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddVitals([FromBody] AddVitalsDto vitalsDto)
         {
-            try
-            {
                 var vitalsId = Guid.CreateVersion7();
                 var userName = User.Identity?.Name ?? "system";
-
+            try
+            {
               var num =  await repository.AddVitals(vitalsDto, vitalsId, userName, HttpContext.RequestAborted);
                 if (num < 1)
                 {

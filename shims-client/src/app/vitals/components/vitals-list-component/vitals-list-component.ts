@@ -26,7 +26,6 @@ import { RouterLink } from '@angular/router';
 export class VitalsListComponent {
     private dialog = inject(MatDialog);
     readonly details = input.required<VitalsummaryDto>();
-    readonly patientAttendanceID = input.required<string>();
     vitals = linkedSignal(() => this.details().vitals);
     patient = computed(() => this.details().patient);
     private http = inject(VitalsHttpService);
@@ -45,12 +44,14 @@ export class VitalsListComponent {
             .afterClosed()
             .pipe(
                 filter(x => !!x),
-                map(x => ({ ...x!, patientAttendancesID: this.patientAttendanceID() })),
+                map(x => ({ ...x!, patientsID: this.patient().patientsID, patientAttendancesID: this.patient().patientAttendancesID })),
+                tap(x => console.log(this.patient())),
                 tap(result => vs = result),
                 switchMap(dto => this.http.add(dto))
             )
             .subscribe({
                 next: () => {
+                    this.vitals.update(v => [{ ...vs!, vitalsID: crypto.randomUUID(), dateSeen: new Date().toISOString(), userName: 'current user' }, ...v]);
                 },
                 error: () => this.addVitals(vs)
             })

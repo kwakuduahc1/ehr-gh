@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ShimsServer.Models.Records;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ShimsServer.Models.ConsultingRoom
@@ -27,7 +28,7 @@ namespace ShimsServer.Models.ConsultingRoom
         [Required, StringLength(75, MinimumLength = 10)]
         public required string UserName { get; set; }
 
-        public virtual Records.PatientAttendance? PatientAttendance { get; set; }
+        public virtual PatientAttendance? PatientAttendance { get; set; }
     }
 
     public record AddPatientConsultationDto(
@@ -40,6 +41,12 @@ namespace ShimsServer.Models.ConsultingRoom
     string ODQ,
 
     [Range(3, 15)]
-    byte AVPU = 14
-);
+    byte AVPU = 14);
+
+    public record PatientConsultationDto(
+        Guid PatientAttendancesID,
+        string Complaints,
+        string ODQ,
+        string AVPU
+        );
 }

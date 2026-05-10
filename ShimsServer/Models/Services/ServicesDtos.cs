@@ -33,4 +33,12 @@ namespace ShimsServer.Models.Services
         string ServiceGroup,
         decimal? Price,
         string[] SchemesCovered);
+
+    /// <summary>
+    /// Data transfer object for creating a service request
+    /// </summary>
+    public record AddServiceRequestDto(
+        [Required] Guid PatientsAttendancesID,
+        [Required] Guid SchemeServicesID,
+        [Required, Range(1, 3)] byte Frequency = 1);
 }

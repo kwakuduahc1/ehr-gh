@@ -11,7 +11,6 @@ export const VitalsRoute: Routes = [
         resolve: {
             details: (id: ActivatedRouteSnapshot) =>
                 inject(VitalsHttpService).list(id.params['id']),
-            patientAttendanceID: (id: ActivatedRouteSnapshot) => id.paramMap.get('id')
         }
     }
 ];

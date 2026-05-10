@@ -118,9 +118,9 @@ namespace ShimsServer.Repositories
         {
             const string sql =
                 """
-                    SELECT PatientsID, hospitalid, fullname, sex, dateofbirth, age, phonenumber, ghanacard, visittype, patientattendancesid, dateseen, patientschemesid, cardid, expirydate, schemesid, schemename, coverage
+                    SELECT patientsid, schemesid, age, sex, fullname, schemename, hospitalid, cardid, dateofbirth, expirydate, dateseen, patientschemesid, phonenumber, visittype, ghanacard, patientattendancesid, coverage
                     FROM vw_patients
-                    WHERE PatientsID = @id;
+                    WHERE patientsid = @id;
                 """;
             using var con = await connection.ConnectionAsync(cancellationToken);
             var res = await con.QueryAsync<PatientDetails>(sql, new { id });
@@ -165,46 +165,12 @@ namespace ShimsServer.Repositories
         {
             const string sql =
                 """
-                    SELECT PatientsID, hospitalid, fullname, sex, dateofbirth, age, phonenumber, ghanacard, visittype, patientattendancesid, dateseen, patientschemesid, cardid, expirydate, schemesid, schemename, coverage
+                    SELECT patientsid, schemesid, age, sex, fullname, schemename, hospitalid, cardid, dateofbirth, expirydate, dateseen, patientschemesid, phonenumber, visittype, ghanacard, patientattendancesid, coverage
                     FROM vw_patients;
                 """;
             using var con = await connection.ConnectionAsync(cancellationToken);
             var res = await con.QueryAsync<PatientDetails>(sql);
-            return res
-                .GroupBy(p => new
-                {
-                    p.FullName,
-                    p.HospitalID,
-                    p.PhoneNumber,
-                    p.GhanaCard,
-                    p.VisitType,
-                    p.PatientAttendancesID,
-                    p.DateSeen,
-                    p.PatientsID,
-                    p.Age,
-                    p.Sex,
-                    p.DateOfBirth
-                }, (k, v) => new PatientDetailsDto(
-                    k.PatientsID,
-                    k.HospitalID,
-                    k.FullName,
-                    k.Sex,
-                    k.DateOfBirth,
-                    k.Age,
-                    k.PhoneNumber,
-                    k.GhanaCard,
-                    k.VisitType,
-                    k.PatientAttendancesID,
-                    k.DateSeen,
-                    v.Select(s => new InsuranceDetails(
-                        s.SchemesID,
-                        s.CardID,
-                        s.ExpiryDate,
-                        s.PatientSchemesID,
-                        s.SchemeName,
-                        s.Coverage
-                    ))
-                ));
+            return res.ToPatientDetailsDto();
         }
 
         public async Task<bool> PatientExists(Guid id, CancellationToken cancellationToken = default)
@@ -221,7 +187,7 @@ namespace ShimsServer.Repositories
         {
             const string sql =
                 """
-                    SELECT PatientsID, hospitalid, fullname, sex, dateofbirth, age, phonenumber, ghanacard, visittype, patientattendancesid, dateseen, patientschemesid, cardid, expirydate, schemesid, schemename, coverage
+                    SELECT patientsid, schemesid, age, sex, fullname, schemename, hospitalid, cardid, dateofbirth, expirydate, dateseen, patientschemesid, phonenumber, visittype, ghanacard, patientattendancesid, coverage
                     FROM vw_patients
                     WHERE fullname ILIKE @search
                         OR cardid ILIKE @search
@@ -232,88 +198,20 @@ namespace ShimsServer.Repositories
                 """;
             using var con = await connection.ConnectionAsync(cancellationToken);
             var res = await con.QueryAsync<PatientDetails>(sql, new { search = $"%{search}%" });
-            return res
-                .GroupBy(p => new
-                {
-                    p.FullName,
-                    p.HospitalID,
-                    p.PhoneNumber,
-                    p.GhanaCard,
-                    p.VisitType,
-                    p.PatientAttendancesID,
-                    p.DateSeen,
-                    p.PatientsID,
-                    p.Age,
-                    p.Sex,
-                    p.DateOfBirth
-                }, (k, v) => new PatientDetailsDto(
-                    k.PatientsID,
-                    k.HospitalID,
-                    k.FullName,
-                    k.Sex,
-                    k.DateOfBirth,
-                    k.Age,
-                    k.PhoneNumber,
-                    k.GhanaCard,
-                    k.VisitType,
-                    k.PatientAttendancesID,
-                    k.DateSeen,
-                    v.Select(s => new InsuranceDetails(
-                        s.SchemesID,
-                        s.CardID,
-                        s.ExpiryDate,
-                        s.PatientSchemesID,
-                        s.SchemeName,
-                        s.Coverage
-                    ))
-                ));
+            return res.ToPatientDetailsDto();
         }
 
         public async Task<PatientDetailsDto?> GetPatientDetailsByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             const string sql =
                 """
-                    SELECT PatientsID, hospitalid, fullname, sex, dateofbirth, age, phonenumber, ghanacard, visittype, patientattendancesid, dateseen, patientschemesid, cardid, expirydate, schemesid, schemename, coverage
+                    SELECT patientsid, schemesid, age, sex, fullname, schemename, hospitalid, cardid, dateofbirth, expirydate, dateseen, patientschemesid, phonenumber, visittype, ghanacard, patientattendancesid, coverage
                     FROM vw_patients
-                    WHERE PatientsID = @id;
+                    WHERE patientsid = @id;
                 """;
             using var con = await connection.ConnectionAsync(cancellationToken);
             var res = await con.QueryAsync<PatientDetails>(sql, new { id });
-            return res
-                .GroupBy(p => new
-                {
-                    p.FullName,
-                    p.HospitalID,
-                    p.PhoneNumber,
-                    p.GhanaCard,
-                    p.VisitType,
-                    p.PatientAttendancesID,
-                    p.DateSeen,
-                    p.PatientsID,
-                    p.Age,
-                    p.Sex,
-                    p.DateOfBirth
-                }, (k, v) => new PatientDetailsDto(
-                    k.PatientsID,
-                    k.HospitalID,
-                    k.FullName,
-                    k.Sex,
-                    k.DateOfBirth,
-                    k.Age,
-                    k.PhoneNumber,
-                    k.GhanaCard,
-                    k.VisitType,
-                    k.PatientAttendancesID,
-                    k.DateSeen,
-                    v.Select(s => new InsuranceDetails(
-                        s.SchemesID,
-                        s.CardID,
-                        s.ExpiryDate,
-                        s.PatientSchemesID,
-                        s.SchemeName,
-                        s.Coverage
-                    ))
-                )).FirstOrDefault();
+            return res.ToPatientDetailsDto().FirstOrDefault();
         }
     }
 
@@ -329,7 +227,7 @@ namespace ShimsServer.Repositories
          DateOnly? ExpiryDate,
          Guid PatientSchemesID,
          string SchemeName,
-         string Coverage
+         string? Coverage
          );
 
     public record AddPatientDto(
@@ -378,23 +276,24 @@ namespace ShimsServer.Repositories
         string VisitType
         );
 
-    record PatientDetails(
+    // System.Guid patientsid, System.Guid schemesid, System.Int16 age, System.String sex, System.String fullname, System.String schemename, System.String hospitalid, System.String cardid, System.DateOnly expirydate, System.DateOnly dateseen, System.Guid patientschemesid, System.String phonenumber, System.String visittype)
+    public record PatientDetails(
         Guid PatientsID,
-        string HospitalID,
-        string FullName,
-        string Sex,
-        DateOnly DateOfBirth,
+        Guid SchemesID,
         short Age,
-        string PhoneNumber,
-        string GhanaCard,
-        string VisitType,
-        Guid PatientAttendancesID,
+        string Sex,
+        string FullName,
+        string SchemeName,
+        string HospitalID,
+        string? CardID,
+        DateOnly DateOfBirth,
+        DateOnly? ExpiryDate,
         DateOnly DateSeen,
         Guid PatientSchemesID,
-        string? CardID,
-        DateOnly? ExpiryDate,
-        Guid SchemesID,
-        string SchemeName,
+        string PhoneNumber,
+        string VisitType,
+        string GhanaCard,
+        Guid PatientAttendancesID,
         string Coverage
         );
 
@@ -413,10 +312,56 @@ namespace ShimsServer.Repositories
     IEnumerable<InsuranceDetails> Schemes
     );
 
+    // SELECT pa.patientattendancesid, pa.visittype, pa.dateseen, isactive
+    // FROM patientattendances pa
+    // ORDER BY pa.dateseen DESC
+    // LIMIT 10
     public record VwSessions(Guid PatientAttendancesID, string VisitType, DateOnly DateSeen, bool IsActive);
 
     // A lightweight DTO for patient information, used in scenarios where only basic details are needed
 
     // PatientsID, hospitalid, fullname, sex, age, visittype
-    public record LitePatientDto(Guid PatientsID, string HospitalID, string FullName, string Sex, short Age, string VisitType);
+    public record LitePatientDto(Guid PatientsID, Guid PatientAttendancesID, string HospitalID, string FullName, string Sex, short Age, string VisitType);
+
+    public static class PatientExtensions
+    {
+        public static IEnumerable<PatientDetailsDto> ToPatientDetailsDto(this IEnumerable<PatientDetails> details)
+        {
+            return details
+                .GroupBy(p => new
+                {
+                    p.FullName,
+                    p.HospitalID,
+                    p.PhoneNumber,
+                    p.GhanaCard,
+                    p.VisitType,
+                    p.PatientAttendancesID,
+                    p.DateSeen,
+                    p.PatientsID,
+                    p.Age,
+                    p.Sex,
+                    p.DateOfBirth
+                }, (k, v) => new PatientDetailsDto(
+                    k.PatientsID,
+                    k.HospitalID,
+                    k.FullName,
+                    k.Sex,
+                    k.DateOfBirth,
+                    k.Age,
+                    k.PhoneNumber,
+                    k.GhanaCard,
+                    k.VisitType,
+                    k.PatientAttendancesID,
+                    k.DateSeen,
+                    v.Select(s => new InsuranceDetails(
+                        s.SchemesID,
+                        s.CardID,
+                        s.ExpiryDate,
+                        s.PatientSchemesID,
+                        s.SchemeName,
+                        s.Coverage
+                    ))
+                ));
+        }
+    }
 }

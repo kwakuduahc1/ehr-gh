@@ -13,6 +13,9 @@ namespace ShimsServer.Models.OPD
         [ForeignKey(nameof(PatientAttendance))]
         public Guid PatientAttendancesID { get; set; }
 
+        [Required]
+        public Guid PatientsID { get; set; }
+
         public required DateTime DateSeen { get; set; } = DateTime.UtcNow;
 
         [Required, Range(36, 45.0)]

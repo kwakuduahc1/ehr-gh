@@ -32,6 +32,7 @@ namespace ShimsServer.Models.OPD
     /// </summary>
     public record AddVitalsDto(
         Guid PatientAttendancesID,
+        Guid PatientsID,
         [Range(36, 45.0, ErrorMessage = "Temperature must be between 36 and 45 degrees Celsius")] double Temperature,
         [Range(1.8, 250, ErrorMessage = "Weight must be between 1.8 and 250 kg")] double Weight,
         [Range(20, 250, ErrorMessage = "Pulse must be between 20 and 250 bpm")] double? Pulse,

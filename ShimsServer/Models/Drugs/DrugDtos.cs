@@ -62,7 +62,7 @@ namespace ShimsServer.Models.Drugs
     /// </summary>
     public record DrugRequestDTO(
         Guid DrugsRequestsID,
-        Guid PatientsAttendancesID,
+        Guid PatientsID,
         Guid SchemeDrugsID,
         string DrugName,
         byte Frequency,
@@ -76,11 +76,28 @@ namespace ShimsServer.Models.Drugs
     /// Data transfer object for creating a new drug request
     /// </summary>
     public record AddDrugRequestDto(
-        [Required] Guid PatientsAttendancesID,
+        [Required] Guid PatientsID,
         [Required] Guid SchemeDrugsID,
         [Required, Range(1, 6, ErrorMessage = "Frequency must be between 1 and 6 daily")] byte Frequency,
         [Required, Range(1, 200, ErrorMessage = "Days must be between 1 and 200")] byte Days,
         [Required, Range(0, 200)] byte QuantityRequested);
+
+    /// <summary>
+    /// Edit a requested drug - only frequency, days and quantity can be edited
+    /// </summary>
+    /// <param name="DrugsRequestsID">The request ID</param>
+    /// <param name="PatientsID">The patient ID</param>
+    /// <param name="SchemeDrugsID">The scheme drug ID</param>
+    /// <param name="Frequency">The frequency of the drug</param>
+    /// <param name="Days">The number of days for the drug</param>
+    /// <param name="QuantityRequested">The quantity requested</param>
+    public record EditDrugsRequestDto(
+    Guid DrugsRequestsID,
+    Guid PatientsID,
+    Guid SchemeDrugsID,
+    [Range(1, 6, ErrorMessage = "Frequency must be between {0} and {1} daily")] byte Frequency,
+    [Range(1, 200, ErrorMessage = "Kindly Indicate the {0} for this drug")] byte Days,
+    [Range(0, 200)] byte QuantityRequested);
 
     /// <summary>
     /// Data transfer object for drug request summary with patient info

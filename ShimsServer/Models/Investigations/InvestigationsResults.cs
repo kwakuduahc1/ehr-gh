@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ShimsServer.Models.Labs
+namespace ShimsServer.Models.Investigations
 {
     public class InvestigationsResults
     {

@@ -34,7 +34,7 @@
         </tr>
     </thead>
     <tbody>
-        @for (p of patients.value(); track p.patientsID) {
+        @for (p of patients.value(); track $index) {
         <tr>
             <td>{{p.hospitalID}}</td>
             <td>{{p.fullName}}</td>

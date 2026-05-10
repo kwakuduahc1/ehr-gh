@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class VitalsHttpService {
+
     private readonly http = inject(HttpClient);
     private readonly baseUrl = `${environment.AppUrl}Vitals`;
 

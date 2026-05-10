@@ -8,7 +8,7 @@ namespace ShimsServer.Models.ConsultingRoom
         public Guid PatientSignsID { get; set; }
 
         [Required]
-        [StringLength(50, MinimumLength = 3)]
+        [StringLength(400, MinimumLength = 3)]
         public required string SignAndSymptoms { get; set; }
 
     }

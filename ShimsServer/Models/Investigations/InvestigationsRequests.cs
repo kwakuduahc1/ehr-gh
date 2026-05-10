@@ -3,18 +3,20 @@ using System.ComponentModel.DataAnnotations.Schema;
 using ShimsServer.Models.Records;
 using ShimsServer.Models.Schemes;
 
-namespace ShimsServer.Models.Labs
+namespace ShimsServer.Models.Investigations
 {
     public class InvestigationsRequests
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid LabRequestsID { get; set; } = Guid.CreateVersion7();
+        public Guid InvestigationsRequestsID { get; set; } = Guid.CreateVersion7();
 
         [Required]
-        public required Guid PatientsAttendancesID { get; set; }
+        [ForeignKey(nameof(PatientAttendance))]
+        public required Guid PatientAttendancesID { get; set; }
 
-        [Required]
-        public required Guid SchemeLabsID { get; set; }
+        [Required, ForeignKey(nameof(Investigations))]
+        public required Guid InvestigationsID { get; set; }
+
 
         [Required]
         public required DateTime DateRequested { get; set; } = DateTime.UtcNow;
@@ -25,7 +27,7 @@ namespace ShimsServer.Models.Labs
 
         public virtual PatientAttendance? PatientAttendance { get; set; }
 
-        public virtual SchemeInvestigations? SchemeLabs { get; set; }
+        public virtual Investigations? Investigations { get; set; }
 
         public virtual InvestigationsPayment? LabPayment { get; set; }
     }

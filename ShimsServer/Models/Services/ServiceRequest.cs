@@ -11,9 +11,11 @@ namespace ShimsServer.Models.Services
         public Guid ServiceRequestID { get; set; } = Guid.CreateVersion7();
 
         [Required]
-        public required Guid PatientsAttendancesID { get; set; }
+        [ForeignKey(nameof(PatientAttendance))]
+        public required Guid PatientAttendancesID { get; set; }
 
         [Required]
+        [ForeignKey(nameof(SchemeServices))]
         public required Guid SchemeServicesID { get; set; }
 
         [Required]

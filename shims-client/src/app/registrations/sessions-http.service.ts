@@ -18,7 +18,7 @@ export class SessionsHttpService {
     }
 
     patientSessions(id: string): Observable<VwSessions[]> {
-        return this.http.get<VwSessions[]>(`${this.baseUrl}/${id}`);
+        return this.http.get<VwSessions[]>(`${this.baseUrl}/Sessions/${id}`);
     }
 
     endSession(id: string): Observable<void> {

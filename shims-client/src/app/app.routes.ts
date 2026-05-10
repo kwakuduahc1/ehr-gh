@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { SchemesRoute } from './schemes/schemes.routes';
+import { OpdHttpService } from './opd/opd-http.service';
+import { inject } from '@angular/core';
 
 export const routes: Routes = [
     {
@@ -36,6 +38,14 @@ export const routes: Routes = [
         path: 'vitals',
         loadChildren: () => import('../app/vitals/vitals.routes')
             .then(x => x.VitalsRoute)
+    },
+    {
+        path: 'opd',
+        loadChildren: () => import('../app/opd/opd.routes')
+            .then(x => x.OpdRoute),
+        resolve: {
+            patients: () => inject(OpdHttpService).list()
+        }
     }
 
 ];

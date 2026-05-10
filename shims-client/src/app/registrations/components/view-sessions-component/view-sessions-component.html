@@ -26,7 +26,7 @@
     <p>No sessions on record.</p>
     } @else {
     <div class="sessions-grid">
-        @for (s of sessions(); track s.patientAttendancesID) {
+        @for (s of sessions(); track $index) {
         <div class="card-sm session-card" [class.session-card--inactive]="!s.isActive">
             <div class="session-card__header">
                 <span class="session-card__type">{{s.visitType}}</span>

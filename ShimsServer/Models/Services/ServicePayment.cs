@@ -10,7 +10,7 @@ namespace ShimsServer.Models.Services
         public required Guid ServiceRequestID { get; set; }
 
         [Required]
-        public required Guid PatientsAttendancesID { get; set; }
+        public required Guid PatientsID { get; set; }
 
         [Required(ErrorMessage = "Indicate the cost of the service")]
         [Range(0, double.MaxValue)]

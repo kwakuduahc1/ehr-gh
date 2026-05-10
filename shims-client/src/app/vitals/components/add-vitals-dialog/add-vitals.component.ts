@@ -32,7 +32,7 @@ export class AddVitalsDialogComponent {
     private data = inject<{ vitals: AddVitalsDto }>(MAT_DIALOG_DATA);
     private snack = inject(MatSnackBar);
     protected val = new ValidatorMessages();
-    fmMld = signal<Omit<AddVitalsDto, 'patientsAttendancesID'>>({
+    fmMld = signal<Omit<AddVitalsDto, 'patientsAttendancesID' | 'patientsID'>>({
         temperature: this.data.vitals?.temperature || NaN,
         pulse: this.data.vitals?.pulse || NaN,
         respiration: this.data.vitals?.respiration || NaN,
@@ -41,7 +41,7 @@ export class AddVitalsDialogComponent {
         complaints: this.data.vitals?.complaints || '',
         notes: this.data.vitals?.notes || '',
         sPO2: this.data.vitals?.sPO2 || NaN,
-        weight: this.data.vitals?.weight || NaN,
+        weight: this.data.vitals?.weight || NaN
     });
 
     form = form(this.fmMld, path => {
@@ -88,16 +88,11 @@ export class AddVitalsDialogComponent {
         }
     });
 
-    constructor() {
-        console.log(this.data);
-    }
-
     addVitals() {
         this.diagRef.close(this.form().value());
     }
 
     close() {
-        console.log('closing dialog');
         this.diagRef.close();
     }
 

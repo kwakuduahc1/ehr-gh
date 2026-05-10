@@ -13,13 +13,21 @@ namespace ShimsServer.Controllers.Records
 
     public class AttendancesController(IAttendanceRepository dataSource, ILogger<AttendancesController> logger) : ControllerBase
     {
-        [HttpGet("{id:guid}")]
+        [HttpGet("Sessions/{id:guid}")]
         [ProducesResponseType(typeof(IEnumerable<VwSessions>), StatusCodes.Status200OK)]
         public async Task<IEnumerable<VwSessions>> GetPatientSessions(Guid id) => await dataSource.GetPatientSessions(id, HttpContext.RequestAborted);
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<ListPatientsDto>), StatusCodes.Status200OK)]
-        public async Task<IEnumerable<ListPatientsDto>> GetActiveSessions(Guid id) => await dataSource.ActiveSessions(id, HttpContext.RequestAborted);
+        [ProducesResponseType(typeof(IEnumerable<PatientDetailsDto>), StatusCodes.Status200OK)]
+        public async Task<IEnumerable<PatientDetailsDto>> GetPatientSessions() => await dataSource.ActiveSessions(HttpContext.RequestAborted);
+
+        [HttpGet("{id:guid}")]
+        [ProducesResponseType(typeof(PatientDetailsDto), StatusCodes.Status200OK)]
+        public async Task<ActionResult<PatientDetailsDto>> GetActiveSessions(Guid id)
+        {
+            var resp = await dataSource.ActiveSessions(id, HttpContext.RequestAborted);
+            return resp != null ? Ok(resp) : NotFound();
+        }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -30,8 +38,8 @@ namespace ShimsServer.Controllers.Records
             var ptId = Guid.CreateVersion7();
             try
             {
-                var attendanceId = await dataSource.AddAttendance(dto, ptId, userName, HttpContext.RequestAborted);
-                if (attendanceId != 1)
+                var n = await dataSource.AddAttendance(dto, ptId, userName, HttpContext.RequestAborted);
+                if (n != 1)
                     return BadRequest(new { message = "No attendance was added. Please check the input and try again." });
                 return Ok(ptId);
             }
@@ -54,7 +62,7 @@ namespace ShimsServer.Controllers.Records
         {
             try
             {
-                if(await dataSource.EndSession(id) != 1)
+                if (await dataSource.EndSession(id) != 1)
                     return BadRequest(new { message = "No session was ended. Please check the session ID and try again." });
                 return Ok();
             }

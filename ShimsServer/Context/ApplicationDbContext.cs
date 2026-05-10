@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using ShimsServer.Models.Labs;
+using ShimsServer.Models.Investigations;
 using ShimsServer.Models.ConsultingRoom;
 using ShimsServer.Models.Schemes;
 using ShimsServer.Models.OPD;

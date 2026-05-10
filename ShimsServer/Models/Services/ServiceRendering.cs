@@ -10,7 +10,7 @@ namespace ShimsServer.Models.Services
         public required Guid ServicePaymentID { get; set; }
 
         [Required]
-        public required Guid PatientsAttendancesID { get; set; }
+        public required Guid PatientsID { get; set; }
 
         [Required]
         public required DateTime DateServed { get; set; } = DateTime.UtcNow;

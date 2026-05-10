@@ -1,4 +1,4 @@
-﻿using ShimsServer.Models.Labs;
+﻿using ShimsServer.Models.Investigations;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -38,7 +38,7 @@ namespace ShimsServer.Models.Schemes
 
         public virtual Schemes? Schemes { get; set; }
 
-        public virtual Investigations? Investigations { get; set; }
+        public virtual Investigations.Investigations? Investigations { get; set; }
 
         public virtual ICollection<InvestigationsRequests>? InvestigationsRequests { get; set; }
     }

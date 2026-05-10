@@ -31,6 +31,11 @@ When asked to create a component
 
 - Create a components folder in the module if it does not exists
 - Use the `np mcp` instructions to create the component
+- Always create
+  - the component `ts` file
+  - the `html` file
+  - the `scss` file
+  - the `test` file
 
 ## Services
 

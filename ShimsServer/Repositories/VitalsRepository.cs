@@ -15,8 +15,8 @@ namespace ShimsServer.Repositories
         {
             const string sql =
                 """
-                    INSERT INTO Vitals (VitalsID, PatientAttendancesID, DateSeen, Temperature, Weight, Pulse, Systol, Diastol, Respiration, SPO2, Complaints, Notes, UserName)
-                    VALUES (@VitalsID, @PatientAttendancesID, now(), @Temperature, @Weight, @Pulse, @Systol, @Diastol, @Respiration, @SPO2, @Complaints, @Notes, @UserName);
+                    INSERT INTO Vitals (VitalsID, PatientAttendancesID, DateSeen, Temperature, Weight, Pulse, Systol, Diastol, Respiration, SPO2, Complaints, Notes, UserName, PatientsID)
+                    VALUES (@VitalsID, @PatientAttendancesID, now(), @Temperature, @Weight, @Pulse, @Systol, @Diastol, @Respiration, @SPO2, @Complaints, @Notes, @UserName, @PatientsID);
                 """;
             using var con = await connection.ConnectionAsync(cancellationToken);
             using var transaction = await con.BeginTransactionAsync(cancellationToken);
@@ -33,7 +33,8 @@ namespace ShimsServer.Repositories
                 dto.SPO2,
                 dto.Complaints,
                 dto.Notes,
-                UserName = userName
+                UserName = userName,
+                dto.PatientsID
             }, transaction: transaction);
             await transaction.CommitAsync(cancellationToken);
             return res;
@@ -43,19 +44,21 @@ namespace ShimsServer.Repositories
         {
             const string sql =
                 """
-                    SELECT v.VitalsID, v.PatientAttendancesID, v.DateSeen, v.Temperature, v.Weight, v.Pulse, v.Systol, v.Diastol, v.Respiration, v.SPO2, v.Complaints, v.Notes, v.UserName
-                    FROM Vitals v
-                    WHERE v.PatientAttendancesID = @id
-                    ORDER BY v.DateSeen DESC
-                    LIMIT 30;
-                SELECT PatientsID, hospitalid, fullname, sex, age, visittype
+                SELECT v.VitalsID, v.PatientAttendancesID, v.DateSeen, v.Temperature, v.Weight, v.Pulse, v.Systol, v.Diastol, v.Respiration, v.SPO2, v.Complaints, v.Notes, v.UserName
+                FROM Vitals v
+                WHERE v.PatientsID = @id
+                ORDER BY v.DateSeen DESC
+                LIMIT 30;
+                SELECT patientsID, patientattendancesid, hospitalid, fullname, sex, age, visittype
                 FROM vw_patients
-                WHERE patientattendancesid = @id;
+                WHERE patientsid = @id;
                 """;
             using var con = await connection.ConnectionAsync(cancellationToken);
             var result = await con.QueryMultipleAsync(sql, new { id });
             var vitals = await result.ReadAsync<VitalsDTO>();
+            Console.WriteLine($"Vitals count: {vitals.Count()}");
             var patient = await result.ReadFirstOrDefaultAsync<LitePatientDto>();
+            Console.WriteLine($"Patient: {patient?.FullName}");
             await con.CloseAsync();
             return new VitalsummaryDto(vitals, patient!);
         }
