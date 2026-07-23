@@ -23,11 +23,14 @@
                                 </a>
                         </li>
                         @if(status.isLoggedIn()){
-                        <li class="nav-item" role="none">
-                                <a class="nav-link" routerLink="/opd" (click)="onNavLinkClick()" role="menuitem">
-                                        <mat-icon class="nav-icon">local_hospital</mat-icon>
-                                        <span>OPD</span>
-                                </a>
+                        <!-- OPD & Consultation Dropdown -->
+                        <li class="nav-item dropdown" role="none">
+                                <button type="button" class="nav-link dropdown-toggle"
+                                        [matMenuTriggerFor]="clinicalMenu" title="Clinical submenu" role="menuitem">
+                                        <mat-icon class="nav-icon">medical_services</mat-icon>
+                                        <span>Clinical</span>
+                                        <mat-icon class="dropdown-icon">expand_more</mat-icon>
+                                </button>
                         </li>
                         <!-- Management Dropdown -->
                         <li class="nav-item dropdown" role="none">
@@ -72,6 +75,35 @@
                 </ul>
         </div>
 </nav>
+
+<!-- Clinical Menu (OPD + Consultation) -->
+<mat-menu #clinicalMenu="matMenu" panelClass="nav-menu-panel">
+        <a mat-menu-item routerLink="/opd" (click)="onNavLinkClick()">
+                <mat-icon class="nav-icon">local_hospital</mat-icon>
+                <span>OPD</span>
+        </a>
+        <mat-divider />
+        <a mat-menu-item routerLink="/consultation" (click)="onNavLinkClick()">
+                <mat-icon class="nav-icon">list_alt</mat-icon>
+                <span>Consultations</span>
+        </a>
+        <a mat-menu-item routerLink="/consultation" [queryParams]="{tab: 'investigations'}" (click)="onNavLinkClick()">
+                <mat-icon class="nav-icon">biotech</mat-icon>
+                <span>Investigations</span>
+        </a>
+        <a mat-menu-item routerLink="/consultation" [queryParams]="{tab: 'drugs'}" (click)="onNavLinkClick()">
+                <mat-icon class="nav-icon">medication</mat-icon>
+                <span>Drugs</span>
+        </a>
+        <a mat-menu-item routerLink="/consultation" [queryParams]="{tab: 'diagnoses'}" (click)="onNavLinkClick()">
+                <mat-icon class="nav-icon">diagnosis</mat-icon>
+                <span>Diagnoses</span>
+        </a>
+        <a mat-menu-item routerLink="/consultation" [queryParams]="{tab: 'outcomes'}" (click)="onNavLinkClick()">
+                <mat-icon class="nav-icon">assignment_turned_in</mat-icon>
+                <span>Outcomes</span>
+        </a>
+</mat-menu>
 
 <!-- Management Menu -->
 <mat-menu #managementMenu="matMenu" panelClass="nav-menu-panel">

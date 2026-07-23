@@ -10,6 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { LoginComponent } from '../login/login.component';
 import { filter, switchMap } from 'rxjs';
 import { LoginVm } from '../../models/IUsers';
+import { MatDivider } from '@angular/material/divider';
 
 @Component({
   selector: 'app-nav',
@@ -19,7 +20,8 @@ import { LoginVm } from '../../models/IUsers';
     MatIcon,
     MatButton,
     MatMenu,
-    MatMenuTrigger
+    MatMenuTrigger,
+    MatDivider
   ],
   templateUrl: './nav-component.html',
   styleUrl: './nav-component.scss',

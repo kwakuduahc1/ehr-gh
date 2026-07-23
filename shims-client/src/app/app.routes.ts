@@ -1,7 +1,8 @@
-import { Routes } from '@angular/router';
+import { ActivatedRouteSnapshot, Routes } from '@angular/router';
 import { SchemesRoute } from './schemes/schemes.routes';
 import { OpdHttpService } from './opd/opd-http.service';
 import { inject } from '@angular/core';
+import { ConsultationHttpService } from './consultation/consultation-http.service';
 
 export const routes: Routes = [
     {
@@ -45,6 +46,14 @@ export const routes: Routes = [
             .then(x => x.OpdRoute),
         resolve: {
             patients: () => inject(OpdHttpService).list()
+        }
+    },
+    {
+        path: 'consulting',
+        loadChildren: () => import('../app/consultation/consultation.routes')
+            .then(x => x.ConsultationRoute),
+        resolve: {
+            // patients: (route: ActivatedRouteSnapshot) => inject(ConsultationHttpService).pending();
         }
     }
 
