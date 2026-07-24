@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { httpResource } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -26,28 +26,32 @@ import { ViewSessionsComponent } from '../view-sessions-component/view-sessions-
     FormField,
     MatProgressBar,
     MatButton,
-    MatIcon
+    MatIcon,
   ],
   templateUrl: './search-component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './search-component.scss',
 })
 export class SearchComponent {
-
   searchMdl = signal<{ search: string }>({ search: '' });
   val = new ValidatorMessages();
   form = form(this.searchMdl);
   private diag = inject(MatDialog);
 
-  patients = httpResource<PatientDetailsDto[]>(() => `${environment.AppUrl}Registrations/${this.searchMdl().search}`, {
-    defaultValue: []
-  });
+  patients = httpResource<PatientDetailsDto[]>(
+    () => `${environment.AppUrl}Registrations/${this.searchMdl().search}`,
+    {
+      defaultValue: [],
+    },
+  );
 
   addAttendance(p: PatientDetailsDto) {
-    this.diag.open<ViewSessionsComponent, {}, { patient: PatientDetailsDto }>(ViewSessionsComponent, {
-      data: { patient: p },
-      width: '850px',
-      disableClose: true
-    })
+    this.diag
+      .open<ViewSessionsComponent, {}, { patient: PatientDetailsDto }>(ViewSessionsComponent, {
+        data: { patient: p },
+        width: '850px',
+        disableClose: true,
+      })
       .afterClosed()
       .subscribe();
   }

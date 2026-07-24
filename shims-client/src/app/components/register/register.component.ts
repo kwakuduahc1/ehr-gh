@@ -1,5 +1,5 @@
-import { Component, inject, input, signal } from '@angular/core';
-import { MatSnackBar } from "@angular/material/snack-bar";
+import { Component, inject, input, signal, ChangeDetectionStrategy } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -13,13 +13,28 @@ import { RegisterVm } from '../../models/IUsers';
 import { ActivityProvider } from '../../providers/ActivityProvider';
 import { StatusProvider } from '../../providers/StatusProvider';
 import { ConfirmationComponent } from '../confirmation/confirmation.component';
-import { form, required, schema, minLength, maxLength, validate, email, FormRoot, FormField } from '@angular/forms/signals';
-import { validatePasswordHasLowercase, validatePasswordHasNumber, validatePasswordHasUppercase } from '../auth-validators';
+import {
+  form,
+  required,
+  schema,
+  minLength,
+  maxLength,
+  validate,
+  email,
+  FormRoot,
+  FormField,
+} from '@angular/forms/signals';
+import {
+  validatePasswordHasLowercase,
+  validatePasswordHasNumber,
+  validatePasswordHasUppercase,
+} from '../auth-validators';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     CommonModule,
     MatInputModule,
@@ -27,14 +42,14 @@ import { validatePasswordHasLowercase, validatePasswordHasNumber, validatePasswo
     MatButtonModule,
     MatSelectModule,
     FormRoot,
-    FormField
-  ]
+    FormField,
+  ],
 })
 export class RegisterComponent {
   private snack = inject(MatSnackBar);
   private status = inject(StatusProvider);
   private diag = inject(MatDialog);
-  private router = inject(Router)
+  private router = inject(Router);
   act = inject(ActivityProvider);
   http = inject(LoginHttpService);
   roles = input<string[]>();
@@ -44,34 +59,33 @@ export class RegisterComponent {
     password: '',
     userRole: '',
     email: '',
-    phoneNumber: ''
+    phoneNumber: '',
   });
 
   form = form<RegisterVm>(this.regMod, RegisterSchema);
 
   register(form: Partial<RegisterVm> | null) {
-    this.diag.open<ConfirmationComponent, {}, boolean>(ConfirmationComponent, {
-      data: 'Are you sure you want to register?'
-    })
+    this.diag
+      .open<ConfirmationComponent, {}, boolean>(ConfirmationComponent, {
+        data: 'Are you sure you want to register?',
+      })
       .afterClosed()
       .pipe(
-        filter(x => !!x),
-        map(() => (form as RegisterVm)),
-        switchMap(x => this.http.register(x)),
-        switchMap(() => this.status.login(this.form().value())
-        )
+        filter((x) => !!x),
+        map(() => form as RegisterVm),
+        switchMap((x) => this.http.register(x)),
+        switchMap(() => this.status.login(this.form().value())),
       )
       .subscribe(() => {
         this.form().reset();
         this.snack.open('Welcome', 'Close');
-      })
+      });
   }
 
   // minLenMsg(f: any | undefined) {
   //   return (`min chars: ${(f as MinLengthValidationError).minLength}`);
   // }
 }
-
 
 const RegisterSchema = schema<RegisterVm>((path) => {
   // Email validations

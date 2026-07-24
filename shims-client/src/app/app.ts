@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavComponent } from './components/nav-component/nav-component';
 
@@ -6,7 +6,8 @@ import { NavComponent } from './components/nav-component/nav-component';
   selector: 'app-root',
   imports: [RouterOutlet, NavComponent],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrl: './app.scss',
 })
 export class App {
   protected readonly title = signal('shims-client');

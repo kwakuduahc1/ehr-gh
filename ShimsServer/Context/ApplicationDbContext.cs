@@ -38,9 +38,8 @@ namespace ShimsServer.Context
         public virtual DbSet<Drugs> Drugs { get; set; }
         public virtual DbSet<DrugsStock> DrugsStocks { get; set; }
         public virtual DbSet<DrugsRequests> DrugsRequests { get; set; }
-        public virtual DbSet<DispensingCalculations> DispensingCalculations { get; set; }
-        public virtual DbSet<DrugPayments> DrugPayments { get; set; }
-        public virtual DbSet<Dispensing> Dispensings { get; set; }
+
+        public virtual DbSet<DrugsRequestDetails> DrugsRequestDetails { get; set; }
 
         // Labs
         public virtual DbSet<Investigations> Investigations  { get; set; }

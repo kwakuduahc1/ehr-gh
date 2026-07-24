@@ -14,7 +14,9 @@ namespace ShimsServer.Controllers
     [ApiVersion("1.0")]
     [Route("api/[controller]")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class ConsultationsController(IConsultationsRepository dataSource, ILogger<ConsultationsController> logger) : ControllerBase
+    public class ConsultationsController(
+        IConsultationsRepository dataSource,
+        ILogger<ConsultationsController> logger) : ControllerBase
     {
         [HttpGet("{id:required:guid}")]
         [ProducesResponseType(typeof(IEnumerable<PatientConsultationDto>), StatusCodes.Status200OK)]
@@ -132,20 +134,27 @@ namespace ShimsServer.Controllers
 
         #region prescriptions
 
+        /// <summary>
+        /// Phase 1: Physician makes a drug prescription with multiple drugs
+        /// </summary>
         [HttpPost("prescription")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PrescriptionResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> AddPrescription([FromBody] AddDrugRequestDto request)
         {
+            // Explicit validation for empty array (ModelState validation is automatic in [ApiController])
+            if (request.Drugs?.Length < 1)
+                return BadRequest(new { message = "At least one drug is required in a prescription." });
+
             (Guid id, string user) info = (Guid.CreateVersion7(), User.Identity?.Name ?? "UnknownUser");
 
             try
             {
                 var result = await dataSource.AddPrescription(request, info, HttpContext.RequestAborted);
-                if (result != 1)
+                if (result < 1)
                     return BadRequest(new { message = "No prescription was added. Please check the input and try again." });
-                return Ok(new { message = "Prescription added successfully." });
+                return Ok(info.id);
             }
             catch (PostgresException ex)
             {
@@ -159,13 +168,39 @@ namespace ShimsServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Get a prescription with all its drugs
+        /// </summary>
+        [HttpGet("prescription/{prescriptionId:guid}")]
+        [ProducesResponseType(typeof(PrescriptionResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<PrescriptionResponseDto>> GetPrescription(Guid prescriptionId)
+        {
+            try
+            {
+                // TODO: Implement get prescription from repository
+                return StatusCode(StatusCodes.Status501NotImplemented, new { message = "Get prescription endpoint not yet implemented." });
+            }
+            catch (PostgresException ex)
+            {
+                logger.LogError(ex, "Database error retrieving prescription {PrescriptionId}", prescriptionId);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "There was a database level error." });
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error retrieving prescription {PrescriptionId}", prescriptionId);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while retrieving the prescription." });
+            }
+        }
+
         [HttpPut("prescription")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> UpdatePrescription([FromBody] EditDrugsRequestDto request)
         {
-            (Guid id, string user) info = (request.DrugsRequestsID, User.Identity?.Name ?? "UnknownUser");
+            (Guid id, string user) info = (request.DrugsRequestDetailsID, User.Identity?.Name ?? "UnknownUser");
 
             try
             {
@@ -176,12 +211,12 @@ namespace ShimsServer.Controllers
             }
             catch (PostgresException ex)
             {
-                logger.LogError(ex, "Database error updating prescription {PrescriptionId}", request.DrugsRequestsID);
+                logger.LogError(ex, "Database error updating prescription {DrugDetailId}", request.DrugsRequestDetailsID);
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "There was a database level error." });
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error updating prescription {PrescriptionId}", request.DrugsRequestsID);
+                logger.LogError(ex, "Error updating prescription {DrugDetailId}", request.DrugsRequestDetailsID);
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred during prescription update." });
             }
         }

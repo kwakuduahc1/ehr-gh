@@ -81,7 +81,7 @@ namespace ShimsServer.Repositories
                 where ir.patientattendancesid = @id
                 """;
             using var con = await connection.ConnectionAsync(token);
-            return await con.QueryAsync<PatientAttendanceInvestigations>(sql, new {id});
+            return await con.QueryAsync<PatientAttendanceInvestigations>(sql, new { id });
         }
 
         public async Task<int> AddInvestigationRequest(AddInvestigationRequestDto request, (Guid id, string user) Info, CancellationToken token)
@@ -133,23 +133,67 @@ namespace ShimsServer.Repositories
 
         public async Task<int> AddPrescription(AddDrugRequestDto request, (Guid id, string user) Info, CancellationToken token)
         {
-            const string sql = """
+            const string sqlRequest = """
                 INSERT INTO drugsrequests(
-                    drugsrequestsid, patientsid, schemedrugsid, frequency, days, quantityrequested, daterequested, username, ispaid, isdispensed)
-                VALUES (@id, @patientsId, @schemeDrugsId, @frequency, @days, @quantityRequested, now(), @userName, false, false)
+                    drugsrequestsid, patientattendancesid, physician, requestdate, username, ispaid, isdispensed)
+                VALUES (@id, @patientAttendancesId, @physician, now(), @userName, false, false)
+                """;
+
+            const string sqlDetail = """
+                INSERT INTO drugsrequestdetails(
+                    drugsrequestdetailsid, drugsrequestsid, schemedrugsid, frequency, days, quantityrequested, daterequested, username)
+                VALUES (@detailId, @drugsRequestsId, @schemeDrugsId, @frequency, @days, @quantityRequested, now(), @userName)
                 """;
 
             using var con = await connection.ConnectionAsync(token);
-            return await con.ExecuteAsync(sql, new
+            using var transaction = await con.BeginTransactionAsync(token);
+
+            try
             {
-                Info.id,
-                request.PatientsID,
-                request.SchemeDrugsID,
-                request.Frequency,
-                request.Days,
-                request.QuantityRequested,
-                userName = Info.user
-            });
+                // Insert the main prescription request
+                var rowsInserted = await con.ExecuteAsync(sqlRequest, new
+                {
+                    Info.id,
+                    request.PatientAttendancesID,
+                    request.Physician,
+                    userName = Info.user
+                }, transaction);
+
+                if (rowsInserted < 1)
+                {
+                    await transaction.RollbackAsync(token);
+                    return 0;
+                }
+
+                // Prepare batch insert for all drug details
+                var drugDetails = request.Drugs.Select(drug => new
+                {
+                    detailId = Guid.CreateVersion7(),
+                    drugsRequestsId = Info.id,
+                    drug.SchemeDrugsID,
+                    drug.Frequency,
+                    drug.Days,
+                    drug.QuantityRequested,
+                    userName = Info.user
+                }).ToList();
+
+                // Batch insert all drug details
+                var detailsInserted = await con.ExecuteAsync(sqlDetail, drugDetails, transaction);
+
+                if (detailsInserted < request.Drugs.Length)
+                {
+                    await transaction.RollbackAsync(token);
+                    return 0;
+                }
+
+                await transaction.CommitAsync(token);
+                return rowsInserted; // Return 1 if prescription header was created successfully
+            }
+            catch
+            {
+                await transaction.RollbackAsync(token);
+                throw;
+            }
         }
 
         public async Task<int> AddServvicesRequest(AddServiceRequestDto request, (Guid id, string user) Info, CancellationToken token)
@@ -228,11 +272,11 @@ namespace ShimsServer.Repositories
         public async Task<int> UpdatePrescription(EditDrugsRequestDto request, (Guid id, string user) Info, CancellationToken token)
         {
             const string sql = """
-                UPDATE drugsrequests 
+                UPDATE drugsrequestdetails 
                 SET frequency = @frequency, 
                     days = @days, 
                     quantityrequested = @quantityRequested
-                WHERE drugsrequestsid = @drugsRequestsId
+                WHERE drugsrequestdetailsid = @drugsRequestDetailsId
                 """;
 
             using var con = await connection.ConnectionAsync(token);
@@ -241,7 +285,7 @@ namespace ShimsServer.Repositories
                 request.Frequency,
                 request.Days,
                 request.QuantityRequested,
-                request.DrugsRequestsID
+                drugsRequestDetailsId = request.DrugsRequestDetailsID
             });
         }
 

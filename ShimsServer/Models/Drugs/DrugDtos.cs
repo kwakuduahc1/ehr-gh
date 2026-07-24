@@ -62,68 +62,36 @@ namespace ShimsServer.Models.Drugs
     /// </summary>
     public record DrugRequestDTO(
         Guid DrugsRequestsID,
-        Guid PatientsID,
-        Guid SchemeDrugsID,
-        string DrugName,
-        byte Frequency,
-        byte Days,
-        byte QuantityRequested,
-        DateTime DateRequested,
+        Guid PatientAttendancesID,
+        string Physician,
+        DateTime RequestDate,
         bool IsPaid,
         bool IsDispensed);
 
     /// <summary>
-    /// Data transfer object for creating a new drug request
+    /// Data transfer object for a single drug detail in a prescription
     /// </summary>
-    public record AddDrugRequestDto(
-        [Required] Guid PatientsID,
+    public record AddPrescriptionDetails(
         [Required] Guid SchemeDrugsID,
         [Required, Range(1, 6, ErrorMessage = "Frequency must be between 1 and 6 daily")] byte Frequency,
         [Required, Range(1, 200, ErrorMessage = "Days must be between 1 and 200")] byte Days,
         [Required, Range(0, 200)] byte QuantityRequested);
 
     /// <summary>
-    /// Edit a requested drug - only frequency, days and quantity can be edited
+    /// Data transfer object for creating a new drug prescription with multiple drugs
     /// </summary>
-    /// <param name="DrugsRequestsID">The request ID</param>
-    /// <param name="PatientsID">The patient ID</param>
-    /// <param name="SchemeDrugsID">The scheme drug ID</param>
-    /// <param name="Frequency">The frequency of the drug</param>
-    /// <param name="Days">The number of days for the drug</param>
-    /// <param name="QuantityRequested">The quantity requested</param>
+    public record AddDrugRequestDto(
+        [Required] Guid PatientAttendancesID,
+        [Required, MinLength(1, ErrorMessage = "At least one drug is required in a prescription")] AddPrescriptionDetails[] Drugs);
+
+    /// <summary>
+    /// Edit a drug request detail - only frequency, days and quantity can be edited
+    /// </summary>
     public record EditDrugsRequestDto(
-    Guid DrugsRequestsID,
-    Guid PatientsID,
-    Guid SchemeDrugsID,
-    [Range(1, 6, ErrorMessage = "Frequency must be between {0} and {1} daily")] byte Frequency,
-    [Range(1, 200, ErrorMessage = "Kindly Indicate the {0} for this drug")] byte Days,
-    [Range(0, 200)] byte QuantityRequested);
-
-    /// <summary>
-    /// Data transfer object for drug request summary with patient info
-    /// </summary>
-    public record DrugRequestSummaryDto(
-        Guid DrugsRequestsID,
-        string PatientName,
-        string DrugName,
-        byte Frequency,
-        byte Days,
-        byte QuantityRequested,
-        DateTime DateRequested,
-        bool IsPaid,
-        bool IsDispensed);
-
-    // DTOs for Dispensing Calculations
-
-    /// <summary>
-    /// Data transfer object for dispensing calculations
-    /// </summary>
-    public record DispensingCalculationDTO(
-        Guid DrugsRequestsID,
-        byte Quantity,
-        DateTime DateDone,
-        string UserName,
-        string? Notes);
+        Guid DrugsRequestDetailsID,
+        [Required, Range(1, 6, ErrorMessage = "Frequency must be between {0} and {1} daily")] byte Frequency,
+        [Required, Range(1, 200, ErrorMessage = "Days must be between 1 and 200")] byte Days,
+        [Required, Range(0, 200)] byte QuantityRequested);
 
     /// <summary>
     /// Data transfer object for creating dispensing calculations
@@ -190,6 +158,8 @@ namespace ShimsServer.Models.Drugs
 
     // DTOs for Dispensing
 
+    // DTOs for Dispensing Details
+
     /// <summary>
     /// Data transfer object for dispensing information
     /// </summary>
@@ -214,15 +184,61 @@ namespace ShimsServer.Models.Drugs
         [Required, Range(1, 100)] byte QuantityDispensed);
 
     /// <summary>
+    /// Data transfer object for dispensing detail with drug and request information
+    /// </summary>
+    public record DispensingDetailDto(
+        Guid DispensingID,
+        Guid DrugsRequestsID,
+        string DrugName,
+        byte QuantityDispensed,
+        DateTime DateDispensed,
+        string UserName);
+
+    /// <summary>
+    /// Data transfer object for dispensing calculation detail with payment information
+    /// </summary>
+    public record DispensingCalculationDetailDto(
+        Guid DrugsRequestsID,
+        byte QuantityCalculated,
+        byte QuantityPaid,
+        decimal PaymentAmount,
+        bool IsPaid,
+        DateTime? DateCalculated,
+        DateTime? DatePaid);
+
+    /// <summary>
     /// Data transfer object for complete drug workflow (request to dispensing)
     /// </summary>
     public record DrugWorkflowDTO(
         Guid DrugsRequestsID,
         string DrugName,
         byte QuantityRequested,
-        byte QuantityCalculated,
-        byte QuantityDispensed,
-        decimal PaymentAmount,
+        byte? QuantityCalculated,
+        byte? QuantityDispensed,
+        decimal? PaymentAmount,
         string Status); // Requested, Calculated, Paid, Dispensed
+
+    /// <summary>
+    /// Data transfer object for a single drug in a prescription response
+    /// </summary>
+    public record PrescriptionDrugResponseDto(
+        Guid DrugsRequestsID,
+        string DrugName,
+        byte Frequency,
+        byte Days,
+        byte QuantityRequested,
+        DateTime DateRequested);
+
+    /// <summary>
+    /// Data transfer object for prescription response with all drugs
+    /// </summary>
+    public record PrescriptionResponseDto(
+        Guid DrugsRequestsID,
+        Guid PatientAttendancesID,
+        string Physician,
+        DateTime RequestDate,
+        IEnumerable<PrescriptionDrugResponseDto> Drugs,
+        bool IsPaid,
+        bool IsDispensed);
 }
 
