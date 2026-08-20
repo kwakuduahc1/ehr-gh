@@ -55,6 +55,10 @@ export const ConsultationRoute: Routes = [
                 path: 'outcomes',
                 loadComponent: () => import('./components/consult-outcomes-component/consult-outcomes-component')
                     .then(m => m.ConsultOutcomesComponent)
+            },
+            {
+                path: '**',
+                redirectTo: 'vitals'
             }
         ]
     }
