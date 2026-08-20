@@ -146,7 +146,7 @@ namespace ShimsServer.Controllers
             if (request.Drugs?.Length < 1)
                 return BadRequest(new { message = "At least one drug is required in a prescription." });
 
-            (Guid id, string user) info = (Guid.CreateVersion7(), User.Identity?.Name);
+            (Guid id, string user) info = (Guid.CreateVersion7()!, User.Identity?.Name!);
 
             try
             {

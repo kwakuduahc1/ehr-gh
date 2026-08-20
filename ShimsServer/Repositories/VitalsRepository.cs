@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using ShimsServer.Models.OPD;
+using System.Runtime.CompilerServices;
 
 namespace ShimsServer.Repositories
 {
@@ -7,10 +8,28 @@ namespace ShimsServer.Repositories
     {
         public Task<VitalsummaryDto> GetVitalsForPatient(Guid patientId, CancellationToken cancellationToken);
 
+        public Task<IEnumerable<VitalsDTO>> Vitals(Guid patientID, int number, CancellationToken token);
+
         public Task<int> AddVitals(AddVitalsDto dto, Guid vid, string userName, CancellationToken cancellationToken);
     }
     public class VitalsRepository(IConnection connection) : IVitalsRepository
     {
+        public async Task<IEnumerable<VitalsDTO>> Vitals(Guid patientID, int number, CancellationToken token)
+        {
+            const string sql =
+                """
+                SELECT v.VitalsID, v.PatientAttendancesID, v.DateSeen, v.Temperature, v.Weight, v.Pulse, v.Systol, v.Diastol, v.Respiration, v.SPO2, v.Complaints, v.Notes, '' AS UserName
+                FROM Vitals v
+                WHERE v.PatientsID = @patientID
+                ORDER BY v.DateSeen DESC
+                LIMIT @number;
+                """;
+            using var con = await connection.ConnectionAsync(token);
+            var vitals = await con.QueryAsync<VitalsDTO>(sql, new { patientID, number });
+            await con.CloseAsync();
+            return vitals ?? [];
+        }
+
         public async Task<int> AddVitals(AddVitalsDto dto, Guid vid, string userName, CancellationToken cancellationToken)
         {
             const string sql =
@@ -40,6 +59,8 @@ namespace ShimsServer.Repositories
             return res;
         }
 
+
+
         public async Task<VitalsummaryDto> GetVitalsForPatient(Guid id, CancellationToken cancellationToken)
         {
             const string sql =
@@ -56,9 +77,7 @@ namespace ShimsServer.Repositories
             using var con = await connection.ConnectionAsync(cancellationToken);
             var result = await con.QueryMultipleAsync(sql, new { id });
             var vitals = await result.ReadAsync<VitalsDTO>();
-            Console.WriteLine($"Vitals count: {vitals.Count()}");
             var patient = await result.ReadFirstOrDefaultAsync<LitePatientDto>();
-            Console.WriteLine($"Patient: {patient?.FullName}");
             await con.CloseAsync();
             return new VitalsummaryDto(vitals, patient!);
         }

@@ -1,4 +1,7 @@
-import { Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import { ActivatedRouteSnapshot, Routes } from '@angular/router';
+import { VitalsHttpService } from '../vitals/vitals-http.service';
+import { ConsultingVitalsHttpService } from './http/vitals-http.service';
 
 export const ConsultationRoute: Routes = [
     {
@@ -14,7 +17,10 @@ export const ConsultationRoute: Routes = [
             {
                 path: 'vitals',
                 loadComponent: () => import('./components/consult-vitals-component/consult-vitals-component')
-                    .then(m => m.ConsultVitalsComponent)
+                    .then(m => m.ConsultVitalsComponent),
+                resolve: {
+                    vitals: (param: ActivatedRouteSnapshot) => inject(ConsultingVitalsHttpService).list(param.paramMap.get('id')!)
+                }
             },
             {
                 path: 'history',

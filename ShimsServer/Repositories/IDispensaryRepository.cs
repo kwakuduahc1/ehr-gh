@@ -20,7 +20,8 @@ namespace ShimsServer.Repositories
     {
         public Task<bool> CheckPrescription(Guid PrescriptionID, CancellationToken token)
         {
-        throw new NotImplementedException();
+            connection.GetHashCode();
+            throw new NotImplementedException();
         }
 
         public Task<int> DeletePrescription(Guid prescriptionID, CancellationToken token)

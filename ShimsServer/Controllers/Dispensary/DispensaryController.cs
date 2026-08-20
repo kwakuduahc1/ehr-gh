@@ -135,7 +135,7 @@ namespace ShimsServer.Controllers.Dispensary
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> AddDrugPayment([FromBody] AddDrugPaymentDto request)
         {
-            (Guid id, string user) info = (Guid.CreateVersion7(), User.Identity?.Name ?? "UnknownUser");
+            //(Guid id, string user) = (Guid.CreateVersion7()!, User.Identity!.Name!);
 
             try
             {
@@ -216,7 +216,7 @@ namespace ShimsServer.Controllers.Dispensary
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DispenserDrug([FromBody] AddDispensingDto request)
         {
-            (Guid id, string user) info = (Guid.CreateVersion7(), User.Identity?.Name ?? "UnknownUser");
+            //(Guid id, string user) info = (Guid.CreateVersion7(), User.Identity?.Name ?? "UnknownUser");
 
             try
             {
