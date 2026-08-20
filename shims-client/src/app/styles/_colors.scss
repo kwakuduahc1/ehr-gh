@@ -6,71 +6,75 @@
 @use 'variables' as *;
 
 // Color utility classes
-.color-primary {
-    color: $primary-color;
-}
-
-.color-primary-dark {
-    color: $primary-dark;
-}
-
-.color-primary-light {
-    color: $primary-light;
-}
-
-.color-secondary {
-    color: $secondary-color;
-}
-
-.color-secondary-dark {
-    color: $secondary-dark;
-}
-
-.color-secondary-light {
-    color: $secondary-light;
-}
-
-.color-accent {
-    color: $accent-color;
-}
-
-.color-success {
-    color: $success-color;
-}
-
-.color-warning {
-    color: $warning-color;
-}
-
-.color-error {
-    color: $error-color;
-}
-
-.color-info {
-    color: $info-color;
-}
-
-.color-text-primary {
+.text-primary {
     color: $text-primary;
 }
 
-.color-text-secondary {
+.text-primary-dark {
+    color: $primary-dark;
+}
+
+.text-primary-light {
+    color: $primary-light;
+}
+
+.text-secondary {
     color: $text-secondary;
 }
 
-.color-text-disabled {
+.text-secondary-dark {
+    color: $secondary-dark;
+}
+
+.text-secondary-light {
+    color: $secondary-light;
+}
+
+.text-accent {
+    color: $text-accent;
+}
+
+.text-success {
+    color: $text-success;
+}
+
+.text-warning {
+    color: $text-warning;
+}
+
+.text-error {
+    color: $text-error;
+}
+
+.text-info {
+    color: $text-info;
+}
+
+.text-muted {
+    color: $text-muted;
+}
+
+.text-body {
+    color: $text-body;
+}
+
+.text-text-secondary {
+    color: $text-muted;
+}
+
+.text-text-disabled {
     color: $text-disabled;
 }
 
-.color-white {
+.text-white {
     color: $white;
 }
 
-.color-black {
+.text-black {
     color: $black;
 }
 
-.color-gray {
+.text-gray {
     color: $gray-600;
 }
 

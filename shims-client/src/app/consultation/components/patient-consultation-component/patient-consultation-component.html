@@ -1,10 +1,23 @@
 <main>
-    <h2>Patient Consultation</h2>
+    <h2 class="text-primary h2 text-center">Consultation</h2>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="h3 text-secondary m-0">{{patient().fullName}}</h3>
+        </div>
+        <div class="card-body">
+            <div class="info-grid">
+                <p class="card-text"><strong>Age:</strong> {{patient().age}}</p>
+                <p class="card-text"><strong>Gender:</strong> {{patient().sex}}</p>
+                <p class="card-text"><strong>Patient ID:</strong> {{patient().hospitalID}}</p>
+                <p class="card-text"><strong>Visit Type:</strong> {{patient().visitType}}</p>
+            </div>
+        </div>
+    </div>
     <mat-tab-group (selectedIndexChange)="onTabChange($event)" [selectedIndex]="selectedTabIndex()">
         @for (tab of tabs; track $index) {
         <mat-tab>
             <ng-template mat-tab-label>
-                <mat-icon [class]="'color-' + tab.color">{{tab.icon}}</mat-icon>
+                <mat-icon [class]="'text-' + tab.color">{{tab.icon}}</mat-icon>
                 <span>{{tab.label}}</span>
             </ng-template>
         </mat-tab>

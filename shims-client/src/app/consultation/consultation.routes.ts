@@ -2,6 +2,8 @@ import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, Routes } from '@angular/router';
 import { VitalsHttpService } from '../vitals/vitals-http.service';
 import { ConsultingVitalsHttpService } from './http/vitals-http.service';
+import { PatientSchemesHttpService } from '../registrations/patient-schemes-http.service';
+import { RegistrationsHttpService } from '../registrations/registrations-http.service';
 
 export const ConsultationRoute: Routes = [
     {
@@ -13,6 +15,9 @@ export const ConsultationRoute: Routes = [
         path: ':id',
         loadComponent: () => import('./components/patient-consultation-component/patient-consultation-component')
             .then(m => m.PatientConsultationComponent),
+        resolve: {
+            patient: (param: ActivatedRouteSnapshot) => inject(RegistrationsHttpService).getRegistration(param.paramMap.get('id')!)
+        },
         children: [
             {
                 path: 'vitals',

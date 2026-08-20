@@ -1,1 +1,14 @@
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
 
+    .card-text {
+        margin: 0;
+        font-size: 0.875rem;
+
+        strong {
+            font-weight: 600;
+        }
+    }
+}

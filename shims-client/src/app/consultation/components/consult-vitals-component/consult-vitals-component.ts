@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { VitalsDTO, VitalsummaryDto } from '../../../models/vitals/IVitals';
-import { DatePipe, JsonPipe } from '@angular/common';
+import { VitalsDTO } from '../../../models/vitals/IVitals';
+import { DatePipe } from '@angular/common';
 
 @Component({
     selector: 'app-consult-vitals',

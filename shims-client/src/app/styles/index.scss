@@ -7,15 +7,15 @@
 @use 'variables' as *;
 
 // 2. Color utilities
-@use 'colors';
+@use 'colors' as *;
 
 // 3. Typography and text styles
-@use 'typography';
+@use 'typography' as *;
 
 // 4. Component styles
-@use 'buttons';
-@use 'cards';
-@use 'tables';
+@use 'buttons' as *;
+@use 'cards' as *;
+@use 'tables' as *;
 
 // ============================================================================
 // Global Styles

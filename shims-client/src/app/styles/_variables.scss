@@ -53,12 +53,22 @@ $bg-secondary: $gray-50;
 $bg-tertiary: $gray-100;
 $bg-dark: $gray-900;
 
-// Colors - Text
-$text-primary: rgba($black, 0.87);
-$text-secondary: rgba($black, 0.6);
+// Colors - Text (Brand Colors)
+$text-primary: $primary-color;
+$text-secondary: $secondary-color;
+$text-accent: $accent-color;
+$text-success: $success-color;
+$text-warning: $warning-color;
+$text-error: $error-color;
+$text-info: $info-color;
+
+// Colors - Text Hierarchy (Default/Body Text)
+$text-body: rgba($black, 0.87);
+$text-muted: rgba($black, 0.6);
 $text-disabled: rgba($black, 0.38);
 $text-hint: rgba($black, 0.38);
 
+// Colors - Text on Dark Backgrounds
 $text-primary-light: $white;
 $text-secondary-light: rgba($white, 0.7);
 $text-disabled-light: rgba($white, 0.5);
@@ -69,8 +79,6 @@ $text-disabled-dark: rgba($black, 0.5);
 $text-hint-dark: rgba($black, 0.5);
 
 $text-tertiary: rgba($black, 0.2);
-$text-info: $info-color;
-$text-warning: $warning-color;
 
 // Typography - Font Families
 $font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',

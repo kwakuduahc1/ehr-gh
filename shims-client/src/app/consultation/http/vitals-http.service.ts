@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { VitalsDTO } from '../../models/vitals/IVitals';
-import { VitalsHttpService } from '../../vitals/vitals-http.service';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
