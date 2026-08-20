@@ -78,6 +78,16 @@ namespace ShimsServer.Models.Drugs
         [Required, Range(0, 200)] byte QuantityRequested);
 
     /// <summary>
+    /// Data transfer object for a single drug detail in a prescription
+    /// </summary>
+    public record EditPrescriptionDetails(
+        [Required] Guid DrugsRequestDetailsID,
+        [Required] Guid SchemeDrugsID,
+        [Required, Range(1, 6, ErrorMessage = "Frequency must be between 1 and 6 daily")] byte Frequency,
+        [Required, Range(1, 200, ErrorMessage = "Days must be between 1 and 200")] byte Days,
+        [Required, Range(0, 200)] byte QuantityRequested);
+
+    /// <summary>
     /// Data transfer object for creating a new drug prescription with multiple drugs
     /// </summary>
     public record AddDrugRequestDto(

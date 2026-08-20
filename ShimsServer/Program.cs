@@ -6,14 +6,14 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Asp.Versioning;
 using Serilog;
-using ShimsServer.Context;
-using ShimsServer.Repositories;
 using System.Net;
 using System.Text;
 using Asp.Versioning.ApiExplorer;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using ShimsServer.Repositories;
+using ShimsServer.Context;
 
-namespace ShimsServer
+namespace HomeCare
 {
     public class Program
     {
@@ -30,7 +30,7 @@ namespace ShimsServer
                 .MinimumLevel.Is(minLevel)
                 .WriteTo.Console()
                 .WriteTo.File(
-                    "logs/shims-.txt",
+                    "logs/home-visits-.txt",
                     rollingInterval: RollingInterval.Day,
                     retainedFileCountLimit: 7, // Reduced from 30 for low-memory environments
                     outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")

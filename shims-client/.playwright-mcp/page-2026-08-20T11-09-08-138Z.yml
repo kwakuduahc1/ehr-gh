@@ -1,0 +1,13 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e4]:
+    - generic [ref=e5]:
+      - heading "SHIMS" [level=1] [ref=e7]
+      - menubar [ref=e8]:
+        - menuitem "Home" [ref=e9] [cursor=pointer]:
+          - img [ref=e10]: home
+        - menuitem "Login" [ref=e12] [cursor=pointer]:
+          - img [ref=e13]: login
+  - generic [ref=e23]:
+    - generic [ref=e24]: You were logged out
+    - button [ref=e26] [cursor=pointer]:
+      - generic [ref=e27]: Ok

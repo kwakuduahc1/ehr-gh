@@ -26,6 +26,12 @@
     }
 }
 
+a[mat-menu-item] {
+    display: flex;
+    align-items: center;
+    padding: $spacing-sm $spacing-lg;
+}
+
 // Hamburger Menu
 .hamburger {
     display: none;

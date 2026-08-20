@@ -1,4 +1,14 @@
 <main>
     <h2>Patient Consultation</h2>
+    <mat-tab-group (selectedIndexChange)="onTabChange($event)" [selectedIndex]="selectedTabIndex()">
+        @for (tab of tabs; track $index) {
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <mat-icon [class]="'color-' + tab.color">{{tab.icon}}</mat-icon>
+                <span>{{tab.label}}</span>
+            </ng-template>
+        </mat-tab>
+        }
+    </mat-tab-group>
     <router-outlet />
 </main>

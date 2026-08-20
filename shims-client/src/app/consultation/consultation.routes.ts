@@ -12,28 +12,48 @@ export const ConsultationRoute: Routes = [
             .then(m => m.PatientConsultationComponent),
         children: [
             {
+                path: 'vitals',
+                loadComponent: () => import('./components/consult-vitals-component/consult-vitals-component')
+                    .then(m => m.ConsultVitalsComponent)
+            },
+            {
+                path: 'history',
+                loadComponent: () => import('./components/consult-history-component/consult-history-component')
+                    .then(m => m.ConsultHistoryComponent)
+            },
+            {
                 path: 'investigations',
-                loadComponent: () => import('./components/consult-investigations/consult-investigations')
+                loadComponent: () => import('./components/consult-investigations-component/consult-investigations-component')
                     .then(m => m.ConsultInvestigationsComponent)
             },
             {
-                path: 'services',
-                loadComponent: () => import('./components/consult-services/consult-services')
-                    .then(m => m.ConsultServicesComponent)
+                path: 'labs',
+                loadComponent: () => import('./components/consult-labs-component/consult-labs-component')
+                    .then(m => m.ConsultLabsComponent)
             },
             {
                 path: 'drugs',
-                loadComponent: () => import('./components/consult-drugs/consult-drugs')
+                loadComponent: () => import('./components/consult-drugs-component/consult-drugs-component')
                     .then(m => m.ConsultDrugsComponent)
             },
             {
+                path: 'summary',
+                loadComponent: () => import('./components/consult-summary-component/consult-summary-component')
+                    .then(m => m.ConsultSummaryComponent)
+            },
+            {
+                path: 'services',
+                loadComponent: () => import('./components/consult-services-component/consult-services-component')
+                    .then(m => m.ConsultServicesComponent)
+            },
+            {
                 path: 'diagnoses',
-                loadComponent: () => import('./components/consult-diagnoses/consult-diagnoses')
+                loadComponent: () => import('./components/consult-diagnoses-component/consult-diagnoses-component')
                     .then(m => m.ConsultDiagnosesComponent)
             },
             {
                 path: 'outcomes',
-                loadComponent: () => import('./components/consult-outcomes/consult-outcomes')
+                loadComponent: () => import('./components/consult-outcomes-component/consult-outcomes-component')
                     .then(m => m.ConsultOutcomesComponent)
             }
         ]

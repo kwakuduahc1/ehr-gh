@@ -22,7 +22,7 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client
   },
   {
-    path: 'consultation',
+    path: 'consulting',
     renderMode: RenderMode.Client
   },
   {

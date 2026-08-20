@@ -50,7 +50,7 @@ export class ViewSessionsComponent {
     applyEach(path, required);
   }, {
     submission: {
-      action: async (f) => this.addSession()
+      action: async (f) => this.addSession(f().value())
     }
   });
 
@@ -62,20 +62,19 @@ export class ViewSessionsComponent {
   }
 
 
-  addSession(): void {
-    submit(this.form, async () => {
-      this.http.addSession(this.fmMdl()).subscribe({
-        next: (id) => {
-          this.sessions.update(list => [{
-            patientAttendancesID: id,
-            visitType: this.fmMdl().visitType,
-            dateSeen: new Date().toISOString(),
-            isActive: true,
-          }, ...list.map(s => ({ ...s, isActive: false }))]);
-          this.form().reset();
-          this.snackBar.open('Session started.', 'Dismiss');
-        }
-      });
+  addSession(session: AddPatientSession): void {
+    console.log(session);
+    this.http.addSession(session).subscribe({
+      next: (id) => {
+        this.sessions.update(list => [{
+          patientAttendancesID: id,
+          visitType: this.fmMdl().visitType,
+          dateSeen: new Date().toISOString(),
+          isActive: true,
+        }, ...list.map(s => ({ ...s, isActive: false }))]);
+        this.form().reset();
+        this.snackBar.open('Session started.', 'Dismiss');
+      }
     });
   }
 

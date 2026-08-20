@@ -84,7 +84,7 @@ namespace ShimsServer.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> AddLabRequest([FromBody] AddInvestigationRequestDto request)
         {
-            (Guid id, string user) info = (Guid.CreateVersion7(), User.Identity?.Name ?? "UnknownUser");
+            (Guid id, string user) info = (Guid.CreateVersion7(), User.Identity!.Name!);
 
             try
             {
@@ -143,11 +143,10 @@ namespace ShimsServer.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> AddPrescription([FromBody] AddDrugRequestDto request)
         {
-            // Explicit validation for empty array (ModelState validation is automatic in [ApiController])
             if (request.Drugs?.Length < 1)
                 return BadRequest(new { message = "At least one drug is required in a prescription." });
 
-            (Guid id, string user) info = (Guid.CreateVersion7(), User.Identity?.Name ?? "UnknownUser");
+            (Guid id, string user) info = (Guid.CreateVersion7(), User.Identity?.Name);
 
             try
             {

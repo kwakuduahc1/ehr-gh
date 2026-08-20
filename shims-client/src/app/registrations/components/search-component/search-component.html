@@ -2,7 +2,7 @@
 
 <form class="add-registration-form" [formRoot]="form">
     <mat-form-field appearance="outline">
-        <mat-label>Surname</mat-label>
+        <mat-label>Search term</mat-label>
         <input type="text" title="Surname" matInput [formField]="form.search">
         @if (form.search().errors()[0]; as err) {
         <mat-error>

@@ -136,13 +136,13 @@ namespace ShimsServer.Repositories
             const string sqlRequest = """
                 INSERT INTO drugsrequests(
                     drugsrequestsid, patientattendancesid, physician, requestdate, username, ispaid, isdispensed)
-                VALUES (@id, @patientAttendancesId, @physician, now(), @userName, false, false)
+                VALUES (@id, @patientAttendancesId, @user, now(), false, false)
                 """;
 
             const string sqlDetail = """
                 INSERT INTO drugsrequestdetails(
                     drugsrequestdetailsid, drugsrequestsid, schemedrugsid, frequency, days, quantityrequested, daterequested, username)
-                VALUES (@detailId, @drugsRequestsId, @schemeDrugsId, @frequency, @days, @quantityRequested, now(), @userName)
+                VALUES (@detailId, @drugsRequestsId, @schemeDrugsId, @frequency, @days, 0, now(), @userName)
                 """;
 
             using var con = await connection.ConnectionAsync(token);
@@ -155,8 +155,7 @@ namespace ShimsServer.Repositories
                 {
                     Info.id,
                     request.PatientAttendancesID,
-                    request.Physician,
-                    userName = Info.user
+                    Info.user,
                 }, transaction);
 
                 if (rowsInserted < 1)
