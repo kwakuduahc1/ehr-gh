@@ -18,10 +18,10 @@ namespace ShimsServer.Controllers
         IConsultationsRepository dataSource,
         ILogger<ConsultationsController> logger) : ControllerBase
     {
-        [HttpGet("{id:required:guid}")]
+        [HttpGet("{id:required:guid}/{take:int}/{skip:int}")]
         [ProducesResponseType(typeof(IEnumerable<PatientConsultationDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IEnumerable<PatientConsultationDto>> GetConsultations(Guid id) => await dataSource.GetConsultations(id, HttpContext.RequestAborted);
+        public async Task<IEnumerable<PatientConsultationDto>> GetConsultations(Guid id, int take=15, int skip=0) => await dataSource.GetConsultations(id, take, skip, HttpContext.RequestAborted);
 
 
         [HttpPost]
@@ -30,14 +30,14 @@ namespace ShimsServer.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> AddConsultation([FromBody] AddPatientConsultationDto dto)
         {
-            (Guid id, string user) info = (Guid.NewGuid(), User.Identity?.Name ?? "UnknownUser");
+            (Guid id, string user) info = (Guid.NewGuid(), User.Identity?.Name!);
 
             try
             {
                 var result = await dataSource.AddConsultation(dto, info, HttpContext.RequestAborted);
                 if (result != 1)
                     return BadRequest(new { message = "No consultation was added. Please check the input and try again." });
-                return Ok(new { message = "Consultation added successfully." });
+                return Ok();
             }
             catch (PostgresException ex)
             {

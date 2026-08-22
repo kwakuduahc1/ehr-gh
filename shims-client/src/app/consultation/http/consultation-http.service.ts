@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 import {
     PatientAttendanceInvestigations,
     AddInvestigationRequestDto,
@@ -19,8 +19,9 @@ import {
     InvestigationResultDTO,
     AddInvestigationResultDto,
     InvestigationResultWithPaymentDto,
-} from './consult-models';
-import { PatientDetailsDto } from '../models/registrations/IRegistrations';
+} from '../consult-models';
+import { PatientDetailsDto } from '../../models/registrations/IRegistrations';
+import { PatientConsultationDto } from '../../models/consultation/history';
 
 @Injectable({ providedIn: 'root' })
 export class ConsultationHttpService {

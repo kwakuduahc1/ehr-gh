@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ShimsServer.Context;
@@ -12,9 +13,11 @@ using ShimsServer.Models.ConsultingRoom;
 namespace ShimsServer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260822200025_NeuroScores")]
+    partial class NeuroScores
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -413,9 +416,13 @@ namespace ShimsServer.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("patientconsultationid");
 
-                    b.Property<AVPU>("AVPU")
-                        .HasColumnType("jsonb")
+                    b.Property<byte?>("AVPU")
+                        .HasColumnType("smallint")
                         .HasColumnName("avpu");
+
+                    b.Property<AVPU>("AVPUA")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("avpua");
 
                     b.Property<string>("Complaints")
                         .IsRequired()
@@ -427,9 +434,13 @@ namespace ShimsServer.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("dateadded");
 
-                    b.Property<GCS>("GCS")
-                        .HasColumnType("jsonb")
+                    b.Property<byte?>("GCS")
+                        .HasColumnType("smallint")
                         .HasColumnName("gcs");
+
+                    b.Property<GCS>("GCSA")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("gcsa");
 
                     b.Property<string>("ODQ")
                         .IsRequired()

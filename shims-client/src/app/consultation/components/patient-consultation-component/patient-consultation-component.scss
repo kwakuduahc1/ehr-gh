@@ -1,3 +1,18 @@
+.pane {
+    display: flex;
+    gap: 1rem;
+}
+
+.left-pane {
+    margin-left: 2rem;
+    flex: 1;
+}
+
+mat-tab-group {
+    margin-top: .52rem;
+    border-top: .21rem solid #600e8f;
+}
+
 .info-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -11,4 +26,5 @@
             font-weight: 600;
         }
     }
+
 }

@@ -117,3 +117,27 @@ export interface InvestigationResultWithPaymentDto {
     totalCost: number;
     dateCreated: string;
 }
+
+export interface AddPatientConsultationDto {
+    patientAttendancesID: string;
+    complaints: string;
+    odq: string;
+    dateAdded?: Date,
+    hasAvpu: boolean,
+    avpu: {
+        alert: number,
+        verbal: number,
+        pain: number,
+        responsive: number
+    },
+    hasGcs: boolean,
+    gcs: {
+        eyeOpening: number,
+        verbalResponse: number,
+        motorResponse: number
+    }
+}
+
+export interface PatientConsultationDto extends AddPatientConsultationDto {
+    patientConsultationsID: string;
+}

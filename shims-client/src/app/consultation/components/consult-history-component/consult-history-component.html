@@ -1,3 +1,164 @@
-<div>
-    <h3>History</h3>
+<div class="panes">
+    <div class="left-pane">
+        <form class="add-registration-form" [formRoot]="form">
+            <fieldset class="long-fieldset">
+                <mat-form-field appearance="outline">
+                    <mat-label>Complaints</mat-label>
+                    <textarea type="text" title="Complaints" matInput [formField]="form.complaints"></textarea>
+                    @if (form.complaints().errors()[0]; as err) {
+                    <mat-error>
+                        @if (err?.kind === 'required') {<span>*</span>}
+                        @if (err?.kind === 'minLength') {<span>{{val.minLenMsg(err)}}</span>}
+                        @if (err?.kind === 'maxLength') {<span>{{val.maxLenMsg(err)}}</span>}
+                    </mat-error>
+                    }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Other Details/Questions</mat-label>
+                    <textarea type="text" title="Other Details/Questions" matInput [formField]="form.odq"></textarea>
+                    @if (form.odq().errors()[0]; as err) {
+                    <mat-error>
+                        @if (err?.kind === 'required') {<span>*</span>}
+                        @if (err?.kind === 'minLength') {<span>{{val.minLenMsg(err)}}</span>}
+                        @if (err?.kind === 'maxLength') {<span>{{val.maxLenMsg(err)}}</span>}
+                    </mat-error>
+                    }
+                </mat-form-field>
+            </fieldset>
+
+            <mat-checkbox matInput [formField]="form.hasAvpu">AVPU</mat-checkbox>
+            @if (form.hasAvpu().value()) {
+            <fieldset class="avpu">
+                <mat-form-field appearance="outline">
+                    <mat-label>Alert</mat-label>
+                    <input type="number" title="Alert" matInput [formField]="form.avpu.alert" autocomplete="off">
+                    @if (form.avpu.alert().errors()[0]; as err) {
+                    <mat-error>
+                        @if (err?.kind === 'required') {<span>*</span>}
+                        @if (err?.kind === 'min') {<span>{{val.minMsg(err)}}</span>}
+                        @if (err?.kind === 'max') {<span>{{val.maxMsg(err)}}</span>}
+                    </mat-error>
+                    }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Verbal</mat-label>
+                    <input type="number" title="Verbal" matInput [formField]="form.avpu.verbal" autocomplete="off">
+                    @if (form.avpu.verbal().errors()[0]; as err) {
+                    <mat-error>
+                        @if (err?.kind === 'required') {<span>*</span>}
+                        @if (err?.kind === 'min') {<span>{{val.minMsg(err)}}</span>}
+                        @if (err?.kind === 'max') {<span>{{val.maxMsg(err)}}</span>}
+                    </mat-error>
+                    }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Pain</mat-label>
+                    <input type="number" title="Pain" matInput [formField]="form.avpu.pain" autocomplete="off">
+                    @if (form.avpu.pain().errors()[0]; as err) {
+                    <mat-error>
+                        @if (err?.kind === 'required') {<span>*</span>}
+                        @if (err?.kind === 'min') {<span>{{val.minMsg(err)}}</span>}
+                        @if (err?.kind === 'max') {<span>{{val.maxMsg(err)}}</span>}
+                    </mat-error>
+                    }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Response</mat-label>
+                    <input type="number" title="Response" matInput [formField]="form.avpu.responsive"
+                        autocomplete="off">
+                    @if (form.avpu.responsive().errors()[0]; as err) {
+                    <mat-error>
+                        @if (err?.kind === 'required') {<span>*</span>}
+
+                        @if (err?.kind === 'min') {<span>{{val.minMsg(err)}}</span>}
+                        @if (err?.kind === 'max') {<span>{{val.maxMsg(err)}}</span>}
+                    </mat-error>
+                    }
+                </mat-form-field>
+
+            </fieldset>
+            }
+            <mat-checkbox matInput [formField]="form.hasGcs">GCS</mat-checkbox>
+            @if (form.hasGcs().value()) {
+            <fieldset class="short-fieldset">
+                <mat-form-field appearance="outline">
+                    <mat-label>Eye opening</mat-label>
+                    <input type="number" title="Eye opening" matInput [formField]="form.gcs.eyeOpening"
+                        autocomplete="off">
+                    @if (form.gcs.eyeOpening().errors()[0]; as err) {
+                    <mat-error>
+                        @if (err?.kind === 'required') {<span>*</span>}
+
+                        @if (err?.kind === 'min') {<span>{{val.minMsg(err)}}</span>}
+                        @if (err?.kind === 'max') {<span>{{val.maxMsg(err)}}</span>}
+                    </mat-error>
+                    }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Verbal</mat-label>
+                    <input type="number" title="Verbal" matInput [formField]="form.gcs.verbalResponse"
+                        autocomplete="off">
+                    @if (form.gcs.verbalResponse().errors()[0]; as err) {
+                    <mat-error>
+                        @if (err?.kind === 'required') {<span>*</span>}
+
+                        @if (err?.kind === 'min') {<span>{{val.minMsg(err)}}</span>}
+                        @if (err?.kind === 'max') {<span>{{val.maxMsg(err)}}</span>}
+                    </mat-error>
+                    }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Motor</mat-label>
+                    <input type="number" title="Verbal" matInput [formField]="form.gcs.motorResponse"
+                        autocomplete="off">
+                    @if (form.gcs.motorResponse().errors()[0]; as err) {
+                    <mat-error>
+                        @if (err?.kind === 'required') {<span>*</span>}
+                        @if (err?.kind === 'min') {<span>{{val.minMsg(err)}}</span>}
+                        @if (err?.kind === 'max') {<span>{{val.maxMsg(err)}}</span>}
+                    </mat-error>
+                    }
+                </mat-form-field>
+            </fieldset>
+            }
+            <div>
+                <button type="submit" class="btn btn-icon" [disabled]="form().invalid() || act.act().isProcessing"
+                    [class.btn-error]="form().invalid()" [class.btn-success]="form().valid()"
+                    [class.btn-info]="form().pending() || form().submitting()">
+                    <mat-icon>save</mat-icon>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="right-pane">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Complaints</th>
+                    <th>Other Details/Questions</th>
+                    <th>AVPU</th>
+                    <th>GCS</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (h of history(); track $index) {
+                <tr>
+                    <td>{{h.dateAdded | date:'short'}}</td>
+                    <td>{{h.complaints}}</td>
+                    <td>{{h.odq}}</td>
+                    <!-- <td>{{h.avpu}}</td>
+                    <td>{{h.gcs}}</td> -->
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>

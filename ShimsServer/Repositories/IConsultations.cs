@@ -1,4 +1,6 @@
 ﻿using Dapper;
+using Npgsql;
+using NpgsqlTypes;
 using ShimsServer.Models.ConsultingRoom;
 using ShimsServer.Models.Drugs;
 using ShimsServer.Models.Investigations;
@@ -14,7 +16,7 @@ namespace ShimsServer.Repositories
 
         Task<int> DeleteConsultation(Guid id, CancellationToken token);
 
-        Task<IEnumerable<PatientConsultationDto>> GetConsultations(Guid id, CancellationToken token);
+        Task<IEnumerable<PatientConsultationDto>> GetConsultations(Guid id, int take, int skip, CancellationToken token);
         #endregion
 
         #region investigation-requests
@@ -55,21 +57,53 @@ namespace ShimsServer.Repositories
         public async Task<int> AddConsultation(AddPatientConsultationDto dto, (Guid id, string user) info, CancellationToken token)
         {
             const string sql = """
-                INSERT INTO patientconsultations(
-                    patientconsultationid, patientsattendancesid, complaints, odq, avpu, dateadded, username)
-                VALUES (@id, @patientAttendanceId, @complaints, @odq, @avpu, now(), @userName)
+                INSERT INTO public.patientconsultations(
+                    patientconsultationid, patientattendancesid, complaints, odq, dateadded, username, avpu, gcs)
+                VALUES (@id, @patientAttendancesID, @complaints, @odq, now(), @userName, @avpu, @gcs)
                 """;
 
-            using var con = await connection.ConnectionAsync(token);
-            return await con.ExecuteAsync(sql, new
+            using var con = (NpgsqlConnection)await connection.ConnectionAsync(token);
+            if (con.State != System.Data.ConnectionState.Open)
+                await con.OpenAsync(token);
+
+            var cmd = con.CreateCommand();
+            cmd.CommandText = sql;
+            cmd.Parameters.AddRange(new NpgsqlParameter[]
             {
-                info.id,
-                dto.PatientsAttendancesID,
-                dto.Complaints,
-                dto.ODQ,
-                dto.AVPU,
-                userName = info.user
+                new ("@id", NpgsqlDbType.Uuid)
+                {
+                   Value = info.id,
+                },
+                new ("@patientAttendancesID", NpgsqlDbType.Uuid)
+                {
+                   Value = dto.PatientAttendancesID,
+                },
+                new ("@complaints", NpgsqlDbType.Varchar)
+                {
+                   Value = dto.Complaints ?? (object)DBNull.Value,
+                   Size = 500
+                },
+                new ("@odq", NpgsqlDbType.Varchar)
+                {
+                   Value = dto.ODQ ?? (object)DBNull.Value,
+                   Size = 250
+                },
+                new ("@userName", NpgsqlDbType.Varchar)
+                {
+                   Value = info.user,
+                   Size = 75
+                },
+                new ("@avpu", NpgsqlDbType.Jsonb)
+                {
+                   Value = dto.AVPU ?? (object)DBNull.Value,
+                },
+                new ("@gcs", NpgsqlDbType.Jsonb)
+                {
+                   Value = dto.GCS ?? (object)DBNull.Value,
+                }
             });
+
+            return await cmd.ExecuteNonQueryAsync(token);
         }
 
         public async Task<IEnumerable<PatientAttendanceInvestigations>> GetPatientAttendanceInvestigationsAsync(Guid id, CancellationToken token)
@@ -254,18 +288,18 @@ namespace ShimsServer.Repositories
             return await con.ExecuteAsync(sql, new { id });
         }
 
-        public async Task<IEnumerable<PatientConsultationDto>> GetConsultations(Guid id, CancellationToken token)
+        public async Task<IEnumerable<PatientConsultationDto>> GetConsultations(Guid id, int take, int skip, CancellationToken token)
         {
             const string sql = """
-                SELECT patientsattendancesid, complaints, odq, avpu
+                SELECT patientattendancesid, complaints, odq, dateadded, avpu, gcs
                 FROM patientconsultations
-                WHERE patientsattendancesid = @id
+                WHERE patientattendancesid = @id
                 ORDER BY dateadded DESC
-                LIMIT 15
+                LIMIT @take OFFSET @skip
                 """;
 
             using var con = await connection.ConnectionAsync(token);
-            return await con.QueryAsync<PatientConsultationDto>(sql, new { id });
+            return await con.QueryAsync<PatientConsultationDto>(sql, new { id, take, skip });
         }
 
         public async Task<int> UpdatePrescription(EditDrugsRequestDto request, (Guid id, string user) Info, CancellationToken token)

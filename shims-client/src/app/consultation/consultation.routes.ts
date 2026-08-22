@@ -1,8 +1,7 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, Routes } from '@angular/router';
-import { VitalsHttpService } from '../vitals/vitals-http.service';
+import { ConsultHistoryHttpService } from './http/consult-history.service';
 import { ConsultingVitalsHttpService } from './http/vitals-http.service';
-import { PatientSchemesHttpService } from '../registrations/patient-schemes-http.service';
 import { RegistrationsHttpService } from '../registrations/registrations-http.service';
 
 export const ConsultationRoute: Routes = [
@@ -30,7 +29,10 @@ export const ConsultationRoute: Routes = [
             {
                 path: 'history',
                 loadComponent: () => import('./components/consult-history-component/consult-history-component')
-                    .then(m => m.ConsultHistoryComponent)
+                    .then(m => m.ConsultHistoryComponent),
+                resolve: {
+                    history: (param: ActivatedRouteSnapshot) => inject(ConsultHistoryHttpService).history(param.paramMap.get('id')!)
+                }
             },
             {
                 path: 'investigations',

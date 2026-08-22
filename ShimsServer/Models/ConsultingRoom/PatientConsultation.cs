@@ -10,7 +10,8 @@ namespace ShimsServer.Models.ConsultingRoom
         public Guid PatientConsultationID { get; set; } = Guid.CreateVersion7();
 
         [Required]
-        public required Guid PatientsAttendancesID { get; set; }
+        [ForeignKey(nameof(PatientAttendance))]
+        public required Guid PatientAttendancesID { get; set; }
 
         [StringLength(500, ErrorMessage = "{0} should be below {1} characters")]
         [Required(AllowEmptyStrings = false)]
@@ -19,9 +20,11 @@ namespace ShimsServer.Models.ConsultingRoom
         [StringLength(250, ErrorMessage = "{0} should be below {1} characters")]
         public required string ODQ { get; set; }
 
-        [Required]
-        [Range(3, 15)]
-        public required byte AVPU { get; set; } = 14;
+        [Column(TypeName = "jsonb")]
+        public AVPU? AVPU { get; set; }
+
+        [Column(TypeName = "jsonb")]
+        public GCS? GCS { get; set; }
 
         public DateTime DateAdded { get; set; }
 
@@ -31,8 +34,12 @@ namespace ShimsServer.Models.ConsultingRoom
         public virtual PatientAttendance? PatientAttendance { get; set; }
     }
 
+    public record AVPU([Range(0, 4)] short? Alert, [Range(0, 3)] short? Verbal, [Range(0, 2)] short? Pain, [Range(0, 1)] short? Responsive, short? Score);
+
+    public record GCS([Range(0, 4)] short? EyeOpening, [Range(0, 5)] short? VerbalResponse, [Range(0, 6)] short? MotorResponse, short? Score);
+
     public record AddPatientConsultationDto(
-    Guid PatientsAttendancesID,
+    Guid PatientAttendancesID,
 
     [StringLength(500, ErrorMessage = "{0} should be below {1} characters")]
     string Complaints,
@@ -40,13 +47,17 @@ namespace ShimsServer.Models.ConsultingRoom
     [StringLength(250, ErrorMessage = "{0} should be below {1} characters")]
     string ODQ,
 
-    [Range(3, 15)]
-    byte AVPU = 14);
+    AVPU? AVPU,
+
+    GCS? GCS
+    );
 
     public record PatientConsultationDto(
         Guid PatientAttendancesID,
         string Complaints,
         string ODQ,
-        string AVPU
+        DateTime DateAdded,
+        string AVPU,
+        string GCS
         );
 }
