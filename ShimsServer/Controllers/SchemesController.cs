@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using ShimsServer.Models.DTOs;
-using ShimsServer.Models.Schemes;
 using ShimsServer.Repositories;
 
 namespace ShimsServer.Controllers
@@ -9,7 +8,7 @@ namespace ShimsServer.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
-    public class SchemesController(ISchemesRepository repository, ILogger<SchemesController> logger, CancellationToken token) : ControllerBase
+    public class SchemesController(ISchemesRepository repository, ILogger<SchemesController> logger) : ControllerBase
     {
 
         /// <summary>
@@ -21,7 +20,7 @@ namespace ShimsServer.Controllers
 
         public async Task<ActionResult<IEnumerable<SchemesDTO>>> GetSchemes()
         {
-            var schemes = await repository.GetAllSchemesAsync(token);
+            var schemes = await repository.GetAllSchemesAsync(Request.HttpContext.RequestAborted);
             return Ok(schemes);
         }
 
@@ -33,7 +32,7 @@ namespace ShimsServer.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SchemesDTO>> GetSchemeById(Guid id)
         {
-            var scheme = await repository.GetSchemeByIdAsync(id, token);
+            var scheme = await repository.GetSchemeByIdAsync(id, Request.HttpContext.RequestAborted);
             return scheme == null ? NotFound() : Ok(scheme);
         }
 
@@ -46,22 +45,12 @@ namespace ShimsServer.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<ActionResult<Guid>> AddScheme([FromBody] AddSchemeDto schemeDto)
         {
-            if (await repository.SchemeExistsByNameAsync(schemeDto.SchemeName, token))
+            if (await repository.SchemeExistsByNameAsync(schemeDto.SchemeName, Request.HttpContext.RequestAborted))
                 return Conflict(new { message = $"Scheme with name {schemeDto.SchemeName} already exists." });
-
-            var scheme = new Schemes
-            {
-                SchemesID = Guid.CreateVersion7(),
-                SchemeName = schemeDto.SchemeName,
-                Coverage = schemeDto.Coverage,
-                MaxPayable = schemeDto.MaxPayable,
-                Recovery = schemeDto.Recovery,
-                IsActive = true
-            };
 
             try
             {
-                var schemeId = await repository.AddSchemeAsync(scheme, token);
+                var schemeId = await repository.AddSchemeAsync(schemeDto, Request.HttpContext.RequestAborted);
                 return Ok(schemeId);
             }
             catch (PostgresException ex)
@@ -81,18 +70,14 @@ namespace ShimsServer.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<IActionResult> UpdateScheme(UpdateSchemeDto schemeDto)
         {
-            var scheme = new Schemes
-            {
-                SchemesID = schemeDto.SchemesID,
-                SchemeName = schemeDto.SchemeName,
-                Coverage = schemeDto.Coverage,
-                MaxPayable = schemeDto.MaxPayable,
-                Recovery = schemeDto.Recovery
-            };
 
             try
             {
-                var updated = await repository.UpdateSchemeAsync(scheme, token);
+                var check = await repository.GetSchemeByIdAsync(schemeDto.SchemesID, Request.HttpContext.RequestAborted);
+                if (check == null)
+                    return NotFound();
+
+                var updated = await repository.UpdateSchemeAsync(schemeDto, Request.HttpContext.RequestAborted);
                 if (!updated)
                     return BadRequest(new { Message = $"Scheme {schemeDto.SchemeName} does not exist" });
 
@@ -115,7 +100,7 @@ namespace ShimsServer.Controllers
         {
             try
             {
-                var deleted = await repository.DeleteSchemeAsync(id, token);
+                var deleted = await repository.DeleteSchemeAsync(id, Request.HttpContext.RequestAborted);
                 if (!deleted)
                     return NotFound();
 

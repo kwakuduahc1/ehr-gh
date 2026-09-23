@@ -88,5 +88,10 @@ namespace ShimsServer.Models.Schemes
         /// </remarks>
         [DefaultValue(true)]
         public bool IsActive { get; set; } = true;
+
+        [Range(1, 5)]
+        [Required]
+        [DefaultValue(3)]
+        public required short Priority { get; set; } = 1;
     }
 }

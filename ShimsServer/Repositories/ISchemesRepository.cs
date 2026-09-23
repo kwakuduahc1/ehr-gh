@@ -30,12 +30,12 @@ namespace ShimsServer.Repositories
         /// <summary>
         /// Adds a new scheme within a transaction
         /// </summary>
-        Task<Guid> AddSchemeAsync(Schemes scheme, CancellationToken cancellationToken = default);
+        Task<Guid> AddSchemeAsync(AddSchemeDto scheme, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Updates an existing scheme within a transaction
         /// </summary>
-        Task<bool> UpdateSchemeAsync(Schemes scheme, CancellationToken cancellationToken = default);
+        Task<bool> UpdateSchemeAsync(UpdateSchemeDto scheme, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Deletes a scheme by ID within a transaction
@@ -87,28 +87,23 @@ namespace ShimsServer.Repositories
             return await conn.ExecuteScalarAsync<bool>(sql, new { name });
         }
 
-        public async Task<Guid> AddSchemeAsync(Schemes scheme, CancellationToken cancellationToken = default)
+        public async Task<Guid> AddSchemeAsync(AddSchemeDto scheme, CancellationToken cancellationToken = default)
         {
             const string sql = """
                 INSERT INTO schemes (schemesid, schemename, coverage, maxpayable, recovery, isactive)
                 VALUES (@SchemesID, @SchemeName, @Coverage, @MaxPayable, @Recovery, true)
                 """;
-
+            var newSchemeId = Guid.CreateVersion7();
             await using var conn = await connection.ConnectionAsync(cancellationToken);
             await using var transaction = await conn.BeginTransactionAsync(cancellationToken);
 
-            await conn.ExecuteAsync(sql, scheme, transaction: transaction);
+            await conn.ExecuteAsync(sql, new { SchemesID = newSchemeId, scheme.SchemeName, scheme.Coverage, scheme.MaxPayable, scheme.Recovery, scheme.Priority }, transaction: transaction);
             await transaction.CommitAsync(cancellationToken);
-            return scheme.SchemesID;
+            return newSchemeId;
         }
 
-        public async Task<bool> UpdateSchemeAsync(Schemes scheme, CancellationToken cancellationToken = default)
+        public async Task<bool> UpdateSchemeAsync(UpdateSchemeDto scheme, CancellationToken cancellationToken = default)
         {
-            const string checkSql = """
-                SELECT SchemesID, SchemeName, Coverage, MaxPayable, Recovery
-                FROM schemes
-                WHERE schemesid = @SchemesID
-                """;
 
             const string updateSql = """
                 UPDATE schemes
@@ -116,20 +111,13 @@ namespace ShimsServer.Repositories
                     coverage = @Coverage, 
                     maxpayable = @MaxPayable, 
                     recovery = @Recovery,
-                    isactive = true
+                    isactive = true,
+                    priority = @Priority
                 WHERE schemesid = @SchemesID
                 """;
 
             await using var conn = await connection.ConnectionAsync(cancellationToken);
             await using var transaction = await conn.BeginTransactionAsync(cancellationToken);
-
-            var existingScheme = await conn.QueryFirstOrDefaultAsync<Schemes>(
-                checkSql, 
-                new { scheme.SchemesID }, 
-                transaction: transaction);
-
-            if (existingScheme == null)
-                return false;
 
             await conn.ExecuteAsync(updateSql, scheme, transaction: transaction);
             await transaction.CommitAsync(cancellationToken);
