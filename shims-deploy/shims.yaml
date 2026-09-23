@@ -3,8 +3,8 @@ services:
     container_name: shims-client
     restart: unless-stopped
     build:
-      context: ..
-      dockerfile: shims-deploy/client.Dockerfile
+      context: .
+      dockerfile: client.Dockerfile
     develop:
       watch:
         - path: ../shims-client/src
@@ -23,8 +23,8 @@ services:
     container_name: shims-server
     restart: always
     build:
-      context: ..
-      dockerfile: shims-deploy/server.Dockerfile
+      context: .
+      dockerfile: server.Dockerfile
     develop:
       watch:
         - path: ../ShimsServer

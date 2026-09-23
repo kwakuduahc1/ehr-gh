@@ -498,3 +498,4 @@ src/environments/environment.development.ts
 /shims-deploy/prerendered-routes.json
 /shims-deploy/.htaccess
 /shims-deploy/000-default.conf
+shims-deploy.zip
