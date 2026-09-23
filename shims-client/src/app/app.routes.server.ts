@@ -5,32 +5,44 @@ export const serverRoutes: ServerRoute[] = [
     path: 'register',
     renderMode: RenderMode.Server
   },
-  {
-    path: 'schemes',
-    renderMode: RenderMode.Client
-  },
-  {
-    path: 'registrations',
-    renderMode: RenderMode.Client
-  },
-  {
-    path: 'vitals/:id',
-    renderMode: RenderMode.Client
-  },
-  {
-    path: 'opd',
-    renderMode: RenderMode.Client
-  },
-  {
-    path: 'consulting',
-    renderMode: RenderMode.Client
-  },
-  {
-    path: 'consulting/:id/**',
-    renderMode: RenderMode.Client
-  },
+  // {
+  //   path: 'schemes',
+  //   renderMode: RenderMode.Client
+  // },
+  // {
+  //   path: 'registrations',
+  //   renderMode: RenderMode.Client
+  // },
+  // {
+  //   path: 'vitals/:id',
+  //   renderMode: RenderMode.Client
+  // },
+  // {
+  //   path: 'opd',
+  //   renderMode: RenderMode.Client
+  // },
+  // {
+  //   path: 'consulting',
+  //   renderMode: RenderMode.Client
+  // },
+  // {
+  //   path: 'consulting/:id/**',
+  //   renderMode: RenderMode.Client
+  // },
+  // {
+  //   path: 'registrations/detail/:id',
+  //   renderMode: RenderMode.Client
+  // },
+  // {
+  //   path: 'schemes/:id/drugs',
+  //   renderMode: RenderMode.Client
+  // },
+  // {
+  //   path: 'schemes/:id/services',
+  //   renderMode: RenderMode.Client
+  // },
   {
     path: '**',
-    renderMode: RenderMode.Prerender
+    renderMode: RenderMode.Client
   }
 ];

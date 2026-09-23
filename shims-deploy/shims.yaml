@@ -1,0 +1,80 @@
+services:
+  shims-client:
+    container_name: shims-client
+    restart: unless-stopped
+    build:
+      context: ..
+      dockerfile: shims-deploy/client.Dockerfile
+    develop:
+      watch:
+        - path: ../shims-client/src
+          action: rebuild
+    depends_on:
+      - shims-server
+    networks:
+      - shims-app-net
+    ports:
+      - target: 80
+        published: 6504
+        protocol: tcp
+        app_protocol: http
+
+  shims-server:
+    container_name: shims-server
+    restart: always
+    build:
+      context: ..
+      dockerfile: shims-deploy/server.Dockerfile
+    develop:
+      watch:
+        - path: ../ShimsServer
+          action: rebuild
+    networks:
+      - shims-app-net
+      - shims-db-net
+    depends_on:
+      shims-db:
+        condition: service_healthy
+    env_file:
+      - path: .env.shared
+        required: true
+      - path: server.env
+        required: true
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:80/api/health || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - shims-server
+
+  shims-db:
+    build:
+      context: .
+      dockerfile: postgres.Dockerfile
+    labels:
+      - shims-db
+    restart: always
+    container_name: shims-db
+    env_file:
+      - path: .env.shared
+        required: true
+      - path: postgres.env
+        required: true
+    volumes:
+      - shims-vlm:/var/lib/postgresql/
+    networks:
+      - shims-db-net
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 13s
+      retries: 3
+
+volumes:
+  shims-vlm:
+
+networks:
+  shims-app-net:
+  shims-db-net:

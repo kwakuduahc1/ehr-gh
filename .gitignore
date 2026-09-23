@@ -486,3 +486,15 @@ src/environments/environment.development.ts
 /ShimsServer/appsettings.**
 /ShimsServer/appsettings.Development.json
 /ShimsServer/appsettings.Production.json
+
+# Deployment folder - ignore all except tracked files (Dockerfiles and config)
+/shims-deploy/client/
+/shims-deploy/server/
+/shims-deploy/.env.shared
+/shims-deploy/postgres.env
+/shims-deploy/redis.env
+/shims-deploy/server.env
+/shims-deploy/3rdpartylicenses.txt
+/shims-deploy/prerendered-routes.json
+/shims-deploy/.htaccess
+/shims-deploy/000-default.conf
