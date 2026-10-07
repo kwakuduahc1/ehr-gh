@@ -291,7 +291,7 @@ namespace ShimsServer.Repositories
         public async Task<IEnumerable<PatientConsultationDto>> GetConsultations(Guid id, int take, int skip, CancellationToken token)
         {
             const string sql = """
-                SELECT patientattendancesid, complaints, odq, dateadded, avpu, gcs
+                SELECT patientconsultationid, patientattendancesid, complaints, odq, dateadded, avpu, gcs
                 FROM patientconsultations
                 WHERE patientattendancesid = @id
                 ORDER BY dateadded DESC

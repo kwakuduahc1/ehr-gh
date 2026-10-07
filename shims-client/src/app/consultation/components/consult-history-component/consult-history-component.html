@@ -142,8 +142,9 @@
             <thead>
                 <tr>
                     <th>Date</th>
+                    <th>Time</th>
                     <th>Complaints</th>
-                    <th>Other Details/Questions</th>
+                    <th>ODQ</th>
                     <th>AVPU</th>
                     <th>GCS</th>
                 </tr>
@@ -151,11 +152,33 @@
             <tbody>
                 @for (h of history(); track $index) {
                 <tr>
-                    <td>{{h.dateAdded | date:'short'}}</td>
+                    <td>{{h.dateAdded | date:'yyyy-MM-dd'}}</td>
+                    <td>{{h.dateAdded | date:'shortTime'}}</td>
                     <td>{{h.complaints}}</td>
                     <td>{{h.odq}}</td>
-                    <!-- <td>{{h.avpu}}</td>
-                    <td>{{h.gcs}}</td> -->
+                    <td>
+                        @if (h.avpu?.alert) {
+                        <ul>
+                            <li>Alert: {{h.avpu.alert}}</li>
+                            <li>Verbal: {{h.avpu.verbal}}</li>
+                            <li>Pain: {{h.avpu.pain}}</li>
+                            <li>Response: {{h.avpu.responsive}}</li>
+                            <li class="total">Total: {{h.avpu.alert + h.avpu.verbal + h.avpu.pain + h.avpu.responsive}}
+                            </li>
+                        </ul>
+                        }
+                    </td>
+                    <td>
+                        @if (h.gcs.eyeOpening) {
+                        <ul>
+                            <li>Eye Opening: {{h.gcs.eyeOpening}}</li>
+                            <li>Verbal Response: {{h.gcs.verbalResponse}}</li>
+                            <li>Motor Response: {{h.gcs.motorResponse}}</li>
+                            <li class="total">Total: {{h.gcs.eyeOpening + h.gcs.verbalResponse + h.gcs.motorResponse}}
+                            </li>
+                        </ul>
+                        }
+                    </td>
                 </tr>
                 }
             </tbody>

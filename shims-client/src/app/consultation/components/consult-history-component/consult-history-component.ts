@@ -8,7 +8,7 @@ import { ValidatorMessages } from '../../../components/auth-validators';
 import { ActivityProvider } from '../../../providers/ActivityProvider';
 import { MatIcon } from '@angular/material/icon';
 import { MatCheckbox } from '@angular/material/checkbox';
-import { DatePipe } from '@angular/common';
+import { DatePipe, JsonPipe } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConsultHistoryHttpService } from '../../http/consult-history.service';
 
@@ -26,7 +26,8 @@ import { ConsultHistoryHttpService } from '../../http/consult-history.service';
         FormField,
         MatIcon,
         DatePipe,
-        MatCheckbox
+        MatCheckbox,
+        JsonPipe
     ]
 })
 export class ConsultHistoryComponent {
@@ -54,13 +55,18 @@ export class ConsultHistoryComponent {
     protected act = inject(ActivityProvider);
     private snack = inject(MatSnackBar);
     private http = inject(ConsultHistoryHttpService);
-    history = model.required<PatientConsultationDto[]>();
+    history = signal<PatientConsultationDto[]>([]);
     form = form<AddPatientConsultationDto>(this.fmMdl, AddPatientSchema, {
         submission: {
             action: async (f) => this.saveHist(f().value()),
             onInvalid: async () => this.snack.open('Form is invalid. Please check the fields and try again.', 'Close')
         }
     });
+
+    ngAfterViewInit() {
+        this.http.history(this.patient()!.patientAttendancesID)
+            .subscribe(res => this.history.set(res));
+    }
 
     saveHist(hist: AddPatientConsultationDto) {
         this.http.addHistory({ ...hist, patientAttendancesID: this.patient()!.patientAttendancesID }).subscribe({
@@ -85,6 +91,14 @@ export class ConsultHistoryComponent {
                         motorResponse: NaN
                     }
                 });
+                this.history.update(h => [
+                    {
+                        ...hist,
+                        patientConsultationsID: res,
+                        dateAdded: new Date()
+                    },
+                    ...h
+                ]);
             }
         });
     }

@@ -6,6 +6,7 @@ using ShimsServer.Models.Drugs;
 using ShimsServer.Models.Investigations;
 using ShimsServer.Models.Services;
 using ShimsServer.Repositories;
+using System.Collections;
 
 namespace ShimsServer.Controllers
 {
@@ -21,8 +22,23 @@ namespace ShimsServer.Controllers
         [HttpGet("{id:required:guid}/{take:int}/{skip:int}")]
         [ProducesResponseType(typeof(IEnumerable<PatientConsultationDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IEnumerable<PatientConsultationDto>> GetConsultations(Guid id, int take=15, int skip=0) => await dataSource.GetConsultations(id, take, skip, HttpContext.RequestAborted);
-
+        public async Task<IEnumerable> GetConsultations(Guid id, int take = 15, int skip = 0)
+        {
+            var resp = await dataSource.GetConsultations(id, take, skip, HttpContext.RequestAborted);
+            if (resp is null)
+                return Enumerable.Empty<PatientConsultationDto>();
+            var result = resp.Select(c => new
+            {
+                c.PatientConsultationID,
+                c.PatientAttendancesID,
+                c.Complaints,
+                c.ODQ,
+                c.DateAdded,
+                AVPU = c.AVPU is not null ? System.Text.Json.JsonSerializer.Deserialize<AVPU>(c.AVPU) : null!,
+                GCS = c.GCS is not null ? System.Text.Json.JsonSerializer.Deserialize<GCS>(c.GCS) : null!
+            });
+            return result;
+        }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -30,24 +46,24 @@ namespace ShimsServer.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> AddConsultation([FromBody] AddPatientConsultationDto dto)
         {
-            (Guid id, string user) info = (Guid.NewGuid(), User.Identity?.Name!);
+            (Guid id, string user) info = (Guid.CreateVersion7(), User.Identity?.Name!);
 
             try
             {
                 var result = await dataSource.AddConsultation(dto, info, HttpContext.RequestAborted);
                 if (result != 1)
-                    return BadRequest(new { message = "No consultation was added. Please check the input and try again." });
-                return Ok();
+                    return BadRequest(new { Message = "No consultation was added. Please check the input and try again." });
+                return Ok(info.id);
             }
             catch (PostgresException ex)
             {
                 logger.LogError(ex, "Database error adding consultation");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "There was a database level error." });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "There was a database level error." });
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error adding consultation");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred during consultation addition." });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred during consultation addition." });
             }
         }
 

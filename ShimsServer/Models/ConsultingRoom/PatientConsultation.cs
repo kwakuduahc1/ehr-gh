@@ -53,6 +53,7 @@ namespace ShimsServer.Models.ConsultingRoom
     );
 
     public record PatientConsultationDto(
+        Guid PatientConsultationID,
         Guid PatientAttendancesID,
         string Complaints,
         string ODQ,

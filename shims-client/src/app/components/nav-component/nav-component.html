@@ -76,6 +76,19 @@
         </div>
 </nav>
 
+<!-- Records Menu -->
+<mat-menu #recordsMenu="matMenu" panelClass="nav-menu-panel">
+        <a mat-menu-item routerLink="/registrations" (click)="onNavLinkClick()">
+                <mat-icon class="nav-icon">how_to_reg</mat-icon>
+                <span>Registrations</span>
+        </a>
+        <mat-divider />
+        <a mat-menu-item routerLink="/registrations/search" (click)="onNavLinkClick()">
+                <mat-icon class="nav-icon">event_available</mat-icon>
+                <span>Attendances</span>
+        </a>
+</mat-menu>
+
 <!-- Clinical Menu (OPD + Consultation) -->
 <mat-menu #clinicalMenu="matMenu" panelClass="nav-menu-panel">
         <a mat-menu-item routerLink="/opd" (click)="onNavLinkClick()">
@@ -124,19 +137,6 @@
         <a mat-menu-item routerLink="/settings" (click)="onNavLinkClick()">
                 <mat-icon class="nav-icon">settings</mat-icon>
                 <span>Settings</span>
-        </a>
-</mat-menu>
-
-<!-- Records Menu -->
-<mat-menu #recordsMenu="matMenu" panelClass="nav-menu-panel">
-        <a mat-menu-item routerLink="/registrations" (click)="onNavLinkClick()">
-                <mat-icon class="nav-icon">how_to_reg</mat-icon>
-                <span>Registrations</span>
-        </a>
-        <mat-divider />
-        <a mat-menu-item routerLink="/registrations/search" (click)="onNavLinkClick()">
-                <mat-icon class="nav-icon">event_available</mat-icon>
-                <span>Attendances</span>
         </a>
 </mat-menu>
 
