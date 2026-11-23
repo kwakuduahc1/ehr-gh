@@ -13,7 +13,7 @@ namespace ShimsServer.Models.Investigations
     public record PatientAttendanceInvestigations(
         Guid InvestigationSRequestsID,
         Guid InvestigationsID,
-        DateOnly DateRequested,
+        DateTime DateRequested,
         string Investigation);
 
     /// <summary>

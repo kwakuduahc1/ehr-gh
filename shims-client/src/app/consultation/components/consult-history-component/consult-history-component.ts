@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, model, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
 import { AddPatientConsultationDto, PatientConsultationDto } from '../../consult-models';
 import { schema, required, minLength, maxLength, applyWhen, min, max, form, disabled, FormRoot, FormField } from '@angular/forms/signals';
 import { PatientDetailsDto } from '../../../models/registrations/IRegistrations';
@@ -8,7 +8,7 @@ import { ValidatorMessages } from '../../../components/auth-validators';
 import { ActivityProvider } from '../../../providers/ActivityProvider';
 import { MatIcon } from '@angular/material/icon';
 import { MatCheckbox } from '@angular/material/checkbox';
-import { DatePipe, JsonPipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConsultHistoryHttpService } from '../../http/consult-history.service';
 
@@ -26,8 +26,7 @@ import { ConsultHistoryHttpService } from '../../http/consult-history.service';
         FormField,
         MatIcon,
         DatePipe,
-        MatCheckbox,
-        JsonPipe
+        MatCheckbox
     ]
 })
 export class ConsultHistoryComponent {

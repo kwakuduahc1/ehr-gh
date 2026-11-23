@@ -29,10 +29,7 @@ export const ConsultationRoute: Routes = [
             {
                 path: 'history',
                 loadComponent: () => import('./components/consult-history-component/consult-history-component')
-                    .then(m => m.ConsultHistoryComponent),
-                // resolve: {
-                //     history: (param: ActivatedRouteSnapshot) => inject(ConsultHistoryHttpService).history(param.paramMap.get('id')!)
-                // }
+                    .then(m => m.ConsultHistoryComponent)
             },
             {
                 path: 'investigations',

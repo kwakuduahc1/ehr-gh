@@ -1,3 +1,61 @@
-<main>
-    <h2>Investigations</h2>
+<main aria-labelledby="investigations-title">
+    <h2 id="investigations-title" class="h2 text-center text-secondary">Investigations</h2>
+
+    @if (error()) {
+        <p class="message error" role="alert">{{ error() }}</p>
+    }
+    @if (notice()) {
+        <p class="message success" role="status">{{ notice() }}</p>
+    }
+    @if (loading()) {
+        <p role="status">Loading investigations…</p>
+    } @else {
+        <section aria-labelledby="requested-title">
+            <h3 id="requested-title">Requested for this visit</h3>
+            @if (requested().length) {
+                <ul class="requested-list">
+                    @for (item of requested(); track item.investigationSRequestsID || item.investigationsID) {
+                        <li>
+                            <span>{{ item.investigation }}</span>
+                            <time>{{ item.dateRequested | date:'mediumDate' }}</time>
+                        </li>
+                    }
+                </ul>
+            } @else {
+                <p>No investigations have been requested for this visit.</p>
+            }
+        </section>
+
+        <section aria-labelledby="available-title">
+            <h3 id="available-title">Available investigations</h3>
+            @if (available().length) {
+                <div class="request-form">
+                    <label for="investigation-choice">Investigation</label>
+                    <select id="investigation-choice" [value]="selectedId()" (change)="selectInvestigation($event)">
+                        <option value="">Choose an investigation</option>
+                        @for (item of available(); track item.schemeInvestigationsID) {
+                            <option [value]="item.schemeInvestigationsID" [disabled]="isRequested(item.investigationsID)">
+                                {{ item.investigation }} — {{ item.schemeName }} ({{ item.price | currency }})
+                                @if (isRequested(item.investigationsID)) { — Already requested }
+                            </option>
+                        }
+                    </select>
+                    <button type="button" [disabled]="!selectedId() || submittingId() !== null"
+                        (click)="requestSelectedInvestigation()">
+                        @if (submittingId()) { Requesting… } @else { Request investigation }
+                    </button>
+                    @if (selectedId()) {
+                        @for (item of available(); track item.schemeInvestigationsID) {
+                            @if (item.schemeInvestigationsID === selectedId() && item.narration) {
+                                <p class="details">{{ item.narration }}</p>
+                            }
+                        }
+                    }
+                </div>
+            } @else {
+                <p>No investigations are available under this patient’s schemes. Contact administration to add an active investigation to a scheme.</p>
+                <button type="button" disabled>Request investigation</button>
+            }
+        </section>
+    }
 </main>

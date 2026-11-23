@@ -10,6 +10,17 @@ export interface AddInvestigationRequestDto {
     schemeInvestigationsID: string;
 }
 
+export interface SchemeInvestigationDTO {
+    schemeInvestigationsID: string;
+    investigationsID: string;
+    schemesID: string;
+    gdrg: string | null;
+    price: number;
+    isActive: boolean;
+    investigation: string | null;
+    narration: string | null;
+}
+
 export interface InvestigationRequestSummaryDto {
     investigationRequestsID: string;
     patientName: string;

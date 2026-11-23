@@ -94,6 +94,13 @@ namespace ShimsServer.Controllers
 
         #region lab-requests
 
+        [HttpGet("investigations/{id:guid}")]
+        [ProducesResponseType(typeof(IEnumerable<PatientAttendanceInvestigations>), StatusCodes.Status200OK)]
+        public async Task<IEnumerable<PatientAttendanceInvestigations>> GetInvestigationRequests(Guid id)
+        {
+            return await dataSource.GetInvestigationRequests(id, HttpContext.RequestAborted);
+        }
+
         [HttpPost("lab-request")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

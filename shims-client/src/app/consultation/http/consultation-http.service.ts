@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import {
     PatientAttendanceInvestigations,
     AddInvestigationRequestDto,
+    SchemeInvestigationDTO,
     InvestigationRequestSummaryDto,
     InvestigationPaymentDTO,
     AddInvestigationPaymentDto,
@@ -32,7 +33,15 @@ export class ConsultationHttpService {
     }
     // Investigation Requests
     getInvestigationsByAttendance(id: string): Observable<PatientAttendanceInvestigations[]> {
-        return this.http.get<PatientAttendanceInvestigations[]>(`${environment.AppUrl}/investigations/${id}`);
+        return this.http.get<PatientAttendanceInvestigations[]>(`${environment.AppUrl}Consultations/investigations/${id}`);
+    }
+
+    getInvestigationsByScheme(id: string): Observable<SchemeInvestigationDTO[]> {
+        return this.http.get<SchemeInvestigationDTO[]>(`${environment.AppUrl}SchemeInvestigations/scheme/${id}`);
+    }
+
+    addInvestigationRequest(dto: AddInvestigationRequestDto): Observable<unknown> {
+        return this.http.post(`${environment.AppUrl}Consultations/lab-request`, dto);
     }
 
     addResult(dto: AddInvestigationResultDto): Observable<string> {

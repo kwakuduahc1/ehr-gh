@@ -31,6 +31,12 @@ export class PatientConsultationComponent {
         { path: 'summary', icon: 'summarize', label: 'Summary', color: 'warning' }
     ];
 
+    constructor() {
+        const activePath = this.route.snapshot.firstChild?.routeConfig?.path;
+        const activeTab = this.tabs.findIndex(tab => tab.path === activePath);
+        if (activeTab >= 0) this.selectedTabIndex.set(activeTab);
+    }
+
     onTabChange(evt: number): void {
         this.selectedTabIndex.set(evt);
 

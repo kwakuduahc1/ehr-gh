@@ -106,24 +106,31 @@ namespace ShimsServer.Repositories
             return await cmd.ExecuteNonQueryAsync(token);
         }
 
-        public async Task<IEnumerable<PatientAttendanceInvestigations>> GetPatientAttendanceInvestigationsAsync(Guid id, CancellationToken token)
+        public async Task<IEnumerable<PatientAttendanceInvestigations>> GetInvestigationRequests(Guid id, CancellationToken token)
         {
             const string sql = """
-                SELECT ir.investigationsrequestsid, ir.investigationsid, ir.daterequested, i.investigation
+                SELECT ir.investigationsrequestsid AS "InvestigationSRequestsID",
+                       ir.investigationsid, ir.daterequested, i.investigation
                 FROM investigationsrequests ir
-                INNER join investigations i ON i.investigationsid = ir.investigationsid
-                where ir.patientattendancesid = @id
+                INNER JOIN investigations i ON i.investigationsid = ir.investigationsid
+                WHERE ir.patientattendancesid = @id
                 """;
             using var con = await connection.ConnectionAsync(token);
-            return await con.QueryAsync<PatientAttendanceInvestigations>(sql, new { id });
+            return await con.QueryAsync<PatientAttendanceInvestigations>(
+                new CommandDefinition(sql, new { id }, cancellationToken: token));
         }
 
         public async Task<int> AddInvestigationRequest(AddInvestigationRequestDto request, (Guid id, string user) Info, CancellationToken token)
         {
             const string sql = """
                 INSERT INTO investigationsrequests(
-                    investigationsrequestsid, patientsattendancesid, investigationsid, daterequested, username)
-                VALUES (@id, @patientsAttendancesId, @investigationsId, now(), @userName)
+                    investigationsrequestsid, patientattendancesid, schemeinvestigationsid,
+                    investigationsid, daterequested, username)
+                SELECT @id, @patientsAttendancesID, si.schemeinvestigationsid,
+                       si.investigationsid, now(), @userName
+                FROM schemeinvestigations si
+                WHERE si.schemeinvestigationsid = @schemeInvestigationsID
+                  AND si.isactive = true;
                 """;
 
             using var con = await connection.ConnectionAsync(token);
@@ -271,7 +278,7 @@ namespace ShimsServer.Repositories
         public async Task<int> DeleteRequest(Guid id, CancellationToken token)
         {
             const string sql = """
-                DELETE FROM investigationsrequests WHERE labrequestsid = @id
+                DELETE FROM investigationsrequests WHERE investigationsrequestsid = @id
                 """;
 
             using var con = await connection.ConnectionAsync(token);
@@ -322,9 +329,5 @@ namespace ShimsServer.Repositories
             });
         }
 
-        public Task<IEnumerable<PatientAttendanceInvestigations>> GetInvestigationRequests(Guid id, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

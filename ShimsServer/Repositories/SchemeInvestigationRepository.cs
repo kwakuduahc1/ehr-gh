@@ -37,9 +37,19 @@ namespace ShimsServer.Repositories
             CancellationToken cancellationToken = default)
         {
             const string sql = """
-                SELECT schemeinvestigationsid, investigationsid, schemesid, gdrg, price, isactive, investigation, narration
-                FROM public.vwm_investigations
-                WHERE schemesid = @id;
+                SELECT si.schemeinvestigationsid,
+                       si.investigationsid,
+                       si.schemesid,
+                       si.gdrg,
+                       si.price,
+                       si.isactive,
+                       i.investigation,
+                       NULL::text AS narration
+                FROM public.schemeinvestigations si
+                INNER JOIN public.investigations i
+                    ON i.investigationsid = si.investigationsid
+                WHERE si.schemesid = @id
+                  AND si.isactive;
                 """;
             await using var conn = await connection.ConnectionAsync(cancellationToken);
             return await conn.QueryAsync<SchemeInvestigationDTO>(sql, new { id = schemeId });
